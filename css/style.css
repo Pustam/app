@@ -1,0 +1,50 @@
+body.main {
+	width:100%;
+	padding-top: 1em;
+	margin:auto;
+}
+footer.footer {
+	position: absolute;
+	bottom:0px;
+	height:1em;		
+}
+.notebook-container {
+	margin-top:1.5em;
+}
+.notebook-container ul {
+	padding-left: 0em;
+}
+.notebook-container ul li {
+	list-style-type: none;
+}
+.notebook-btn-container {
+	margin : 1em 0em;
+}
+/*
+Footer that appears after every note 
+*/
+.note-footer {
+	display : none;
+	margin-top:5px;
+}
+.note-container .note:focus + .note-footer {
+	display: block;
+}
+/*
+The main note div 
+*/
+.note {
+	border : 1px solid #d9d9d9;
+	padding: 2px 4px;
+}
+/*
+Div that contains each notes. 
+*/
+.note-container{
+	clear : both;
+	margin-bottom:2em;
+}
+.note-container kbd {
+	color:#333;
+	background-color:#d5d5d5;
+}

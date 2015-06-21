@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>  
+  <head>
+    <title>
+        Markdown notes
+    </title>
+    <link rel="stylesheet" href="../css/bootstrap-lumen.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../dist/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"></link>
+    <link rel="stylesheet" href="../dist/font-awesome/css/font-awesome.css"></link>
+    <script>      
+      // Plugins/Modules
+      window.$ = window.jQuery = require("../dist/jquery/dist/jquery.js");
+      
+      // Custom loads
+      var AppConfig = require('../config.js');
+      var AppUtil = require(AppConfig.helperPath + 'utility.js');
+      var MainScript = require(AppConfig.browserSrcPath + 'index.js');             
+    </script>
+    <script type="text/javascript" src="../dist/bootstrap/dist/js/bootstrap.js"></script>    
+  </head>  
+  <body class="main">
+    <section class="col-md-2">
+      <button type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-plus"></span>
+          <script>AppUtil.echo('New notebook');</script>
+      </button>
+      <div class="container-fluid notebook-container">
+        <ul id="1_lstNotebooks" class="form-horizontal">          
+        </ul>
+      </div>
+    </section>
+    <section class="col-md-10">
+      <div role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist" id="1_openTab">         
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content" id="1_openTabContainer">
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      
+    </footer>    
+    <!-- Loading the dialogs -->    
+  </body>
+</html>

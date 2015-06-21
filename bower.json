@@ -1,0 +1,22 @@
+{
+  "name": "markdown-notes",
+  "version": "0.1.0",
+  "homepage": "https://github.com/atom/electron-starter",
+  "authors": [
+    "Abijeet Patro <abijeetpatro@osmosys.asia"
+  ],
+  "license": "MIT",  
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/components/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+	  "bootstrap" : "3.3.4",
+    "awesome-bootstrap-checkbox" : "0.3.4",
+    "font-awesome": "4.3.0"
+  }
+}
