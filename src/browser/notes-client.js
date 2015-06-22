@@ -3,6 +3,7 @@ var Notes = require(AppConfig.srcPath + 'notes.js');
 var ejs = require('ejs');
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
 var i18n = require('i18n');
+var marked = require('marked');
 
 'use strict';
 
@@ -15,7 +16,13 @@ var NotesClient = function() {
     return '';
   };
 
-  var addNewNoteHtml = function(notebookContainer) {
+  var addNewNoteHtml = function(notebookContainer, notebookID) {        
+    if(!notebookID) {
+      notebookID = notebookContainer.getAttribute('id');
+    } else if (!notebookContainer) {
+      notebookContainer = document.getElementById(notebookID);
+    }
+    
     var notesContainer = notebookContainer.querySelector('.notes-container');
     
     // Create the note
@@ -26,13 +33,15 @@ var NotesClient = function() {
     notesContainer.appendChild(noteContainer);
     
     // Create the inner elements.
-    noteContainer.innerHTML = '<div class="note" contenteditable></div>' 
+    noteContainer.innerHTML = '<div class="note" data-notebookid="' + notebookID + '"contenteditable></div>' 
       + '<div class="pull-right note-footer"><span class="small">' 
       + i18n.__('Press Cntrl+S to save or Shift + Enter to save and a new note') 
       + '</span></div>';
       
     // Add events.
-    addNoteEvents(noteContainer.querySelector('.note'));
+    var currNote = noteContainer.querySelector('.note');
+    addNoteEvents(currNote);
+    currNote.focus();
   };
 
   var removeAllNoteEvents = function(notebookContainer) {
@@ -69,21 +78,47 @@ var NotesClient = function() {
 
   function evtNoteBlur(event) {
     console.log('blur...');
-    console.log(event);
+    saveNote(event.target, true);
   }
 
   function evtNoteKeyPress(event) {
     if(event.which === 19 && event.ctrlKey === true) {
       // Need to save...
-      console.log('SAVE!!!');
+      saveNote(event.target, false);
       event.preventDefault();
-      return false;
     } else if(event.which === 13 && event.shiftKey === true) {
-      // Need to save and create a new note.
-      console.log('SAVE AND CREATE!!!');
+      // Need to save and create a new note.      
+      saveAndCreateNote(event.target);
       event.preventDefault();
-      return false;
     }    
+  }
+  
+  function saveAndCreateNote(note) {
+    var notebookID = note.dataset.notebookid;
+    saveNote(note, true);
+    addNewNoteHtml(null, notebookID);
+  }
+  
+  function saveNote(note, isBlur) {
+    var noteText = note.textContent;    
+    if(noteText) {
+      var noteID = note.dataset.noteid;
+      var notebookID = note.dataset.notebookid;
+      if(noteID && notebookID) {
+        // TODO : Save the note in the database!!  
+      } else if(notebookID) {
+        // TODO : Create the note in the database!!
+      } else {
+        // TODO : Error!! No notebookID AND noteID
+        return;
+      }
+      
+      if(isBlur) {
+        var noteHtml = marked(noteText);
+        note.innerHTML = noteHtml;
+      } 
+    }
+    note = null;        
   }
 
   return {
