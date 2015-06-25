@@ -22,6 +22,12 @@ var AppConfig = {
 		'shrinkNotes' : false,
 		'createdOn' : null,
 		'modifiedOn' : null	
+	},
+	getNotebookContentID : function(notebookDbID) {
+		return 'notebook_' + notebookDbID;
+	},
+	getNotebookHeaderID : function(notebookDbID) {		
+		return 'notebookHeader_' + notebookDbID;
 	}
 };
 

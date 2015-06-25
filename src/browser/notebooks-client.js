@@ -68,9 +68,9 @@ var NotebooksClient = function() {
           // TODO : Error while fetching the template, show error 
           return;
         }
-        var notebookContentID = getNotebookContentID(notebookID);
+        var notebookContentID = AppConfig.getNotebookContentID(notebookID);
         // Add <li> to tab header
-        notebooksTabHeading.innerHTML += '<li role="presentation" id="' + getNotebookHeaderID(
+        notebooksTabHeading.innerHTML += '<li role="presentation" id="' + AppConfig.getNotebookHeaderID(
             notebookID) + '" class="active"><a href="#' + notebookContentID + '" aria-controls="' +
           notebookID + '" role="tab" data-toggle="tab">' + notebookData.name + '</a></li>';
 
@@ -83,7 +83,7 @@ var NotebooksClient = function() {
         notebooksTabContainer.innerHTML += '<div role="tabpanel" class="tab-pane active" id="' +
           notebookContentID + '">' + notebooksHtml + '</div>';
         var notebookContents = document.getElementById(notebookContentID);
-        addNotebookEvents(notebookContents, notebookContentID);
+        addNotebookEvents(notebookContents, notebookID);
         notebookContents = null;
       });
     });
@@ -91,11 +91,11 @@ var NotebooksClient = function() {
 
   // Hides a notebook with the given ID
   function hideTab(notebookID) {
-    var notebookHeader = notebooksTabHeading.querySelector('#' + getNotebookHeaderID(notebookID));
+    var notebookHeader = notebooksTabHeading.querySelector('#' + AppConfig.getNotebookHeaderID(notebookID));
     if (notebookHeader) {
       notebookHeader.remove();
     }
-    var notebookContents = notebooksTabContainer.querySelector('#' + getNotebookContentID(notebookID));
+    var notebookContents = notebooksTabContainer.querySelector('#' + AppConfig.getNotebookContentID(notebookID));
 
     // Cleanup!!
     removeNotebookEvents(notebookContents);
@@ -105,11 +105,11 @@ var NotebooksClient = function() {
     notebookContents = null;
   }
 
-  function addNotebookEvents(notebookContents, notebookContentID) {
+  function addNotebookEvents(notebookContents, notebookID) {
     // Add new note button handler..  
     var btnAddNote = notebookContents.querySelector('.add-note');
     btnAddNote.addEventListener('click', evtAddNote);
-    btnAddNote.dataset.notebookid = notebookContentID;
+    btnAddNote.dataset.notebookid = notebookID;
     btnAddNote = null;
   }
 
@@ -128,26 +128,14 @@ var NotebooksClient = function() {
    * Events
    */
   function evtAddNote(event) {
-    var notebookContent = document.getElementById(this.dataset.notebookid);
-    NotesClient.addNewNoteHtml(notebookContent);
+    var notebookID = this.dataset.notebookid;
+    NotesClient.addNewNoteHtml(notebookID);
   }
-
 
   /**
    * End of events
    */
 
-
-  /**
-   * Getters
-   */
-  function getNotebookHeaderID(notebookID) {
-    return 'notebookHeader_' + notebookID;
-  }
-
-  function getNotebookContentID(notebookID) {
-    return 'notebook_' + notebookID;
-  }
   return {
     cbBindNotebooks: cbBindNotebooks,
     init: init

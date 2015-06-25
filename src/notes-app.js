@@ -4,17 +4,19 @@
  */
 'use strict';
 
-var Async = require('async');
+var async = require('async');
 var Datastore = require('nedb');
 var AppConfig = require(__dirname + '/../config.js');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
 var i18n = require('i18n');
 
 var NotesApp = function() {
-  var dbObjs = [];
-  var dbPaths = [AppConfig.database.path + AppConfig.database.notes,
-    AppConfig.database.path + AppConfig.database.notebooks
-  ];
+  var dbObjs = {};
+  
+  var dbPaths = {
+    notesDb : AppConfig.database.path + AppConfig.database.notes,
+    notebookDb : AppConfig.database.path + AppConfig.database.notebooks
+  };
 
   /**
    * Called when the application starts. 
@@ -24,17 +26,27 @@ var NotesApp = function() {
    */
   var init = function(cbMain) {
     // Check for databases and load them as needed.
-    Async.each(dbPaths, function(dbPath, callback) {
+    async.each(Object.keys(dbPaths), function(dbName, callback) {
+      var dbPath = dbPaths[dbName];
+      if(!dbPath) {
+        // TODO : Handle empty path error!!!
+        return callback(new AppError());
+      }
       var db = new Datastore({
         filename: dbPath
       });
+            
       db.loadDatabase(function(err) {
         if (err) {
           return callback(err);
         }
-        dbObjs.push(db);
+        if(db.filename.toLowerCase() === dbPaths.notesDb.toLowerCase()) {
+          dbObjs.noteDb = db;  
+        } else if(db.filename.toLowerCase() === dbPaths.notebookDb.toLowerCase()) {
+          dbObjs.notebookDb = db;
+        }        
         callback();
-      });
+      });      
     }, function(err) {
       if (err) {
         // Error while loading the databases.
@@ -49,14 +61,14 @@ var NotesApp = function() {
    * Returns a reference to the notes database.
    */
   var getNotesDb = function() {
-    return dbObjs[0];
+    return dbObjs.noteDb;
   };
 
   /**
    * Returns a reference to the notebook database.
    */
   var getNotebooksDb = function() {
-    return dbObjs[1];
+    return dbObjs.notebookDb;
   };
 
   /**
@@ -78,6 +90,7 @@ var NotesApp = function() {
       }
       if (docs.length === 0) {
         // It doesn't so let's create the notebook.
+        // TODO : Needs to be moved to notebook.js
         var notebook = AppConfig.defaultNotebook;
         notebook.createdOn = new Date();
         notebook.modifiedOn = notebook.createdOn;
