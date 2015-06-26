@@ -6,7 +6,7 @@ body.main {
 footer.footer {
 	position: absolute;
 	bottom:0px;
-	height:1em;		
+	height:1em;
 }
 .notebook-container {
 	margin-top:1.5em;
@@ -21,7 +21,7 @@ footer.footer {
 	margin : 1em 0em;
 }
 /*
-Footer that appears after every note 
+Footer that appears after every note
 */
 .note-footer {
 	display : none;
@@ -31,14 +31,18 @@ Footer that appears after every note
 	display: block;
 }
 /*
-The main note div 
+The main note div
 */
-.note {
+.notes-container  .note {
 	border : 1px solid #d9d9d9;
 	padding: 2px 4px;
 }
+
+.notes-container .note :last-child {
+	margin-bottom:0px;
+}
 /*
-Div that contains each notes. 
+Div that contains each notes.
 */
 .note-container{
 	clear : both;
