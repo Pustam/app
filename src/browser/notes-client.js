@@ -172,7 +172,10 @@ var NotesClient = function() {
   function getNoteHTML(notebookDbID, noteText, noteID) {
     if(!noteText) {
       noteText = '';
+    } else {
+      noteText = marked(noteText);
     }
+    
     if(noteID) {
       noteID = 'data-noteid="' + noteID + '""';
     } else {
