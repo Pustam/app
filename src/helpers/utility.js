@@ -13,7 +13,7 @@ var utility = function() {
   // included to handle printing into the HTML pages
   // from one location itself. There maybe a better way
   // to do this though.
-  // TODO : Find a better way to do this.
+  // TODO Find a better way to do this.
   var echo = function(text) {
     document.write(i18n.__(text));
   };

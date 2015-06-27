@@ -1,7 +1,7 @@
 /*************************************************
  * Contains code to communicate with the Notes
  * database and the business logic as well.
- * @author : Abijeet Patro 
+ * @author : Abijeet Patro
  *************************************************/
 
 'use strict';
@@ -26,16 +26,16 @@ var Notes = function() {
 
   var modifyNote = function(noteObj, isNewNote, cbMain) {
     if (!validateNote(noteObj, isNewNote)) {
-      // TODO : Validation error.
+      // TODO Validation error.
       return cbMain(new AppError());
     }
     var noteElem = noteObj.noteElem;
     var isBlur = noteObj.isBlur;
     var noteID = noteObj._id;
-    
+
     noteObj = populateValues(noteObj, true);
 
-    var notesDb = NotesApp.getNotesDb();    
+    var notesDb = NotesApp.getNotesDb();
 
     // Delete _id, just in case so nedb can create its own.
     delete noteObj._id;
@@ -49,7 +49,7 @@ var Notes = function() {
         _id: noteID
       }, noteObj, function(err, numReplaced) {
         if (numReplaced <= 0) {
-          // TODO : Return the error stating
+          // TODO Return the error stating
           // that no rows got updated.
           err = new AppError();
         }
@@ -66,7 +66,7 @@ var Notes = function() {
       noteObj.noteElem = noteElem;
       noteObj.isBlur = isBlur;
 
-      cbMain(null, noteObj);      
+      cbMain(null, noteObj);
       noteObj = null, cbMain = null;
       return;
     }
@@ -75,7 +75,7 @@ var Notes = function() {
   var getNoteByID = function(noteID, cbMain) {
     var notesDb = NotesApp.getNotesDb();
     if (!noteID) {
-      // TODO : Add proper error.
+      // TODO Add proper error.
       return cbMain(new AppError());
     }
     notesDb.findOne({

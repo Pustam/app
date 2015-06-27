@@ -18,7 +18,7 @@ var NotebooksClient = function() {
 
   var cbBindNotebooks = function(err, notebooks) {
     if (err) {
-      // TODO : Show error to user.
+      // TODO Show error to user.
       return;
     }
     try {
@@ -30,7 +30,7 @@ var NotebooksClient = function() {
       notebooksContainerUL.innerHTML = notebooksHTML;
       addNotebookSelectedEvent();
     } catch (e) {
-      // TODO : Show error to user.
+      // TODO Show error to user.
       console.log(e);
     }
   };
@@ -58,13 +58,13 @@ var NotebooksClient = function() {
     // Fetch the notebook details
     Notebooks.getFullDetailByID(notebookID, function(err, notebookData) {
       if (err) {
-        // TODO : Show error to user.
+        // TODO Show error to user.
         return;
       }
 
       AppUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
         if (err) {
-          // TODO : Error while fetching the template, show error
+          // TODO Error while fetching the template, show error
           return;
         }
         var notebookContentID = AppConfig.getNotebookContentID(notebookID);

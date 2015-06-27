@@ -12,41 +12,41 @@ var i18n = require('i18n');
 
 var NotesApp = function() {
   var dbObjs = {};
-  
+
   var dbPaths = {
     notesDb : AppConfig.database.path + AppConfig.database.notes,
     notebookDb : AppConfig.database.path + AppConfig.database.notebooks
   };
 
   /**
-   * Called when the application starts. 
-   * - Checks if the databases are present, if not creates and 
+   * Called when the application starts.
+   * - Checks if the databases are present, if not creates and
    * loads them into memory.
-   * - Checks if the default data is present in the database. 
+   * - Checks if the default data is present in the database.
    */
   var init = function(cbMain) {
     // Check for databases and load them as needed.
     async.each(Object.keys(dbPaths), function(dbName, callback) {
       var dbPath = dbPaths[dbName];
       if(!dbPath) {
-        // TODO : Handle empty path error!!!
+        // TODO Handle empty path error!!!
         return callback(new AppError());
       }
       var db = new Datastore({
         filename: dbPath
       });
-            
+
       db.loadDatabase(function(err) {
         if (err) {
           return callback(err);
         }
         if(db.filename.toLowerCase() === dbPaths.notesDb.toLowerCase()) {
-          dbObjs.noteDb = db;  
+          dbObjs.noteDb = db;
         } else if(db.filename.toLowerCase() === dbPaths.notebookDb.toLowerCase()) {
           dbObjs.notebookDb = db;
-        }        
+        }
         callback();
-      });      
+      });
     }, function(err) {
       if (err) {
         // Error while loading the databases.
@@ -72,7 +72,7 @@ var NotesApp = function() {
   };
 
   /**
-   * Checks if the default data is present. The default data at this moment 
+   * Checks if the default data is present. The default data at this moment
    * consists of the "Daily" notebook
    */
   function checkIfDefaultDataPresent(cbMain) {
@@ -90,7 +90,7 @@ var NotesApp = function() {
       }
       if (docs.length === 0) {
         // It doesn't so let's create the notebook.
-        // TODO : Needs to be moved to notebook.js
+        // TODO Needs to be moved to notebook.js
         var notebook = AppConfig.defaultNotebook;
         notebook.createdOn = new Date();
         notebook.modifiedOn = notebook.createdOn;

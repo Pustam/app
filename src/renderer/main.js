@@ -37,7 +37,7 @@ App.on('ready', function() {
   mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'loading.html');
   NotesApp.init(function(err) {
     if (err) {
-      // TODO : Load error html.
+      // TODO Load error html.
       return;
     }
     mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'index.html');
