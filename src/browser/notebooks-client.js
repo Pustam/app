@@ -1,10 +1,9 @@
 /* global AppConfig */
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
-var ejs = require('ejs');
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
 var NotesClient = require(AppConfig.browserSrcPath + 'notes-client.js');
 
-'use strict';
+'use strict'
 
 var NotebooksClient = function() {
   var notebooksContainerUL = null;
@@ -37,7 +36,7 @@ var NotebooksClient = function() {
   };
 
 
-  // Private functions	
+  // Private functions
   function addNotebookSelectedEvent() {
     var notebooksChk = notebooksContainerUL.querySelectorAll('input[type="checkbox"]');
     for (var i = 0, len = notebooksChk.length; i !== len; ++i) {
@@ -45,7 +44,7 @@ var NotebooksClient = function() {
     }
   }
 
-  // Fires when a notebook is selected or deselected.	 
+  // Fires when a notebook is selected or deselected.
   function notebookSelectChanged(event) {
     if (event.target.checked) {
       showTab(event.target.id);
@@ -65,25 +64,27 @@ var NotebooksClient = function() {
 
       AppUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
         if (err) {
-          // TODO : Error while fetching the template, show error 
+          // TODO : Error while fetching the template, show error
           return;
         }
         var notebookContentID = AppConfig.getNotebookContentID(notebookID);
+
         // Add <li> to tab header
         notebooksTabHeading.innerHTML += '<li role="presentation" id="' + AppConfig.getNotebookHeaderID(
             notebookID) + '" class="active"><a href="#' + notebookContentID + '" aria-controls="' +
           notebookID + '" role="tab" data-toggle="tab">' + notebookData.name + '</a></li>';
 
-        // Build the notes html and attach the event handlers.
-        var notesHtml = NotesClient.buildNotesHtml(notebookData.notes, notebookID);
-
-        var notebooksHtml = notesPageHeaderHtml + notesHtml;
-
-        // Add <div> to tab body
+        // Add the default content of the notebook.
         notebooksTabContainer.innerHTML += '<div role="tabpanel" class="tab-pane active" id="' +
-          notebookContentID + '">' + notebooksHtml + '</div>';
+            notebookContentID + '">' + notesPageHeaderHtml + '</div>';
+
         var notebookContents = document.getElementById(notebookContentID);
         addNotebookEvents(notebookContents, notebookID);
+
+        // Build the notes html and attach the event handlers.
+        NotesClient.buildNotesHtml(notebookData.notes, notebookID, notebookContents);
+
+        // Add <div> to tab body
         notebookContents = null;
       });
     });
@@ -106,7 +107,7 @@ var NotebooksClient = function() {
   }
 
   function addNotebookEvents(notebookContents, notebookID) {
-    // Add new note button handler..  
+    // Add new note button handler..
     var btnAddNote = notebookContents.querySelector('.add-note');
     btnAddNote.addEventListener('click', evtAddNote);
     btnAddNote.dataset.notebookid = notebookID;

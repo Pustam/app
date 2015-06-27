@@ -1,11 +1,9 @@
 /* global AppConfig */
 var Notes = require(AppConfig.srcPath + 'notes.js');
-var ejs = require('ejs');
-var AppUtil = require(AppConfig.helperPath + 'utility.js');
 var i18n = require('i18n');
 var marked = require('marked');
 
-'use strict';
+'use strict'
 
 var NotesClient = function() {
 
@@ -16,37 +14,28 @@ var NotesClient = function() {
 
   };
 
-  var buildNotesHtml = function(notes, notebookID) {
-    return '';
+  var buildNotesHtml = function(notes, notebookDbID, notebookContainer) {
+    var notesContainer = notebookContainer.querySelector('.notes-container');
+
+    for (var i = 0, len = notes.length; i !== len; ++i) {
+      appendNoteElement(notebookDbID, notes[i].text, notes[i]._id, notesContainer);
+    }
   };
 
   var addNewNoteHtml = function(notebookDbID, notebookContainer) {
     if(!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
-    }  
+    }
     if(!notebookContainer) {
       var notebookID = AppConfig.getNotebookContentID(notebookDbID);
-      notebookContainer = document.getElementById(notebookID);  
+      notebookContainer = document.getElementById(notebookID);
     }
-       
+
     var notesContainer = notebookContainer.querySelector('.notes-container');
 
     // Create the note
-    var noteContainer = document.createElement('div');
-    noteContainer.setAttribute('class', 'note-container');
+    var currNote = appendNoteElement(notebookDbID, null, null, notesContainer);
 
-    // Add it to the notes container
-    notesContainer.appendChild(noteContainer);
-
-    // Create the inner elements.
-    noteContainer.innerHTML = '<div class="note" data-notebookid="' + notebookDbID + '" contenteditable></div>' 
-      + '<div class="pull-right note-footer"><span class="small">' 
-      + i18n.__('Press Cntrl+S to save or Shift + Enter to save and a new note.') 
-      + '</span></div>';
-
-    // Add events.
-    var currNote = noteContainer.querySelector('.note');
-    addNoteEvents(currNote);
     currNote.focus();
   };
 
@@ -68,14 +57,14 @@ var NotesClient = function() {
     // Keyup event - Perform action according to the
     // key's pressed.
     note.addEventListener('keypress', evtNoteKeyPress, false);
-  };
+  }
 
   function removeNoteEvents(note) {
     note.removeEventListener('focus', evtNoteFocus);
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
     note = null;
-  };
+  }
 
   function evtNoteFocus(event) {
     currentlyFocusedNote = event.target;
@@ -87,7 +76,7 @@ var NotesClient = function() {
     }
     focusTimeout = setTimeout(function() {
       if (currentlyFocusedNote && currentlyFocusedNote.dataset.noteid) {
-        // Fetch the content of the note.    
+        // Fetch the content of the note.
         Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
           function(err, noteObj) {
             if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
@@ -102,7 +91,6 @@ var NotesClient = function() {
   }
 
   function evtNoteBlur(event) {
-    console.log('blur...');
     saveNote(event.target, true);
   }
 
@@ -112,7 +100,7 @@ var NotesClient = function() {
       saveNote(event.target, false);
       event.preventDefault();
     } else if (event.which === 13 && event.shiftKey === true) {
-      // Need to save and create a new note.      
+      // Need to save and create a new note.
       saveAndCreateNote(event.target);
       event.preventDefault();
     }
@@ -137,7 +125,7 @@ var NotesClient = function() {
         // Insert
         Notes.modifyNote(noteObj, true, function(err, noteObj) {
           if(noteObj) {
-            noteObj.noteElem.dataset.noteid = noteObj._id; 
+            noteObj.noteElem.dataset.noteid = noteObj._id;
           }
           cbModifiedNote(err, noteObj);
         });
@@ -163,6 +151,38 @@ var NotesClient = function() {
     return noteObj;
   }
 
+  function appendNoteElement(notebookDbID, noteText, noteID, notesContainer) {
+    // Create the note
+    var noteContainer = document.createElement('div');
+    noteContainer.setAttribute('class', 'note-container');
+
+    // Create the inner elements.
+    noteContainer.innerHTML = getNoteHTML(notebookDbID, noteText, noteID);
+
+    // Add events.
+    var currNote = noteContainer.querySelector('.note');
+    addNoteEvents(currNote);
+
+    // Add it to the notes container
+    notesContainer.appendChild(noteContainer);
+
+    return currNote;
+  }
+
+  function getNoteHTML(notebookDbID, noteText, noteID) {
+    if(!noteText) {
+      noteText = '';
+    }
+    if(noteID) {
+      noteID = 'data-noteid="' + noteID + '""';
+    } else {
+      noteID = '';
+    }
+
+    return '<div class="note" ' + noteID + ' data-notebookid="' + notebookDbID + '" contenteditable>' +
+      noteText + '</div><div class="pull-right note-footer"><span class="small">' +
+      i18n.__('Press Cntrl+S to save or Shift + Enter to save and a new note.') + '</span></div>';
+  }
 
   /**
    * Callbacks

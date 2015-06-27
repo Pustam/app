@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var AppError = function(err, customMsg, log) {
   if (err instanceof Error) {

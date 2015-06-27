@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var i18n = require('i18n');
 var AppConfig = require(__dirname + '/../../config.js');
@@ -12,8 +12,8 @@ var utility = function() {
   // Creating an echo function with the i18n module
   // included to handle printing into the HTML pages
   // from one location itself. There maybe a better way
-  // to do this though. 
-  // TODO : Find a better way to do this.	
+  // to do this though.
+  // TODO : Find a better way to do this.
   var echo = function(text) {
     document.write(i18n.__(text));
   };

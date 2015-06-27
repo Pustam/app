@@ -1,9 +1,8 @@
 /* global AppConfig */
-'use strict';
+'use strict'
 
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
-var Notes = require(AppConfig.srcPath + 'notes.js');
 var NotebooksClient = require(AppConfig.browserSrcPath + 'notebooks-client.js');
 var async = require('async');
 
