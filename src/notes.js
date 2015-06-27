@@ -120,6 +120,33 @@ var Notes = function() {
   };
 
   /**
+   * Delete's a note with the given ID
+   * @param  {String} noteID   Note ID
+   * @param  {function} cbMain Callback function. Error is passed as an argument
+   * if deletion failed, else error is passed as null
+   * @return {undefined}    No return type.
+   */
+  var deleteNote = function(noteID, cbMain) {
+    if(!noteID) {
+      // TODO Pass correct error message
+      err = new AppError(new ReferenceError());
+      return cbMain(err);
+    }
+    var notesDb = NotesApp.getNotesDb();
+    notesDb.remove({ _id : noteID }, {}, function(err, numRemoved) {
+      if(err) {
+        // TODO Show error regarding DB error.
+        return cbMain(new AppError(err));
+      }
+      if(numRemoved <= 0) {
+        // TODO Show error regarding no doc deleted.
+        return cbMain(new AppError());
+      }
+      cbMain(null);
+    });
+  };
+
+  /**
    * Private function used to validate a note object. If it's NOT a new note
    * ensures that the _id parameter has been provided.
    * @param  {Object}  noteObj   Note object
@@ -165,7 +192,8 @@ var Notes = function() {
   return {
     getAllNotesByID: getAllNotesByID,
     getNoteByID: getNoteByID,
-    modifyNote: modifyNote
+    modifyNote: modifyNote,
+    deleteNote : deleteNote
   };
 };
 

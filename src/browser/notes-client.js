@@ -5,10 +5,6 @@ var marked = require('marked');
 'use strict'
 
 var NotesClient = function() {
-
-  var currentlyFocusedNote = null;
-  var focusTimeout = null;
-
   var init = function() {
 
   };
@@ -24,7 +20,7 @@ var NotesClient = function() {
    */
   var buildNotesHtml = function(notes, notebookDbID, notebookContainer) {
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
-    if(!notesContainer) {
+    if(!notebooksContainer) {
       // TODO Something bad happened!!
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
@@ -108,26 +104,20 @@ var NotesClient = function() {
    */
   function evtNoteFocus(event) {
     currentlyFocusedNote = event.target;
-    if (focusTimeout) {
-      clearTimeout(focusTimeout);
-    }
     if(!currentlyFocusedNote.dataset.noteid) {
       return;
     }
-    focusTimeout = setTimeout(function() {
-      if (currentlyFocusedNote && currentlyFocusedNote.dataset.noteid) {
-        // Fetch the content of the note.
-        Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
-          function(err, noteObj) {
-            if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
-              // the note is still selected.
-              currentlyFocusedNote.innerHTML = "";
-              currentlyFocusedNote.innerText = noteObj.text;
-            }
-          });
-      }
-      focusTimeout = null;
-    }, 300);
+    if (currentlyFocusedNote && currentlyFocusedNote.dataset.noteid) {
+      // Fetch the content of the note.
+      Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
+        function(err, noteObj) {
+          if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
+            // the note is still selected.
+            currentlyFocusedNote.innerHTML = "";
+            currentlyFocusedNote.innerText = noteObj.text;
+          }
+        });
+    }
   }
 
   /**
@@ -155,6 +145,9 @@ var NotesClient = function() {
       // Need to save and create a new note.
       saveAndCreateNote(event.target);
       event.preventDefault();
+    } else if (event.which === 4 && event.shiftKey === true && event.ctrlKey === true) {
+      deleteNote(event.target);
+      event.preventDefault();
     }
   }
 
@@ -162,7 +155,7 @@ var NotesClient = function() {
    * Saves and creates a note. This is called when the user presses
    * Shift + Enter. Calls `saveNote` and the calls `addNewNoteHtml`
    * @param  {Object} note The note object
-   * @return {undefined}   
+   * @return {undefined}
    */
   function saveAndCreateNote(note) {
     var notebookID = note.dataset.notebookid;
@@ -170,6 +163,12 @@ var NotesClient = function() {
     addNewNoteHtml(notebookID);
   }
 
+  /**
+   * Calls the method to update or create a note, based on the note element.
+   * @param  {Object}  note   HTML note element that needs to be saved.
+   * @param  {Boolean} isBlur Is this triggered as part of blur event.
+   * @return {undefined}      No return type.
+   */
   function saveNote(note, isBlur) {
     var noteText = note.innerText;
     if (noteText) {
@@ -193,6 +192,28 @@ var NotesClient = function() {
       }
     }
     note = null;
+  }
+
+  /**
+   * Calls the method to delete a note, based on the note element.
+   * @param  {Object} note HTML note element
+   * @return {undefined}      No return type.
+   */
+  function deleteNote(note) {
+    var noteID = note.dataset.noteid;
+    if(noteID) {
+      Notes.deleteNote(noteID, function(err) {
+        if(err) {
+          // TODO Show error regarding delete.
+        }
+      });
+    }
+    removeNoteEvents(note);
+    if(note.parentNode) {
+      note.parentNode.remove();
+    } else {
+      note.remove();
+    }
   }
 
   /**
@@ -265,8 +286,7 @@ var NotesClient = function() {
     }
 
     return '<div class="note" ' + noteID + ' data-notebookid="' + notebookDbID + '" contenteditable>' +
-      noteText + '</div><div class="pull-right note-footer"><span class="small">' +
-      i18n.__('Press Cntrl+S to save or Shift + Enter to save and a new note.') + '</span></div>';
+      noteText + '</div><div class="pull-right note-footer"></div>';
   }
 
   // START of CALLBACKS

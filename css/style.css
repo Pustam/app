@@ -21,16 +21,6 @@ footer.footer {
 	margin : 1em 0em;
 }
 /*
-Footer that appears after every note
-*/
-.note-footer {
-	display : none;
-	margin-top:5px;
-}
-.note-container .note:focus + .note-footer {
-	display: block;
-}
-/*
 The main note div
 */
 .notes-container  .note {
@@ -41,12 +31,15 @@ The main note div
 .notes-container .note :last-child {
 	margin-bottom:0px;
 }
+.notes-container .note :first-child {
+	margin-top:0px;
+}
 /*
 Div that contains each notes.
 */
 .note-container{
 	clear : both;
-	margin-bottom:2em;
+	margin-bottom:1.3em;
 }
 .note-container kbd {
 	color:#333;
