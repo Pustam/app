@@ -1,0 +1,38 @@
+<div class="modal fade" id="dlgShortcutHelp">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">List of Shortcuts</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th><%= i18n.__('shortcut.shortcut');%></th>
+              <th><%= i18n.__('shortcut.description');%></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-md-4"><%- i18n.__('shortcut.kbd_new_note');%></td>
+              <td><%= i18n.__('shortcut.desc_new_note');%></td>
+            </tr>
+            <tr>
+              <td class="col-md-4"><%- i18n.__('shortcut.kbd_save_note');%></td>
+              <td><%= i18n.__('shortcut.desc_save_note');%></td>
+            </tr>
+            <tr>
+              <td class="col-md-4"><%- i18n.__('shortcut.kbd_delete_note');%></td>
+              <td><%= i18n.__('shortcut.desc_delete_note');%></td>
+            </tr>
+            <tr>
+              <td class="col-md-4"><%- i18n.__('shortcut.kbd_complete_note');%></td>
+              <td><%= i18n.__('shortcut.desc_complete_note');%></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
