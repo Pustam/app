@@ -1,3 +1,5 @@
+/*global AppConfig */
+
 'use strict';
 
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');

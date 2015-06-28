@@ -1,10 +1,11 @@
-'use strict';
-
 /*************************************************
  * Contains code to communicate with the Notes
  * database and the business logic as well.
  * @author : Abijeet Patro
  *************************************************/
+ /*global AppConfig */
+
+'use strict';
 
 var AppConfig = require(__dirname + '/../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
@@ -129,7 +130,7 @@ var Notes = function() {
   var deleteNote = function(noteID, cbMain) {
     if(!noteID) {
       // TODO Pass correct error message
-      err = new AppError(new ReferenceError());
+      var err = new AppError(new ReferenceError());
       return cbMain(err);
     }
     var notesDb = NotesApp.getNotesDb();

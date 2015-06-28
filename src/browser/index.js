@@ -1,3 +1,5 @@
+/*global AppConfig */
+
 'use strict';
 
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');

@@ -1,3 +1,5 @@
+/*global AppConfig */
+
 'use strict';
 
 var Notes = require(AppConfig.srcPath + 'notes.js');
@@ -7,6 +9,7 @@ var marked = require('marked');
 var NotesClient = function() {
   const NOTE_COMPLETE_CLASS = 'complete';
   const DEFAULT_NOTE_CLASS = 'note';
+  var currentlyFocusedNote = null;
 
   var init = function() {
 
@@ -110,17 +113,15 @@ var NotesClient = function() {
     if(!currentlyFocusedNote.dataset.noteid) {
       return;
     }
-    if (currentlyFocusedNote && currentlyFocusedNote.dataset.noteid) {
-      // Fetch the content of the note.
-      Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
-        function(err, noteObj) {
-          if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
-            // the note is still selected.
-            currentlyFocusedNote.innerHTML = "";
-            currentlyFocusedNote.innerText = noteObj.text;
-          }
-        });
-    }
+    // Fetch the content of the note.
+    Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
+      function(err, noteObj) {
+      if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
+        // the note is still selected.
+        currentlyFocusedNote.innerHTML = "";
+        currentlyFocusedNote.innerText = noteObj.text;
+      }
+    });
   }
 
   /**
@@ -313,15 +314,15 @@ var NotesClient = function() {
    * @return {String}              HTML String for note
    */
   function getNoteHTML(notebookDbID, note, noteID) {
+    var noteText = '';
+    var noteID = '';
+    var noteClasses = DEFAULT_NOTE_CLASS;
+    
     if(note) {
       noteText = marked(note.text);
       noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +
         NOTE_COMPLETE_CLASS) : DEFAULT_NOTE_CLASS;
       noteID = 'data-noteid="' + note._id + '"';
-    } else {
-      noteText = '';
-      noteID = '';
-      noteClasses = DEFAULT_NOTE_CLASS;
     }
 
     return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
