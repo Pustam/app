@@ -1,10 +1,10 @@
+'use strict';
+
 /*************************************************
  * Contains code to communicate with the Notes
  * database and the business logic as well.
  * @author : Abijeet Patro
  *************************************************/
-
-'use strict';
 
 var AppConfig = require(__dirname + '/../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
@@ -82,7 +82,7 @@ var Notes = function() {
      */
     function cbNoteModified(err, noteObj) {
       if (err) {
-        cbMain(new AppError(err))
+        cbMain(new AppError(err));
         noteObj = null, cbMain = null;
         return;
       }
@@ -93,7 +93,7 @@ var Notes = function() {
       noteObj = null, cbMain = null;
       return;
     }
-  }
+  };
 
   /**
    * Fetches note details by the ID

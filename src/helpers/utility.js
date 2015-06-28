@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 var i18n = require('i18n');
 var AppConfig = require(__dirname + '/../../config.js');

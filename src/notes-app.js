@@ -1,8 +1,9 @@
+'use strict';
+
 /**
  * Contains functions that run at app startup. Also supplies references to the
  * databases used by the app.
  */
-'use strict';
 
 var async = require('async');
 var Datastore = require('nedb');

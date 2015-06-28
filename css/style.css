@@ -34,6 +34,11 @@ The main note div
 .notes-container .note :first-child {
 	margin-top:0px;
 }
+
+.notes-container .complete {
+	text-decoration: line-through;
+}
+
 /*
 Div that contains each notes.
 */

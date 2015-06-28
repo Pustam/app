@@ -1,10 +1,10 @@
+'use strict';
+
 /*************************************************
  * Contains code to communicate with the Notebooks
  * database and the business logic as well.
- * @author : Abijeet Patro 
+ * @author : Abijeet Patro
  *************************************************/
-/// <reference path="../typings/node/node.d.ts"/>
-'use strict';
 
 var AppConfig = require(__dirname + '/../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
@@ -27,7 +27,7 @@ var Notebooks = function() {
   };
 
   /**
-   * Fetches full details regarding a notebook including the 
+   * Fetches full details regarding a notebook including the
    * notes present in the notebook.
    */
   var getFullDetailByID = function(notebookID, cbMain) {
@@ -55,8 +55,8 @@ var Notebooks = function() {
         }
         return cbMain(new AppError(err, 'There was an error while retrieving information about your notebook.'));
       }
-      // Create a property under the notebook object, 
-      // and assign all notes and return object.				
+      // Create a property under the notebook object,
+      // and assign all notes and return object.
       results[0].notes = results[1];
       return cbMain(null, results[0]);
     });

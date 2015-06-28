@@ -1,9 +1,8 @@
-/* global AppConfig */
+'use strict';
+
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
 var NotesClient = require(AppConfig.browserSrcPath + 'notes-client.js');
-
-'use strict'
 
 var NotebooksClient = function() {
   var notebooksContainerUL = null;
@@ -82,7 +81,7 @@ var NotebooksClient = function() {
         addNotebookEvents(notebookContents, notebookID);
 
         // Build the notes html and attach the event handlers.
-        NotesClient.buildNotesHtml(notebookData.notes, notebookID, notebookContents);
+        NotesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
 
         // Add <div> to tab body
         notebookContents = null;
@@ -128,9 +127,9 @@ var NotebooksClient = function() {
   /**
    * Events
    */
-  function evtAddNote(event) {
+  function evtAddNote() {
     var notebookID = this.dataset.notebookid;
-    NotesClient.addNewNoteHtml(notebookID);
+    NotesClient.addNewNote(notebookID);
   }
 
   /**

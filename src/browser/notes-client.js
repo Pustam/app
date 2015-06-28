@@ -1,10 +1,13 @@
+'use strict';
+
 var Notes = require(AppConfig.srcPath + 'notes.js');
 var i18n = require('i18n');
 var marked = require('marked');
 
-'use strict'
-
 var NotesClient = function() {
+  const NOTE_COMPLETE_CLASS = 'complete';
+  const DEFAULT_NOTE_CLASS = 'note';
+
   var init = function() {
 
   };
@@ -18,13 +21,13 @@ var NotesClient = function() {
    * @param  {Object} notebookContainer The notebook container HTML element
    * @return {undefined}                No return type.
    */
-  var buildNotesHtml = function(notes, notebookDbID, notebookContainer) {
+  var buildNotes = function(notes, notebookDbID, notebookContainer) {
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
     if(!notebooksContainer) {
       // TODO Something bad happened!!
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
-      appendNoteElement(notebookDbID, notes[i].text, notes[i]._id, notebooksContainer);
+      appendNoteElement(notebookDbID, notes[i], notebooksContainer);
     }
   };
 
@@ -36,7 +39,7 @@ var NotesClient = function() {
    * @param  {Object} notebookContainer HTML element containing the notes.
    * @return {undefined}                No return type.
    */
-  var addNewNoteHtml = function(notebookDbID, notebookContainer) {
+  var addNewNote = function(notebookDbID, notebookContainer) {
     if(!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
@@ -48,7 +51,7 @@ var NotesClient = function() {
     var notesContainer = notebookContainer.querySelector('.notes-container');
 
     // Create the note
-    var currNote = appendNoteElement(notebookDbID, null, null, notesContainer);
+    var currNote = appendNoteElement(notebookDbID, null, notesContainer);
 
     currNote.focus();
   };
@@ -138,29 +141,34 @@ var NotesClient = function() {
    */
   function evtNoteKeyPress(event) {
     if (event.which === 19 && event.ctrlKey === true) {
-      // Need to save...
+      // Ctrl + S - Need to save...
       saveNote(event.target, false);
       event.preventDefault();
-    } else if (event.which === 13 && event.shiftKey === true) {
-      // Need to save and create a new note.
+    } else if (event.which === 14 && event.ctrlKey === true) {
+      // Ctrl + N - Need to save and create a new note.
       saveAndCreateNote(event.target);
       event.preventDefault();
-    } else if (event.which === 4 && event.shiftKey === true && event.ctrlKey === true) {
+    } else if (event.which === 4 && event.ctrlKey === true) {
+      // Ctrl + D - Need to delete the note
       deleteNote(event.target);
+      event.preventDefault();
+    } else if (event.which === 5 && event.ctrlKey === true) {
+      // Ctrl + E - Mark note as complete.
+      markNoteAsComplete(event.target);
       event.preventDefault();
     }
   }
 
   /**
    * Saves and creates a note. This is called when the user presses
-   * Shift + Enter. Calls `saveNote` and the calls `addNewNoteHtml`
+   * Shift + Enter. Calls `saveNote` and the calls `addNewNote`
    * @param  {Object} note The note object
    * @return {undefined}
    */
   function saveAndCreateNote(note) {
     var notebookID = note.dataset.notebookid;
     saveNote(note, true);
-    addNewNoteHtml(notebookID);
+    addNewNote(notebookID);
   }
 
   /**
@@ -217,6 +225,31 @@ var NotesClient = function() {
   }
 
   /**
+   * Adds the necessary class depending on whether the note is complete or
+   * incomplete. It then calls the `saveNote` method to save the note.
+   * @param  {Object} note HTML note element
+   * @return {undefined}      No return type.
+   */
+  function markNoteAsComplete(note) {
+    var isComplete = false;
+    if(!note.innerText) {
+      // TODO Maybe show a message stating that an empty note
+      // can't be marked as complete.
+      return;
+    }
+    // Toggle the classes as necessary.
+    if(note.classList.contains(NOTE_COMPLETE_CLASS)) {
+      isComplete = true;
+      note.classList.remove(NOTE_COMPLETE_CLASS);
+    } else {
+      note.classList.add(NOTE_COMPLETE_CLASS);
+    }
+    // Save the note, it will update the note or create it.
+    // This will also mark it as complete or mark it as uncomplete.
+    saveNote(note, false);
+  }
+
+  /**
    * Creates a note object from the given note element.
    * This note object can then be stored in the database.
    * @param  {object}  note   Note HTML Element
@@ -235,25 +268,32 @@ var NotesClient = function() {
     if (note.dataset.noteid) {
       noteObj._id = note.dataset.noteid;
     }
+
+    if(note.classList.contains(NOTE_COMPLETE_CLASS)) {
+      noteObj.isComplete = true;
+    } else {
+      noteObj.isComplete = false;
+    }
+
     return noteObj;
   }
 
   /**
    * Creates and appends a note element to the notebook container and
    * calls `addNoteEvents`.
-   * @param  {String} notebookDbID   Notebook ID
-   * @param  {String} noteText       Note text
-   * @param  {String} noteID         Note ID
-   * @param  {Object} notesContainer HTML notes container element
-   * @return {[type]}                HTML note element
+   * defaults.
+   * @param  {String} notebookDbID       Notebook ID
+   * @param  {[type]} note               The note object from the database
+   * @param  {Object} notebooksContainer HTML notes container element
+   * @return {Object} HTML note element that was added.
    */
-  function appendNoteElement(notebookDbID, noteText, noteID, notebooksContainer) {
+  function appendNoteElement(notebookDbID, note, notebooksContainer) {
     // Create the note
     var noteContainer = document.createElement('div');
     noteContainer.setAttribute('class', 'note-container');
 
     // Create the inner elements.
-    noteContainer.innerHTML = getNoteHTML(notebookDbID, noteText, noteID);
+    noteContainer.innerHTML = getNoteHTML(notebookDbID, note);
 
     // Add events.
     var currNote = noteContainer.querySelector('.note');
@@ -266,27 +306,27 @@ var NotesClient = function() {
   }
 
   /**
-   * Returns the HTML for a new note
+   * Returns the HTML for a new note. Adds default values if `note` object
+   * is null.
    * @param  {String} notebookDbID Notebook ID
-   * @param  {String} noteText     Note text
-   * @param  {String} noteID       Note ID
+   * @param  {Object} note         The note object from the database
    * @return {String}              HTML String for note
    */
-  function getNoteHTML(notebookDbID, noteText, noteID) {
-    if(!noteText) {
+  function getNoteHTML(notebookDbID, note, noteID) {
+    if(note) {
+      noteText = marked(note.text);
+      noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +
+        NOTE_COMPLETE_CLASS) : DEFAULT_NOTE_CLASS;
+      noteID = 'data-noteid="' + note._id + '"';
+    } else {
       noteText = '';
-    } else {
-      noteText = marked(noteText);
-    }
-
-    if(noteID) {
-      noteID = 'data-noteid="' + noteID + '""';
-    } else {
       noteID = '';
+      noteClasses = DEFAULT_NOTE_CLASS;
     }
 
-    return '<div class="note" ' + noteID + ' data-notebookid="' + notebookDbID + '" contenteditable>' +
-      noteText + '</div><div class="pull-right note-footer"></div>';
+    return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
+      notebookDbID + '" contenteditable>' + noteText +
+      '</div><div class="pull-right note-footer"></div>';
   }
 
   // START of CALLBACKS
@@ -322,8 +362,8 @@ var NotesClient = function() {
 
   return {
     init: init,
-    buildNotesHtml: buildNotesHtml,
-    addNewNoteHtml: addNewNoteHtml,
+    buildNotes: buildNotes,
+    addNewNote: addNewNote,
     addNotesEvents: addNoteEvents,
     removeAllNoteEvents: removeAllNoteEvents
   };
