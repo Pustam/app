@@ -1,7 +1,5 @@
-/*
-global AppConfig
-jshint esnext: true
-*/
+/* global AppConfig  */
+/* jshint esnext: true */
 
 'use strict';
 
@@ -20,7 +18,7 @@ var NotebooksClient = function() {
     notebooksTabContainer = document.getElementById('1_openTabContainer');
   };
 
-  var cbBindNotebooks = function(notebooks) {    
+  var cbBindNotebooks = function(notebooks) {
     try {
       var notebooksHTML = '';
       for (var i = 0, len = notebooks.length; i !== len; ++i) {
