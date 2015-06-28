@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>  
+<html>
   <head>
     <title>
         Markdown notes
@@ -8,41 +8,42 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../dist/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"></link>
     <link rel="stylesheet" href="../dist/font-awesome/css/font-awesome.css"></link>
-    <script>      
+    <script>
       // Plugins/Modules
-      window.$ = window.jQuery = require("../dist/jquery/dist/jquery.js");
-      
+      window.$ = window.jQuery = require('jquery');
+
       // Custom loads
       var AppConfig = require('../config.js');
       var AppUtil = require(AppConfig.helperPath + 'utility.js');
-      var MainScript = require(AppConfig.browserSrcPath + 'index.js');             
+      var MainScript = require(AppConfig.browserSrcPath + 'index.js');
     </script>
-    <script type="text/javascript" src="../dist/bootstrap/dist/js/bootstrap.js"></script>    
-  </head>  
+    <script type="text/javascript" src="../dist/bootstrap/dist/js/bootstrap.js"></script>
+  </head>
   <body class="main">
     <section class="col-md-2">
       <button type="button" class="btn btn-default">
         <span class="glyphicon glyphicon-plus"></span>
-          <script>AppUtil.echo('New notebook');</script>
+          <script>AppUtil.echo('notebook.new_notebook');</script>
       </button>
       <div class="container-fluid notebook-container">
-        <ul id="1_lstNotebooks" class="form-horizontal">          
+        <ul id="1_lstNotebooks" class="form-horizontal">
         </ul>
       </div>
     </section>
     <section class="col-md-10">
       <div role="tabpanel">
         <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist" id="1_openTab">         
+        <ul class="nav nav-tabs" role="tablist" id="1_openTab">
         </ul>
         <!-- Tab panes -->
         <div class="tab-content" id="1_openTabContainer">
         </div>
       </div>
     </section>
+    <div class="help-shortcut" id="1_btnShortcutHelp"><span class="glyphicon glyphicon-question-sign"></span></div>
     <footer class="footer">
-      
-    </footer>    
-    <!-- Loading the dialogs -->    
+
+    </footer>
+    <!-- Loading the dialogs -->
   </body>
 </html>

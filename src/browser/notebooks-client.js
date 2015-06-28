@@ -1,4 +1,7 @@
-/*global AppConfig */
+/*
+global AppConfig
+jshint esnext: true
+*/
 
 'use strict';
 
@@ -17,11 +20,7 @@ var NotebooksClient = function() {
     notebooksTabContainer = document.getElementById('1_openTabContainer');
   };
 
-  var cbBindNotebooks = function(err, notebooks) {
-    if (err) {
-      // TODO Show error to user.
-      return;
-    }
+  var cbBindNotebooks = function(notebooks) {    
     try {
       var notebooksHTML = '';
       for (var i = 0, len = notebooks.length; i !== len; ++i) {
@@ -71,13 +70,13 @@ var NotebooksClient = function() {
         var notebookContentID = AppConfig.getNotebookContentID(notebookID);
 
         // Add <li> to tab header
-        notebooksTabHeading.innerHTML += '<li role="presentation" id="' + AppConfig.getNotebookHeaderID(
+        notebooksTabHeading.insertAdjacentHTML('beforeend', '<li role="presentation" id="' + AppConfig.getNotebookHeaderID(
             notebookID) + '" class="active"><a href="#' + notebookContentID + '" aria-controls="' +
-          notebookID + '" role="tab" data-toggle="tab">' + notebookData.name + '</a></li>';
+          notebookID + '" role="tab" data-toggle="tab">' + notebookData.name + '</a></li>');
 
         // Add the default content of the notebook.
-        notebooksTabContainer.innerHTML += '<div role="tabpanel" class="tab-pane active" id="' +
-            notebookContentID + '">' + notesPageHeaderHtml + '</div>';
+        notebooksTabContainer.insertAdjacentHTML('beforeend', '<div role="tabpanel" class="tab-pane active" id="' +
+            notebookContentID + '">' + notesPageHeaderHtml + '</div>');
 
         var notebookContents = document.getElementById(notebookContentID);
         addNotebookEvents(notebookContents, notebookID);
@@ -129,9 +128,11 @@ var NotebooksClient = function() {
   /**
    * Events
    */
-  function evtAddNote() {
-    var notebookID = this.dataset.notebookid;
-    NotesClient.addNewNote(notebookID);
+  function evtAddNote(event) {
+    var notebookID = event.target.dataset.notebookid;
+    if(notebookID) {
+      NotesClient.addNewNote(notebookID);
+    }
   }
 
   /**

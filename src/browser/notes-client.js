@@ -313,11 +313,11 @@ var NotesClient = function() {
    * @param  {Object} note         The note object from the database
    * @return {String}              HTML String for note
    */
-  function getNoteHTML(notebookDbID, note, noteID) {
+  function getNoteHTML(notebookDbID, note) {
     var noteText = '';
     var noteID = '';
     var noteClasses = DEFAULT_NOTE_CLASS;
-    
+
     if(note) {
       noteText = marked(note.text);
       noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +

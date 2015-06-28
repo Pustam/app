@@ -1,6 +1,6 @@
 var AppConfig = {
 	basePath: __dirname + '/',
-	htmlPath: __dirname + '/html/',	
+	htmlPath: __dirname + '/html/',
 	rendererPath: __dirname + '/src/renderer/',
 	browserSrcPath: __dirname + '/src/browser/',
 	helperPath : __dirname + '/src/helpers/',
@@ -15,18 +15,19 @@ var AppConfig = {
 		locales: ['en'],
 		directory: __dirname + '/locales',
 		defaultLocale: 'en',
+		objectNotation: true
 	},
 	defaultNotebook : {
 		'name' : 'Daily',
-		'type' : 'task',		
+		'type' : 'task',
 		'shrinkNotes' : false,
 		'createdOn' : null,
-		'modifiedOn' : null	
+		'modifiedOn' : null
 	},
 	getNotebookContentID : function(notebookDbID) {
 		return 'notebook_' + notebookDbID;
 	},
-	getNotebookHeaderID : function(notebookDbID) {		
+	getNotebookHeaderID : function(notebookDbID) {
 		return 'notebookHeader_' + notebookDbID;
 	}
 };

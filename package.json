@@ -12,7 +12,8 @@
     "winston" : "1.0.0",
     "i18n" : "0.5.0",
     "ejs" : "2.3.1",
-    "marked" : "0.3.3"
+    "marked" : "0.3.3",
+    "jquery" : "2.1.4"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

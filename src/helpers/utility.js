@@ -19,6 +19,14 @@ var utility = function() {
   };
 
   var loadPartial = function(partialName, data, callback) {
+    loadTemplateFile(partialName, false, data, callback);
+  };
+
+  var loadDialog = function(dialogName, data, callback) {
+    loadTemplateFile(dialogName, true, data, callback);
+  };
+
+  function loadTemplateFile(fileName, isDialog, data, callback) {
     try {
       if (typeof data === 'undefined' || !data) {
         data = {
@@ -29,7 +37,13 @@ var utility = function() {
         data.AppUtil = utility();
         data.i18n = i18n;
       }
-      fs.readFile(AppConfig.partialsPath + partialName, 'utf-8', function(err, htmlFile) {
+      var fileToLoad = '';
+      if(isDialog) {
+        fileToLoad = AppConfig.dialogsPath + fileName;
+      } else {
+        fileToLoad = AppConfig.partialsPath + fileName;
+      }
+      fs.readFile(fileToLoad, 'utf-8', function(err, htmlFile) {
         if (err) {
           data.AppUtil = null;
           return callback(new AppError(err));
@@ -43,11 +57,12 @@ var utility = function() {
     } catch (e) {
       return callback(new AppError(e));
     }
-  };
+  }
 
   return {
     echo: echo,
-    loadPartial: loadPartial
+    loadPartial: loadPartial,
+    loadDialog : loadDialog
   };
 };
 
