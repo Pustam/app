@@ -1,9 +1,9 @@
 /*global AppConfig */
+/*jshint esnext: true */
 
 'use strict';
 
 var Notes = require(AppConfig.srcPath + 'notes.js');
-var i18n = require('i18n');
 var marked = require('marked');
 
 var NotesClient = function() {

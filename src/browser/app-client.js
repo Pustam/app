@@ -8,7 +8,7 @@ var AppClient = function() {
   var init = function() {
     // Shortcuts button clicked.
     document.getElementById('1_btnShortcutHelp').addEventListener('click', showShortcutDialog, false);
-  }
+  };
 
   function showShortcutDialog() {
     AppUtil.loadDialog('shortcuts-help.html', {}, function(err, html) {
@@ -21,7 +21,7 @@ var AppClient = function() {
       var $dlg = jQuery('#dlgShortcutHelp');
       $dlg.modal('show');
 
-      $dlg.on('hidden.bs.modal', function(event) {
+      $dlg.on('hidden.bs.modal', function() {
         $dlg.off('hidden.bs.modal');
         this.remove();
       });
