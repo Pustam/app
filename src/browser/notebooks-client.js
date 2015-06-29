@@ -79,6 +79,10 @@ var NotebooksClient = function() {
         var notebookContents = document.getElementById(notebookContentID);
         addNotebookEvents(notebookContents, notebookID);
 
+        // Generate the datepicker!
+        jQuery(notebookContents.querySelector('.notebook-date')).datepicker({ todayBtn: true,
+          orientation : 'top', todayHighlight : true, format : AppConfig.dateFormat });
+
         // Build the notes html and attach the event handlers.
         NotesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
 
@@ -99,6 +103,7 @@ var NotebooksClient = function() {
     // Cleanup!!
     removeNotebookEvents(notebookContents);
     if (notebookContents) {
+      jQuery(notebookContents.querySelector('.notebook-date')).datepicker('remove');
       notebookContents.remove();
     }
     notebookContents = null;

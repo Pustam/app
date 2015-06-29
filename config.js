@@ -24,6 +24,7 @@ var AppConfig = {
 		'createdOn' : null,
 		'modifiedOn' : null
 	},
+	dateFormat : 'DD, dd MM, yyyy',
 	getNotebookContentID : function(notebookDbID) {
 		return 'notebook_' + notebookDbID;
 	},

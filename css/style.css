@@ -20,6 +20,13 @@ footer.footer {
 .notebook-btn-container {
 	margin : 1em 0em;
 }
+.notebook-btn-container .notebook-date
+{
+	width:50%;
+}
+.notebook-btn-container .pull-left{
+	width : 45%;
+}
 /*
 The main note div
 */

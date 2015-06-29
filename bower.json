@@ -5,7 +5,7 @@
   "authors": [
     "Abijeet Patro <abijeetpatro@osmosys.asia"
   ],
-  "license": "MIT",  
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -17,6 +17,7 @@
   "dependencies": {
 	  "bootstrap" : "3.3.4",
     "awesome-bootstrap-checkbox" : "0.3.4",
-    "font-awesome": "4.3.0"
+    "font-awesome": "4.3.0",
+    "bootstrap-datepicker" : "1.4.0"
   }
 }

@@ -3,7 +3,6 @@
 'use strict';
 
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
-var jQuery = require('jquery');
 
 var AppClient = function() {
   var init = function() {

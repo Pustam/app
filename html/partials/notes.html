@@ -1,10 +1,14 @@
-<section class="container notebook-btn-container">
-	<div class="pull-left"></div>
+<section class="container-fluid notebook-btn-container">
+	<div class="pull-left">
+		<div class="input-group notebook-date date">
+  		<input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+		</div>
+	</div>
 	<div class="pull-right">
 		<button class="btn btn-default add-note"><%= i18n.__('notebook.add_note');%></button>
 		<button class="btn btn-default"><%= i18n.__('notebook.settings');%></button>
 	</div>
 </section>
-<section class="container notes-container">
+<section class="container-fluid notes-container">
 
 </section>
