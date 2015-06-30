@@ -9,11 +9,8 @@ var marked = require('marked');
 var NotesClient = function() {
   const NOTE_COMPLETE_CLASS = 'complete';
   const DEFAULT_NOTE_CLASS = 'note';
+  const NOTE_NOT_EDITABLE_CLASS = 'readonly';
   var currentlyFocusedNote = null;
-
-  var init = function() {
-
-  };
 
   /**
    * Used to generate the note elements inside a notebook. Whenever the user
@@ -24,13 +21,22 @@ var NotesClient = function() {
    * @param  {Object} notebookContainer The notebook container HTML element
    * @return {undefined}                No return type.
    */
-  var buildNotes = function(notes, notebookDbID, notebookContainer) {
+  var buildNotes = function(notes, notebookDbID, notebookContainer, addEvents) {
+    if(!notebookContainer) {
+      notebookContainer =
+        document.getElementById(AppConfig.getNotebookContentID(notebookDbID));
+    }
+
+    if(addEvents === undefined) {
+      addEvents = true;
+    }
+
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
     if(!notebooksContainer) {
       // TODO Something bad happened!!
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
-      appendNoteElement(notebookDbID, notes[i], notebooksContainer);
+      appendNoteElement(notebookDbID, notes[i], notebooksContainer, addEvents);
     }
   };
 
@@ -57,6 +63,20 @@ var NotesClient = function() {
     var currNote = appendNoteElement(notebookDbID, null, notesContainer);
 
     currNote.focus();
+  };
+
+
+  var removeNotesFromNotebook = function(notebookDbID) {
+    if(!notebookDbID) {
+      throw new ReferenceError('Notebook ID not provided!');
+    }
+    var notebookID = AppConfig.getNotebookContentID(notebookDbID);
+    var notebookContainer = document.getElementById(notebookID);
+    removeAllNoteEvents(notebookContainer);
+    var notesContainer = notebookContainer.querySelector('.notes-container');
+    while(notesContainer.firstChild) {
+      notesContainer.removeChild(notesContainer.firstChild);
+    }
   };
 
   /**
@@ -275,6 +295,11 @@ var NotesClient = function() {
     } else {
       noteObj.isComplete = false;
     }
+    var notebookElemID = AppConfig.getNotebookContentID(note.dataset.notebookid);
+    var notebookDate = jQuery('#' + notebookElemID).find('.notebook-date').datepicker('getDate');
+
+    // We need to store this to filter future date!
+    noteObj.targetDate = notebookDate;
 
     return noteObj;
   }
@@ -288,17 +313,24 @@ var NotesClient = function() {
    * @param  {Object} notebooksContainer HTML notes container element
    * @return {Object} HTML note element that was added.
    */
-  function appendNoteElement(notebookDbID, note, notebooksContainer) {
+  function appendNoteElement(notebookDbID, note, notebooksContainer, addEvents) {
     // Create the note
     var noteContainer = document.createElement('div');
     noteContainer.setAttribute('class', 'note-container');
 
+    if(addEvents === undefined) {
+      addEvents = true;
+    }
+
     // Create the inner elements.
-    noteContainer.innerHTML = getNoteHTML(notebookDbID, note);
+    noteContainer.innerHTML = getNoteHTML(notebookDbID, note, addEvents);
 
     // Add events.
     var currNote = noteContainer.querySelector('.note');
-    addNoteEvents(currNote);
+
+    if(addEvents) {
+      addNoteEvents(currNote);
+    }
 
     // Add it to the notes container
     notebooksContainer.appendChild(noteContainer);
@@ -313,7 +345,7 @@ var NotesClient = function() {
    * @param  {Object} note         The note object from the database
    * @return {String}              HTML String for note
    */
-  function getNoteHTML(notebookDbID, note) {
+  function getNoteHTML(notebookDbID, note, isEditable) {
     var noteText = '';
     var noteID = '';
     var noteClasses = DEFAULT_NOTE_CLASS;
@@ -325,8 +357,14 @@ var NotesClient = function() {
       noteID = 'data-noteid="' + note._id + '"';
     }
 
+    var editable = '';
+    if(isEditable) {
+      editable = 'contenteditable';
+    } else {
+      noteClasses += ' ' + NOTE_NOT_EDITABLE_CLASS;
+    }
     return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
-      notebookDbID + '" contenteditable>' + noteText +
+      notebookDbID + '" ' + editable + '>' + noteText +
       '</div><div class="pull-right note-footer"></div>';
   }
 
@@ -362,11 +400,11 @@ var NotesClient = function() {
   }
 
   return {
-    init: init,
     buildNotes: buildNotes,
     addNewNote: addNewNote,
     addNotesEvents: addNoteEvents,
-    removeAllNoteEvents: removeAllNoteEvents
+    removeAllNoteEvents: removeAllNoteEvents,
+    removeNotesFromNotebook : removeNotesFromNotebook
   };
 };
 

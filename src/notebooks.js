@@ -46,8 +46,8 @@ var Notebooks = function() {
         cb(null, notebook);
       });
     }, function(cb) {
-      // Now fetch all notes in a notebook.
-      Notes.getAllNotesByID(notebookID, cb);
+      // Now fetch all the ACTIVE notes in a notebook.
+      Notes.getAllActiveNotes(notebookID, cb);
     }], function(err, results) {
       if (err) {
         if (err instanceof AppError) {

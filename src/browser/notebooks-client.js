@@ -6,6 +6,7 @@
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
 var NotesClient = require(AppConfig.browserSrcPath + 'notes-client.js');
+var Notes = require(AppConfig.srcPath + 'notes.js');
 
 var NotebooksClient = function() {
   var notebooksContainerUL = null;
@@ -32,7 +33,6 @@ var NotebooksClient = function() {
       console.log(e);
     }
   };
-
 
   // Private functions
   function addNotebookSelectedEvent() {
@@ -77,14 +77,17 @@ var NotebooksClient = function() {
             notebookContentID + '">' + notesPageHeaderHtml + '</div>');
 
         var notebookContents = document.getElementById(notebookContentID);
-        addNotebookEvents(notebookContents, notebookID);
 
         // Generate the datepicker!
-        jQuery(notebookContents.querySelector('.notebook-date')).datepicker({ todayBtn: true,
-          orientation : 'top', todayHighlight : true, format : AppConfig.dateFormat });
+        var $datePicker = jQuery(notebookContents.querySelector('.notebook-date')).datepicker({ todayBtn: true,
+          orientation : 'top', todayHighlight : true, autoclose: true,
+          format : AppConfig.dateFormat }).datepicker('update', new Date()).element.data('notebookid', notebookID);
 
-        // Build the notes html and attach the event handlers.
+        // Build the notes html.
         NotesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
+
+        // Attach the events.
+        addNotebookEvents(notebookContents, notebookID);
 
         // Add <div> to tab body
         notebookContents = null;
@@ -115,6 +118,11 @@ var NotebooksClient = function() {
     btnAddNote.addEventListener('click', evtAddNote);
     btnAddNote.dataset.notebookid = notebookID;
     btnAddNote = null;
+
+    // Adding the change event to the datepicker
+    var $datePicker = $(notebookContents.querySelector('.notebook-date'));
+    $datePicker.on('changeDate', evtNotebookDateChanged);
+    $datePicker = null;
   }
 
   /**
@@ -138,9 +146,76 @@ var NotebooksClient = function() {
     }
   }
 
+  function evtNotebookDateChanged(e) {
+    var selectedDate = e.date;
+    var selectedDateInt = e.date.getTime();
+    var currentDateInt = new Date().setHours(0, 0, 0, 0);
+    var notebookDbID = jQuery(this).data('notebookid');
+    if(!notebookDbID) {
+      // Notebook id not found!!
+      return;
+    }
+
+    // Show the "Add note" button
+    var notebookID = AppConfig.getNotebookContentID(notebookDbID);
+    var notebookContainer = document.getElementById(notebookID);
+    var btnAddNote = notebookContainer.querySelector('.add-note');
+    btnAddNote.style.display = 'inline-block';
+
+    // Remove the notes
+    NotesClient.removeNotesFromNotebook(notebookDbID);
+
+    if(selectedDateInt < currentDateInt) {
+      // Hide the "Add note" button.
+      btnAddNote.style.display = 'none';
+      showNotesForPastDate(notebookDbID, selectedDate);
+    } else if (selectedDateInt > currentDateInt ) {
+      showFutureNotes(notebookDbID, selectedDate);
+    } else {
+      showActiveNotes(notebookDbID);
+    }
+  }
+
   /**
    * End of events
    */
+
+   function showNotesForPastDate(notebookDbID, selectedDate) {
+     Notes.getCompletedNotesForDate(notebookDbID, selectedDate, function(err, notes) {
+       if(err) {
+         // TODO Show error
+         console.log(err);
+         return;
+       }
+       // Build the notes html and attach the event handlers.
+       NotesClient.buildNotes(notes, notebookDbID, null, false);
+     });
+   }
+
+   function showFutureNotes(notebookDbID, selectedDate) {
+     Notes.getFutureNotesByDate(notebookDbID, selectedDate, function(err, notes) {
+       if(err) {
+         // TODO Show error
+         console.log(err);
+         return;
+       }
+       // Build the notes html and attach the event handlers.
+       NotesClient.buildNotes(notes, notebookDbID, null);
+     });
+   }
+
+   function showActiveNotes(notebookID) {
+     Notes.getAllActiveNotes(notebookID, function(err, notes) {
+       if(err) {
+         // TODO Show error
+         console.log(err);
+         return;
+       }
+
+       // Build the notes html and attach the event handlers.
+       NotesClient.buildNotes(notes, notebookID, null);
+     });
+   }
 
   return {
     cbBindNotebooks: cbBindNotebooks,

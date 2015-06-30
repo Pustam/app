@@ -33,6 +33,12 @@ The main note div
 .notes-container  .note {
 	border : 1px solid #d9d9d9;
 	padding: 2px 4px;
+	border-radius: 3px;
+}
+
+.notes-container  .note.readonly {
+	background : #e7e7e7;
+	word-break: break-all;
 }
 
 .notes-container .note :last-child {

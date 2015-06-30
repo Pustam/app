@@ -147,6 +147,92 @@ var Notes = function() {
     });
   };
 
+
+  /**
+   * Fetches all the active notes in a notebook. Active notes are notes that are
+   * created on today OR created on in the past but NOT completed.
+   * @param  {String} notebookID Notebook ID
+   * @param  {function} cbMain     Callback function
+   * @return {undefined}           No return type.
+   */
+  var getAllActiveNotes = function(notebookID, cbMain) {
+    var notesDb = NotesApp.getNotesDb();
+    var dtNow = new Date().getTime();
+    var dtNowString = new Date().toDateString();
+    var dateInt =
+    notesDb.find({
+      $where : function() {
+        // Check if belongs to current notebook.
+        if(this.notebookID !== notebookID) {
+          return false;
+        }
+
+        // Check if date is current date
+        if(this.targetDate.toDateString() === dtNowString) {
+          return true;
+        }
+
+        // Check if date is less than current date, and note
+        // is not complete.
+        if(this.targetDate.getTime() < dtNow && this.isComplete === false) {
+          return true;
+        }
+
+        return false;
+      }
+    }).sort({ createdOn : -1 }).exec(function(err, notes) {
+      if (err) {
+        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+      }
+      return cbMain(null, notes);
+    });
+  };
+
+  /**
+   * Fetches all the completed notes for a given day.
+   * @param  {String} notebookID Notebook ID
+   * @param  {Date} date         The requested date
+   * @param  {function} cbMain   Callback function
+   * @return {undefined}         No return type.
+   */
+  var getCompletedNotesForDate = function(notebookID, date, cbMain) {
+    var notesDb = NotesApp.getNotesDb();
+    var dtSelectedString = date.toDateString();
+    notesDb.find({
+      $where : function() {
+        // Check if belongs to current notebook.
+        if(this.notebookID !== notebookID) {
+          return false;
+        }
+
+        // Check if date is current date and its completed.
+        if(this.targetDate.toDateString() === dtSelectedString && this.isComplete === true) {
+          return true;
+        }
+
+        return false;
+      }
+    }).sort({ createdOn : -1 }).exec(function(err, notes) {
+      if (err) {
+        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+      }
+      return cbMain(null, notes);
+    });
+  }
+
+  var getFutureNotesByDate = function(notebookID, futureDate, cbMain) {
+    var notesDb = NotesApp.getNotesDb();
+    var dtFutureDate = new Date(futureDate.setHours(0, 0, 0, 0));
+    notesDb.find({
+      targetDate : dtFutureDate
+    }).sort({ createdOn : -1}).exec(function(err, notes) {
+      if (err) {
+        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+      }
+      return cbMain(null, notes);
+    });
+  };
+
   /**
    * Private function used to validate a note object. If it's NOT a new note
    * ensures that the _id parameter has been provided.
@@ -191,10 +277,12 @@ var Notes = function() {
   }
 
   return {
-    getAllNotesByID: getAllNotesByID,
     getNoteByID: getNoteByID,
     modifyNote: modifyNote,
-    deleteNote : deleteNote
+    deleteNote : deleteNote,
+    getAllActiveNotes : getAllActiveNotes,
+    getCompletedNotesForDate : getCompletedNotesForDate,
+    getFutureNotesByDate : getFutureNotesByDate
   };
 };
 
