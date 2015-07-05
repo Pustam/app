@@ -12,9 +12,9 @@ var AppClient = function() {
 
   function showShortcutDialog() {
     AppUtil.loadDialog('shortcuts-help.html', {}, function(err, html) {
-      if(err) {
-        // TODO show the user error regarding the loading of the dialog.
-        console.log(err);
+      if (err) {
+        var errParse = new AppError(err, i18n.__('error.shortcut_dialog_display'), false, true);
+        errParse.display();
         return;
       }
       document.querySelector('body').insertAdjacentHTML('beforeend', html);
@@ -27,9 +27,9 @@ var AppClient = function() {
       });
     });
   }
-
+  
   return {
-    init : init
+    init: init
   };
 };
 

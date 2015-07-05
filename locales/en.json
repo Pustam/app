@@ -2,7 +2,12 @@
 	"notebook": {
 		"new_notebook": "New notebook",
 		"add_note": "Add note",
-		"settings": "Settings"
+		"settings": "Settings",
+		"empty_notebook" : "This notebook does not seem to have any notes on this day."
+	},
+	"note" : {
+		"deletion_confirmation_text" : "Are you sure you want to delete the note?",
+		"deletion_confirmation_title" : "Deletion confirmation"
 	},
 	"shortcut": {
 		"shortcut": "Shortcut",
@@ -15,5 +20,36 @@
 		"desc_delete_note": "Deletes the currently focused note.",
 		"kbd_complete_note": "<kbd>Ctrl</kbd> + <kbd>E</kbd>",
 		"desc_complete_note": "Marks the currently focused note as complete."
+	},
+	"error" : {
+		"loading_database" : "There was an error while creating/loading the database.",
+		"empty_database_path" : "Empty database path found!",
+		"checking_default_notebook" : "There was an error while checking if the default notebook exists.",
+		"creating_default_notebook" : "'There was an error while creating the default notebook.'",
+		"retrieving_notebooks" : "There was an error while retrieving your notebooks.",
+		"retrieving_notebook" : "There was an error while retrieving information about your notebook.",
+		"notes_fetch_error" : "There was an error while fetching the notes. ",
+		"notes_save_validation_err" : "Hmph! Some of the expected info for the note seems to be missing. Sorry, we couldn't save the note.",
+		"note_delete_validation_err" : "Whew! Unexpected error while deleting the note.",
+		"note_delete_err" : "There was an error while deleting the note.",
+		"note_delete_not_found" : "Unknown note sent for deletion!",
+		"partial_load_error" : "Error while loading your file - '%s'.",
+		"notebook_display_error" : "There was an error while displaying the notes.",
+		"notebook_hide_error" : "There was an error while closing the notebook.",
+		"app_init" : "There was an error while initializing the app.",
+		"notes_display_error" : "There was an error while displaying the notes.",
+		"app_unstable" : "The application is in an unstable state and should be restarted. Sorry for the inconvinience.",
+		"notebook_not_found" : "Notebook with ID '%s' was not found.",
+		"shortcut_dialog_display" : "There was an error while displaying the shortcuts.",
+		"notes_update_err" : "There was an error while updating the note.",
+		"notes_modification_err" : "There was an error while inserting or updating the note.",
+		"note_fetch_error" : "There was an error while fetching the contents of the note.",
+		"notebook_container_not_found" : "There was an error while fetching the notebook container.",
+		"savenote_invalid_call" : "saveNote called without notebookID and noteID.",
+		"notes_deletion_err" : "There was an error while deleting the note.",
+		"mark_note_complete" : "There was an error while marking the note as complete.",
+		"err_date_change" : "There was an error while showing the notes for the given date.",
+		"add_new_error" : "There was an error while adding the note.",
+		"save_and_create_note" : "Unexpected error while saving the note."
 	}
 }

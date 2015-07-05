@@ -3,13 +3,14 @@
  * database and the business logic as well.
  * @author : Abijeet Patro
  *************************************************/
- /*global AppConfig */
+/*global AppConfig */
 
 'use strict';
 
 var AppConfig = require(__dirname + '/../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
+var i18n = require('i18n');
 
 var Notes = function() {
   /**
@@ -23,9 +24,11 @@ var Notes = function() {
     var notesDb = NotesApp.getNotesDb();
     notesDb.find({
       notebookID: notebookID
-    }).sort({ createdOn : 1 }).exec(function(err, notes) {
+    }).sort({
+      createdOn: 1
+    }).exec(function(err, notes) {
       if (err) {
-        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+        return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
       }
       return cbMain(null, notes);
     });
@@ -41,8 +44,7 @@ var Notes = function() {
    */
   var modifyNote = function(noteObj, isNewNote, cbMain) {
     if (!validateNote(noteObj, isNewNote)) {
-      // TODO Validation error.
-      return cbMain(new AppError());
+      return cbMain(new AppError(err, i18n.__('error.notes_save_validation_err')));
     }
     var noteElem = noteObj.noteElem;
     var isBlur = noteObj.isBlur;
@@ -64,9 +66,7 @@ var Notes = function() {
         _id: noteID
       }, noteObj, function(err, numReplaced) {
         if (numReplaced <= 0) {
-          // TODO Return the error stating
-          // that no rows got updated.
-          err = new AppError();
+          err = new AppError(err, i18n.__('error.notes_update_err'));
         }
         return cbNoteModified(err, noteObj);
       });
@@ -82,13 +82,13 @@ var Notes = function() {
      * @return {undefined}         No return type.
      */
     function cbNoteModified(err, noteObj) {
+      noteObj.noteElem = noteElem;
+      noteObj.isBlur = isBlur;
       if (err) {
-        cbMain(new AppError(err));
+        cbMain(new AppError(err, i18n.__('error.notes_modification_err')), noteObj);
         noteObj = null, cbMain = null;
         return;
       }
-      noteObj.noteElem = noteElem;
-      noteObj.isBlur = isBlur;
 
       cbMain(null, noteObj);
       noteObj = null, cbMain = null;
@@ -114,7 +114,7 @@ var Notes = function() {
       _id: noteID
     }, function(err, noteObj) {
       if (err) {
-        return cbMain(err);
+        return cbMain(new AppError(err, i18n.__('error.note_fetch_error')));
       }
       return cbMain(null, noteObj);
     });
@@ -128,20 +128,19 @@ var Notes = function() {
    * @return {undefined}    No return type.
    */
   var deleteNote = function(noteID, cbMain) {
-    if(!noteID) {
-      // TODO Pass correct error message
-      var err = new AppError(new ReferenceError());
+    if (!noteID) {
+      var err = new AppError(new ReferenceError('Note ID is a mandatory value'), i18n.__('error.note_delete_validation_err'));
       return cbMain(err);
     }
     var notesDb = NotesApp.getNotesDb();
-    notesDb.remove({ _id : noteID }, {}, function(err, numRemoved) {
-      if(err) {
-        // TODO Show error regarding DB error.
-        return cbMain(new AppError(err));
+    notesDb.remove({
+      _id: noteID
+    }, {}, function(err, numRemoved) {
+      if (err) {
+        return cbMain(new AppError(err), i18n.__('error.note_delete_err'));
       }
-      if(numRemoved <= 0) {
-        // TODO Show error regarding no doc deleted.
-        return cbMain(new AppError());
+      if (numRemoved <= 0) {
+        return cbMain(new AppError(), i18n.__('error.note_delete_not_found'));
       }
       cbMain(null);
     });
@@ -160,32 +159,34 @@ var Notes = function() {
     var dtNow = new Date().getTime();
     var dtNowString = new Date().toDateString();
     var dateInt =
-    notesDb.find({
-      $where : function() {
-        // Check if belongs to current notebook.
-        if(this.notebookID !== notebookID) {
+      notesDb.find({
+        $where: function() {
+          // Check if belongs to current notebook.
+          if (this.notebookID !== notebookID) {
+            return false;
+          }
+
+          // Check if date is current date
+          if (this.targetDate.toDateString() === dtNowString) {
+            return true;
+          }
+
+          // Check if date is less than current date, and note
+          // is not complete.
+          if (this.targetDate.getTime() < dtNow && this.isComplete === false) {
+            return true;
+          }
+
           return false;
         }
-
-        // Check if date is current date
-        if(this.targetDate.toDateString() === dtNowString) {
-          return true;
+      }).sort({
+        createdOn: -1
+      }).exec(function(err, notes) {
+        if (err) {
+          return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
         }
-
-        // Check if date is less than current date, and note
-        // is not complete.
-        if(this.targetDate.getTime() < dtNow && this.isComplete === false) {
-          return true;
-        }
-
-        return false;
-      }
-    }).sort({ createdOn : -1 }).exec(function(err, notes) {
-      if (err) {
-        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
-      }
-      return cbMain(null, notes);
-    });
+        return cbMain(null, notes);
+      });
   };
 
   /**
@@ -199,22 +200,24 @@ var Notes = function() {
     var notesDb = NotesApp.getNotesDb();
     var dtSelectedString = date.toDateString();
     notesDb.find({
-      $where : function() {
+      $where: function() {
         // Check if belongs to current notebook.
-        if(this.notebookID !== notebookID) {
+        if (this.notebookID !== notebookID) {
           return false;
         }
 
         // Check if date is current date and its completed.
-        if(this.targetDate.toDateString() === dtSelectedString && this.isComplete === true) {
+        if (this.targetDate.toDateString() === dtSelectedString && this.isComplete === true) {
           return true;
         }
 
         return false;
       }
-    }).sort({ createdOn : -1 }).exec(function(err, notes) {
+    }).sort({
+      createdOn: -1
+    }).exec(function(err, notes) {
       if (err) {
-        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+        return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
       }
       return cbMain(null, notes);
     });
@@ -224,10 +227,12 @@ var Notes = function() {
     var notesDb = NotesApp.getNotesDb();
     var dtFutureDate = new Date(futureDate.setHours(0, 0, 0, 0));
     notesDb.find({
-      targetDate : dtFutureDate
-    }).sort({ createdOn : -1}).exec(function(err, notes) {
+      targetDate: dtFutureDate
+    }).sort({
+      createdOn: -1
+    }).exec(function(err, notes) {
       if (err) {
-        return cbMain(new AppError(err, 'There was an error while fetching your notes.'));
+        return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
       }
       return cbMain(null, notes);
     });
@@ -279,10 +284,10 @@ var Notes = function() {
   return {
     getNoteByID: getNoteByID,
     modifyNote: modifyNote,
-    deleteNote : deleteNote,
-    getAllActiveNotes : getAllActiveNotes,
-    getCompletedNotesForDate : getCompletedNotesForDate,
-    getFutureNotesByDate : getFutureNotesByDate
+    deleteNote: deleteNote,
+    getAllActiveNotes: getAllActiveNotes,
+    getCompletedNotesForDate: getCompletedNotesForDate,
+    getFutureNotesByDate: getFutureNotesByDate
   };
 };
 

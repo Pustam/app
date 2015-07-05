@@ -35,5 +35,7 @@ var AppConfig = {
 
 AppConfig.partialsPath = AppConfig.htmlPath + 'partials/';
 AppConfig.dialogsPath = AppConfig.htmlPath + 'dialogs/';
+AppConfig.logPath = AppConfig.basePath + 'logs/';
+AppConfig.EOL = require('os').EOL;
 
 module.exports = AppConfig;

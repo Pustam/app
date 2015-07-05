@@ -38,7 +38,7 @@ var utility = function() {
         data.i18n = i18n;
       }
       var fileToLoad = '';
-      if(isDialog) {
+      if (isDialog) {
         fileToLoad = AppConfig.dialogsPath + fileName;
       } else {
         fileToLoad = AppConfig.partialsPath + fileName;
@@ -46,7 +46,7 @@ var utility = function() {
       fs.readFile(fileToLoad, 'utf-8', function(err, htmlFile) {
         if (err) {
           data.AppUtil = null;
-          return callback(new AppError(err));
+          return callback(new AppError(err, i18n.__('error.partial_load_error', fileToLoad)));
         }
         var tmpl = ejs.compile(htmlFile);
         var str = tmpl(data);
@@ -55,14 +55,14 @@ var utility = function() {
         return callback(null, str);
       });
     } catch (e) {
-      return callback(new AppError(e));
+      return callback(new AppError(e, i18n.__('error.partial_load_error', fileName)));
     }
   }
 
   return {
     echo: echo,
     loadPartial: loadPartial,
-    loadDialog : loadDialog
+    loadDialog: loadDialog
   };
 };
 

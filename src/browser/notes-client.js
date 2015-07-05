@@ -5,6 +5,8 @@
 
 var Notes = require(AppConfig.srcPath + 'notes.js');
 var marked = require('marked');
+var AppError = require(AppConfig.helperPath + 'app-error.js');
+var i18n = require('i18n');
 
 var NotesClient = function() {
   const NOTE_COMPLETE_CLASS = 'complete';
@@ -22,18 +24,21 @@ var NotesClient = function() {
    * @return {undefined}                No return type.
    */
   var buildNotes = function(notes, notebookDbID, notebookContainer, addEvents) {
-    if(!notebookContainer) {
+    if (!notebookContainer) {
       notebookContainer =
         document.getElementById(AppConfig.getNotebookContentID(notebookDbID));
     }
 
-    if(addEvents === undefined) {
+    if (addEvents === undefined) {
       addEvents = true;
     }
-
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
-    if(!notebooksContainer) {
-      // TODO Something bad happened!!
+    if (!notebooksContainer) {
+      throw new Error(i18n.__('error.notebook_container_not_found'));
+    }
+    if(notes.length === 0) {
+
+      return;
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
       appendNoteElement(notebookDbID, notes[i], notebooksContainer, addEvents);
@@ -49,10 +54,10 @@ var NotesClient = function() {
    * @return {undefined}                No return type.
    */
   var addNewNote = function(notebookDbID, notebookContainer) {
-    if(!notebookDbID) {
+    if (!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
-    if(!notebookContainer) {
+    if (!notebookContainer) {
       var notebookID = AppConfig.getNotebookContentID(notebookDbID);
       notebookContainer = document.getElementById(notebookID);
     }
@@ -67,14 +72,14 @@ var NotesClient = function() {
 
 
   var removeNotesFromNotebook = function(notebookDbID) {
-    if(!notebookDbID) {
+    if (!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
     var notebookID = AppConfig.getNotebookContentID(notebookDbID);
     var notebookContainer = document.getElementById(notebookID);
     removeAllNoteEvents(notebookContainer);
     var notesContainer = notebookContainer.querySelector('.notes-container');
-    while(notesContainer.firstChild) {
+    while (notesContainer.firstChild) {
       notesContainer.removeChild(notesContainer.firstChild);
     }
   };
@@ -130,18 +135,18 @@ var NotesClient = function() {
    */
   function evtNoteFocus(event) {
     currentlyFocusedNote = event.target;
-    if(!currentlyFocusedNote.dataset.noteid) {
+    if (!currentlyFocusedNote.dataset.noteid) {
       return;
     }
     // Fetch the content of the note.
     Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
       function(err, noteObj) {
-      if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
-        // the note is still selected.
-        currentlyFocusedNote.innerHTML = "";
-        currentlyFocusedNote.innerText = noteObj.text;
-      }
-    });
+        if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
+          // the note is still selected.
+          currentlyFocusedNote.innerHTML = "";
+          currentlyFocusedNote.innerText = noteObj.text;
+        }
+      });
   }
 
   /**
@@ -188,8 +193,13 @@ var NotesClient = function() {
    */
   function saveAndCreateNote(note) {
     var notebookID = note.dataset.notebookid;
-    saveNote(note, true);
-    addNewNote(notebookID);
+    try {
+      saveNote(note, true);
+      addNewNote(notebookID);
+    } catch (e) {
+      var errObj = new AppError(e, i18n.__('error.save_and_create_note'));
+      errObj.display();
+    }
   }
 
   /**
@@ -198,26 +208,30 @@ var NotesClient = function() {
    * @param  {Boolean} isBlur Is this triggered as part of blur event.
    * @return {undefined}      No return type.
    */
-  function saveNote(note, isBlur) {
+  function saveNote(note, isBlur, isNoteComplete) {
     var noteText = note.innerText;
     if (noteText) {
-      var noteID = note.dataset.noteid;
-      var notebookID = note.dataset.notebookid;
-      var noteObj = createNoteObjFromElement(note, isBlur);
-      if (noteID && notebookID) {
-        // Update
-        Notes.modifyNote(noteObj, false, cbModifiedNote);
-      } else if (notebookID) {
-        // Insert
-        Notes.modifyNote(noteObj, true, function(err, noteObj) {
-          if(noteObj) {
-            noteObj.noteElem.dataset.noteid = noteObj._id;
-          }
-          cbModifiedNote(err, noteObj);
-        });
-      } else {
-        // TODO : Error!! No notebookID AND noteID
-        return;
+      try {
+        var noteID = note.dataset.noteid;
+        var notebookID = note.dataset.notebookid;
+        var noteObj = createNoteObjFromElement(note, isBlur, isNoteComplete);
+        if (noteID && notebookID) {
+          // Update
+          Notes.modifyNote(noteObj, false, cbModifiedNote);
+        } else if (notebookID) {
+          // Insert
+          Notes.modifyNote(noteObj, true, function(err, noteObj) {
+            if (noteObj) {
+              noteObj.noteElem.dataset.noteid = noteObj._id;
+            }
+            cbModifiedNote(err, noteObj);
+          });
+        } else {
+          throw new Error(i18n.__('error.savenote_invalid_call'));
+        }
+      } catch (e) {
+        var errObj = new AppError(e, i18n.__('error.notes_modification_err'));
+        errObj.display();
       }
     }
     note = null;
@@ -229,19 +243,31 @@ var NotesClient = function() {
    * @return {undefined}      No return type.
    */
   function deleteNote(note) {
-    var noteID = note.dataset.noteid;
-    if(noteID) {
-      Notes.deleteNote(noteID, function(err) {
-        if(err) {
-          // TODO Show error regarding delete.
-        }
-      });
-    }
-    removeNoteEvents(note);
-    if(note.parentNode) {
-      note.parentNode.remove();
-    } else {
-      note.remove();
+    try {
+      var respConfirm = window.confirm(i18n.__('note.deletion_confirmation_text'),
+        i18n.__('note.deletion_confirmation_title'));
+      if(!respConfirm) {
+        return;
+      }
+      var noteID = note.dataset.noteid;
+      if (noteID) {
+        Notes.deleteNote(noteID, function(err) {
+          if (err) {
+            var errObj = new AppError(err, i18n.__('error.notes_deletion_err'));
+            errObj.display();
+            return;
+          }
+        });
+      }
+      removeNoteEvents(note);
+      if (note.parentNode) {
+        note.parentNode.remove();
+      } else {
+        note.remove();
+      }
+    } catch (e) {
+      var appErrObj = new AppError(e, i18n.__('error.notes_deletion_err'));
+      appErrObj.display();
     }
   }
 
@@ -253,21 +279,26 @@ var NotesClient = function() {
    */
   function markNoteAsComplete(note) {
     var isComplete = false;
-    if(!note.innerText) {
-      // TODO Maybe show a message stating that an empty note
-      // can't be marked as complete.
-      return;
-    }
-    // Toggle the classes as necessary.
-    if(note.classList.contains(NOTE_COMPLETE_CLASS)) {
-      isComplete = true;
-      note.classList.remove(NOTE_COMPLETE_CLASS);
-    } else {
-      note.classList.add(NOTE_COMPLETE_CLASS);
+    try {
+      if (!note.innerText) {
+        // TODO Maybe show a message stating that an empty note
+        // can't be marked as complete.
+        return;
+      }
+      // Toggle the classes as necessary.
+      if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
+        isComplete = true;
+        note.classList.remove(NOTE_COMPLETE_CLASS);
+      } else {
+        note.classList.add(NOTE_COMPLETE_CLASS);
+      }
+    } catch (e) {
+      var appErrObj = new AppError(e, i18n.__('error.mark_note_complete'));
+      appErrObj.display();
     }
     // Save the note, it will update the note or create it.
     // This will also mark it as complete or mark it as uncomplete.
-    saveNote(note, false);
+    saveNote(note, false, isComplete);
   }
 
   /**
@@ -278,7 +309,7 @@ var NotesClient = function() {
    * element.
    * @return {object}         Note object to be stored in the database
    */
-  function createNoteObjFromElement(note, isBlur) {
+  function createNoteObjFromElement(note, isBlur, isNoteComplete) {
     var noteObj = {
       text: note.innerText,
       notebookID: note.dataset.notebookid,
@@ -290,10 +321,18 @@ var NotesClient = function() {
       noteObj._id = note.dataset.noteid;
     }
 
-    if(note.classList.contains(NOTE_COMPLETE_CLASS)) {
+    if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
       noteObj.isComplete = true;
     } else {
       noteObj.isComplete = false;
+    }
+
+    if(isNoteComplete !== undefined) {
+      if(isNoteComplete === true) {
+        noteObj.completedOn = new Date();
+      } else {
+        noteObj.completedOn = null;
+      }
     }
     var notebookElemID = AppConfig.getNotebookContentID(note.dataset.notebookid);
     var notebookDate = jQuery('#' + notebookElemID).find('.notebook-date').datepicker('getDate');
@@ -318,7 +357,7 @@ var NotesClient = function() {
     var noteContainer = document.createElement('div');
     noteContainer.setAttribute('class', 'note-container');
 
-    if(addEvents === undefined) {
+    if (addEvents === undefined) {
       addEvents = true;
     }
 
@@ -328,7 +367,7 @@ var NotesClient = function() {
     // Add events.
     var currNote = noteContainer.querySelector('.note');
 
-    if(addEvents) {
+    if (addEvents) {
       addNoteEvents(currNote);
     }
 
@@ -350,7 +389,7 @@ var NotesClient = function() {
     var noteID = '';
     var noteClasses = DEFAULT_NOTE_CLASS;
 
-    if(note) {
+    if (note) {
       noteText = marked(note.text);
       noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +
         NOTE_COMPLETE_CLASS) : DEFAULT_NOTE_CLASS;
@@ -358,7 +397,7 @@ var NotesClient = function() {
     }
 
     var editable = '';
-    if(isEditable) {
+    if (isEditable) {
       editable = 'contenteditable';
     } else {
       noteClasses += ' ' + NOTE_NOT_EDITABLE_CLASS;
@@ -378,7 +417,8 @@ var NotesClient = function() {
    */
   function cbModifiedNote(err, noteObj) {
     if (err) {
-      // TODO Error while creating new note.
+      var errObj = new AppError(err, i18n.__('error.notes_modification_err'));
+      errObj.display();
       return;
     }
     checkIfBlur(noteObj);
@@ -404,7 +444,7 @@ var NotesClient = function() {
     addNewNote: addNewNote,
     addNotesEvents: addNoteEvents,
     removeAllNoteEvents: removeAllNoteEvents,
-    removeNotesFromNotebook : removeNotesFromNotebook
+    removeNotesFromNotebook: removeNotesFromNotebook
   };
 };
 
