@@ -36,7 +36,7 @@ var NotesClient = function() {
     if (!notebooksContainer) {
       throw new Error(i18n.__('error.notebook_container_not_found'));
     }
-    if(notes.length === 0) {
+    if (notes.length === 0) {
 
       return;
     }
@@ -246,7 +246,7 @@ var NotesClient = function() {
     try {
       var respConfirm = window.confirm(i18n.__('note.deletion_confirmation_text'),
         i18n.__('note.deletion_confirmation_title'));
-      if(!respConfirm) {
+      if (!respConfirm) {
         return;
       }
       var noteID = note.dataset.noteid;
@@ -327,8 +327,8 @@ var NotesClient = function() {
       noteObj.isComplete = false;
     }
 
-    if(isNoteComplete !== undefined) {
-      if(isNoteComplete === true) {
+    if (isNoteComplete !== undefined) {
+      if (isNoteComplete === true) {
         noteObj.completedOn = new Date();
       } else {
         noteObj.completedOn = null;

@@ -92,7 +92,7 @@ var NotebooksClient = function() {
             format: AppConfig.dateFormat
           }).datepicker('update', new Date()).element.data('notebookid', notebookID);
 
-          if(notebookData.notes.length !== 0) {
+          if (notebookData.notes.length !== 0) {
             // Build the notes html.
             NotesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
           } else {
@@ -170,7 +170,7 @@ var NotebooksClient = function() {
    */
   function evtAddNote(event) {
     try {
-      var notebookID = event.target.dataset.notebookid;      
+      var notebookID = event.target.dataset.notebookid;
       if (notebookID) {
         clearEmptyNotebook(notebookID);
         NotesClient.addNewNote(notebookID);
@@ -230,7 +230,7 @@ var NotebooksClient = function() {
         return;
       }
       try {
-        if(notes.length === 0) {
+        if (notes.length === 0) {
           handleEmptyNotebook(notebookDbID);
         } else {
           // Build the notes html and attach the event handlers.
@@ -250,7 +250,7 @@ var NotebooksClient = function() {
         return;
       }
       try {
-        if(notes.length === 0) {
+        if (notes.length === 0) {
           handleEmptyNotebook(notebookDbID);
         } else {
           // Build the notes html and attach the event handlers.
@@ -270,7 +270,7 @@ var NotebooksClient = function() {
         return;
       }
       try {
-        if(notes.length === 0) {
+        if (notes.length === 0) {
           handleEmptyNotebook(notebookDbID);
         } else {
           // Build the notes html and attach the event handlers.
@@ -285,7 +285,7 @@ var NotebooksClient = function() {
 
   function clearEmptyNotebook(notebookInfo) {
     var notebookContainer = null;
-    if(typeof notebookInfo === 'string') {
+    if (typeof notebookInfo === 'string') {
       // Its the ID
       var notebookID = AppConfig.getNotebookContentID(notebookInfo);
       notebookContainer = notebooksTabContainer.querySelector('#' + notebookID);
@@ -294,16 +294,16 @@ var NotebooksClient = function() {
       notebookContainer = notebookInfo;
     }
 
-    if(notebookContainer) {
+    if (notebookContainer) {
       var elemEmptyNotebook = notebookContainer.querySelector('.' + EMPTY_NOTES_CLASS);
-      if(elemEmptyNotebook) {
-          elemEmptyNotebook.remove();
+      if (elemEmptyNotebook) {
+        elemEmptyNotebook.remove();
       }
     }
   }
 
   function getEmptyNotebookHTML() {
-      return '<div class="' + EMPTY_NOTES_CLASS + '">' + i18n.__('notebook.empty_notebook') + '</div>'
+    return '<div class="' + EMPTY_NOTES_CLASS + '">' + i18n.__('notebook.empty_notebook') + '</div>'
   }
 
   function handleEmptyNotebook(notebookDbID) {

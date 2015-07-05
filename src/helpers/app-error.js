@@ -41,14 +41,14 @@ AppError.prototype.display = function() {
 
 AppError.prototype.log = function() {
   var errorString = "Message : " + this.message + AppConfig.EOL + new Date().toString() + LOG_DIVIDER;
-  errorString +=  this.error.stack + AppConfig.EOL;
+  errorString += this.error.stack + AppConfig.EOL;
   errorString += END_OF_LOG_DIVIDER;
   var that = this;
-  if(AppConfig.isDevelopment) {
+  if (AppConfig.isDevelopment) {
     window.alert(AppConfig.EOL + errorString, 'You moron, fix this error!');
   }
   fs.appendFile(AppConfig.logPath + 'error.log', errorString, function(err) {
-    if(err) {
+    if (err) {
       // This inline string is intentional, dont include i18n.
       errorString = 'Things seem to be going really really wrong. ' +
         'We just encountered an error while processing an error!!! Error inside error! KABOOM!' +

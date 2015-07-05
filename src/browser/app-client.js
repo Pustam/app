@@ -27,7 +27,7 @@ var AppClient = function() {
       });
     });
   }
-  
+
   return {
     init: init
   };
