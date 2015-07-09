@@ -7,7 +7,7 @@ var AppConfig = {
 	srcPath : __dirname + '/src/',
 	isDevelopment: true,
 	database: {
-		path: '/home/abijeet/Projects/markdown-notes/markdown-notes/db/',
+		path: __dirname + '/db/',
 		notes: 'notes.db',
 		notebooks: 'notebooks.db'
 	},

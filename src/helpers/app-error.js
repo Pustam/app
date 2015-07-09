@@ -14,7 +14,6 @@ var AppError = function(err, customMsg, log, overrideMsg) {
   if (log !== false) {
     log = true;
   }
-  var errObj = null;
   if (err instanceof Error) {
     this.message = customMsg;
     this.error = err;

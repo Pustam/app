@@ -3,6 +3,8 @@
 'use strict';
 
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
+var AppError = require(AppConfig.helperPath + 'app-error.js');
+var i18n = require('i18n');
 
 var AppClient = function() {
   var init = function() {

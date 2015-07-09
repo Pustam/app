@@ -6,6 +6,7 @@ var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
 var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
 var NotebooksClient = require(AppConfig.browserSrcPath + 'notebooks-client.js');
 var AppClient = require(AppConfig.browserSrcPath + 'app-client.js');
+var AppError = require(AppConfig.helperPath + 'app-error.js');
 var async = require('async');
 var i18n = require('i18n');
 

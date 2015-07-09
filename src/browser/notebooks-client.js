@@ -114,12 +114,14 @@ var NotebooksClient = function() {
 
   // Hides a notebook with the given ID
   function hideTab(notebookID) {
+    var notebookHeader = null;
+    var notebookContents = null;
     try {
-      var notebookHeader = notebooksTabHeading.querySelector('#' + AppConfig.getNotebookHeaderID(notebookID));
+      notebookHeader = notebooksTabHeading.querySelector('#' + AppConfig.getNotebookHeaderID(notebookID));
       if (notebookHeader) {
         notebookHeader.remove();
       }
-      var notebookContents = notebooksTabContainer.querySelector('#' + AppConfig.getNotebookContentID(notebookID));
+      notebookContents = notebooksTabContainer.querySelector('#' + AppConfig.getNotebookContentID(notebookID));
 
       // Cleanup!!
       removeNotebookEvents(notebookContents);
@@ -130,7 +132,6 @@ var NotebooksClient = function() {
       var errObj = new AppError(e, i18n.__('error.notebook_hide_error') + ' ' + i18n.__('error.app_unstable'));
       errObj.display();
     }
-
     notebookContents = null;
     notebookHeader = null;
   }
@@ -182,11 +183,15 @@ var NotebooksClient = function() {
   }
 
   function evtNotebookDateChanged(e) {
+    var selectedDate = null, currentDateInt = null,
+      selectedDateInt = null, notebookDbID = null,
+      btnAddNote = null;
+
     try {
-      var selectedDate = e.date;
-      var selectedDateInt = e.date.getTime();
-      var currentDateInt = new Date().setHours(0, 0, 0, 0);
-      var notebookDbID = jQuery(this).data('notebookid');
+      selectedDate = e.date;
+      selectedDateInt = e.date.getTime();
+      currentDateInt = new Date().setHours(0, 0, 0, 0);
+      notebookDbID = jQuery(this).data('notebookid');
       if (!notebookDbID) {
         // Notebook id not found!!
         return;
@@ -195,7 +200,7 @@ var NotebooksClient = function() {
       // Show the "Add note" button
       var notebookID = AppConfig.getNotebookContentID(notebookDbID);
       var notebookContainer = document.getElementById(notebookID);
-      var btnAddNote = notebookContainer.querySelector('.add-note');
+      btnAddNote = notebookContainer.querySelector('.add-note');
       btnAddNote.style.display = 'inline-block';
 
       clearEmptyNotebook(notebookContainer);
@@ -303,7 +308,7 @@ var NotebooksClient = function() {
   }
 
   function getEmptyNotebookHTML() {
-    return '<div class="' + EMPTY_NOTES_CLASS + '">' + i18n.__('notebook.empty_notebook') + '</div>'
+    return '<div class="' + EMPTY_NOTES_CLASS + '">' + i18n.__('notebook.empty_notebook') + '</div>';
   }
 
   function handleEmptyNotebook(notebookDbID) {
