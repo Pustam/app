@@ -124,7 +124,7 @@ body.main {
 	margin:auto;
 }
 footer.footer {
-	position: absolute;
+	position: fixed;
 	bottom:0px;
 	min-height:2em;
 	padding: 0.4em 0.5em;
@@ -169,7 +169,9 @@ The main note div
 	background : #e7e7e7;
 	word-break: break-all;
 }
-
+.notes-container .note-container:last-child {
+	margin-bottom:3em;
+}
 .notes-container .note :last-child {
 	margin-bottom:0px;
 }
@@ -193,24 +195,27 @@ Div that contains each notes.
 	background-color:#d5d5d5;
 }
 /**
- * Help icon
+ * Shortcuts
  */
-.help-shortcut {
+.app-shortcut {
 	position : fixed;
 	top:10px;
-	right:30px;
 	font-size:2em;
-	color:#009933;
+	color:skyblue;
 	cursor:pointer;
 }
-
-/**
- * Shortcut
- * @type {[type]}
- */
-.help-shortcut:hover {
-	color:#47D147;
+.help-btn {
+	right:30px;
 }
+.about-btn {
+	right:60px;
+}
+.app-shortcut:hover {
+	color : #45b3e0;
+}
+/**
+ * End of shortcuts
+ */
 .modal kbd {
 	padding: 4px 6px;
 	border-radius: 3px;
