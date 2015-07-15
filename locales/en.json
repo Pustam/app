@@ -18,8 +18,10 @@
 		"desc_save_note": "Saves the currently focused note.",
 		"kbd_delete_note": "<kbd>Ctrl</kbd> + <kbd>D</kbd>",
 		"desc_delete_note": "Deletes the currently focused note.",
-		"kbd_complete_note": "<kbd>Ctrl</kbd> + <kbd>E</kbd>",
-		"desc_complete_note": "Marks the currently focused note as complete."
+		"kbd_complete_note": "<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd>",
+		"desc_complete_note": "Marks the currently focused note as complete.",
+		"kbd_edit_note" : "<kbd>Ctrl</kbd> + <kbd>E</kbd>",
+		"desc_edit_note" : "Makes the currently focused note editable."
 	},
 	"error" : {
 		"loading_database" : "There was an error while creating/loading the database.",

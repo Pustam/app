@@ -23,15 +23,16 @@ var NotesClient = function() {
    * @param  {Object} notebookContainer The notebook container HTML element
    * @return {undefined}                No return type.
    */
-  var buildNotes = function(notes, notebookDbID, notebookContainer, addEvents) {
+  var buildNotes = function(notes, notebookDbID, notebookContainer, isEditable) {
     if (!notebookContainer) {
       notebookContainer =
         document.getElementById(AppConfig.getNotebookContentID(notebookDbID));
     }
 
-    if (addEvents === undefined) {
-      addEvents = true;
+    if (isEditable === undefined) {
+      isEditable = true;
     }
+
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
     if (!notebooksContainer) {
       throw new Error(i18n.__('error.notebook_container_not_found'));
@@ -41,7 +42,7 @@ var NotesClient = function() {
       return;
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
-      appendNoteElement(notebookDbID, notes[i], notebooksContainer, addEvents);
+      appendNoteElement(notebookDbID, notes[i], notebooksContainer, isEditable);
     }
   };
 
@@ -67,7 +68,7 @@ var NotesClient = function() {
     // Create the note
     var currNote = appendNoteElement(notebookDbID, null, notesContainer);
 
-    currNote.focus();
+    makeNoteEditable(currNote);
   };
 
 
@@ -102,16 +103,9 @@ var NotesClient = function() {
    * Used to add events to the note element that has been created.
    * @param {Object} note HTML note element
    */
-  function addNoteEvents(note) {
-    // Focus - Nothing for now
-    note.addEventListener('focus', evtNoteFocus, false);
-
+  function addEditableNoteEvents(note) {
     // Blur - Save
     note.addEventListener('blur', evtNoteBlur, false);
-
-    // Keyup event - Perform action according to the
-    // key's pressed.
-    note.addEventListener('keypress', evtNoteKeyPress, false);
   }
 
   /**
@@ -120,34 +114,11 @@ var NotesClient = function() {
    * @return {undefined}   No return type.
    */
   function removeNoteEvents(note) {
-    note.removeEventListener('focus', evtNoteFocus);
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
     note = null;
   }
 
-  /**
-   * Fired whenever a note is focused. When this happens, the function waits
-   * for a few milliseconds and then calls functions that fetch the details
-   * regarding the note and put it in the note element.
-   * @param  {Object} event Event object
-   * @return {undefined}    No return type.
-   */
-  function evtNoteFocus(event) {
-    currentlyFocusedNote = event.target;
-    if (!currentlyFocusedNote.dataset.noteid) {
-      return;
-    }
-    // Fetch the content of the note.
-    Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
-      function(err, noteObj) {
-        if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
-          // the note is still selected.
-          currentlyFocusedNote.innerHTML = "";
-          currentlyFocusedNote.innerText = noteObj.text;
-        }
-      });
-  }
 
   /**
    * Fired whenever focus is lost on a note. Then calls `saveNote`
@@ -166,22 +137,30 @@ var NotesClient = function() {
    * @return {undefined}    No return type.
    */
   function evtNoteKeyPress(event) {
-    if (event.which === 19 && event.ctrlKey === true) {
-      // Ctrl + S - Need to save...
-      saveNote(event.target, false);
-      event.preventDefault();
-    } else if (event.which === 14 && event.ctrlKey === true) {
-      // Ctrl + N - Need to save and create a new note.
-      saveAndCreateNote(event.target);
-      event.preventDefault();
-    } else if (event.which === 4 && event.ctrlKey === true) {
-      // Ctrl + D - Need to delete the note
-      deleteNote(event.target);
-      event.preventDefault();
-    } else if (event.which === 5 && event.ctrlKey === true) {
-      // Ctrl + E - Mark note as complete.
-      markNoteAsComplete(event.target);
-      event.preventDefault();
+    if(event.ctrlKey === true && event.shiftKey === true) {
+      if (event.which === 3) {
+         // Ctrl + Shift + C - Mark note as complete.
+         markNoteAsComplete(event.target);
+         event.preventDefault();
+       }
+    } else if(event.ctrlKey === true) {
+      if (event.which === 19) {
+        // Ctrl + S - Need to save...
+        saveNote(event.target, false);
+        event.preventDefault();
+      } else if (event.which === 14) {
+        // Ctrl + N - Need to save and create a new note.
+        saveAndCreateNote(event.target);
+        event.preventDefault();
+      } else if (event.which === 4) {
+        // Ctrl + D - Need to delete the note
+        deleteNote(event.target);
+        event.preventDefault();
+      } else if (event.which === 5) {
+        // Ctrl + E - Need to make the note editable
+        makeNoteEditable(event.target);
+        event.preventDefault();
+      }
     }
   }
 
@@ -301,6 +280,43 @@ var NotesClient = function() {
     saveNote(note, false, isComplete);
   }
 
+  function makeNoteEditable(note) {
+    addEditableNoteEvents(note);
+    currentlyFocusedNote = note;
+    if (!currentlyFocusedNote.dataset.noteid) {
+      turnOnEditing(currentlyFocusedNote);
+      return;
+    }
+    // Fetch the content of the note.
+    Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
+      function(err, noteObj) {
+        if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
+          // the note is still selected.
+          currentlyFocusedNote.innerHTML = "";
+          currentlyFocusedNote.innerText = noteObj.text;
+          turnOnEditing(currentlyFocusedNote);
+        }
+    });
+  }
+
+  function turnOnEditing(note) {
+    note.setAttribute('contenteditable', true);
+    note.focus();
+
+    // Now set the cursor at the end.
+    var range = document.createRange();
+    range.selectNodeContents(note);
+    range.collapse(false);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function turnOffEditing(note) {
+    note.setAttribute('contenteditable', false);
+    note.removeEventListener('blur', evtNoteBlur);
+  }
+
   /**
    * Creates a note object from the given note element.
    * This note object can then be stored in the database.
@@ -334,6 +350,7 @@ var NotesClient = function() {
         noteObj.completedOn = null;
       }
     }
+
     var notebookElemID = AppConfig.getNotebookContentID(note.dataset.notebookid);
     var notebookDate = jQuery('#' + notebookElemID).find('.notebook-date').datepicker('getDate');
 
@@ -352,27 +369,29 @@ var NotesClient = function() {
    * @param  {Object} notebooksContainer HTML notes container element
    * @return {Object} HTML note element that was added.
    */
-  function appendNoteElement(notebookDbID, note, notebooksContainer, addEvents) {
+  function appendNoteElement(notebookDbID, note, notebooksContainer, isEditable) {
     // Create the note
     var noteContainer = document.createElement('div');
     noteContainer.setAttribute('class', 'note-container');
 
-    if (addEvents === undefined) {
-      addEvents = true;
+    if (isEditable === undefined) {
+      isEditable = true;
     }
 
     // Create the inner elements.
-    noteContainer.innerHTML = getNoteHTML(notebookDbID, note, addEvents);
-
-    // Add events.
-    var currNote = noteContainer.querySelector('.note');
-
-    if (addEvents) {
-      addNoteEvents(currNote);
-    }
+    noteContainer.innerHTML = getNoteHTML(notebookDbID, note, isEditable);
 
     // Add it to the notes container
     notebooksContainer.appendChild(noteContainer);
+
+    // Return the newly added note
+    var currNote = noteContainer.querySelector('.note');
+
+    // Keyup event - Perform action according to the
+    // key's pressed.
+    if(isEditable) {
+      currNote.addEventListener('keypress', evtNoteKeyPress, false);
+    }
 
     return currNote;
   }
@@ -396,14 +415,11 @@ var NotesClient = function() {
       noteID = 'data-noteid="' + note._id + '"';
     }
 
-    var editable = '';
-    if (isEditable) {
-      editable = 'contenteditable';
-    } else {
+    if (!isEditable) {
       noteClasses += ' ' + NOTE_NOT_EDITABLE_CLASS;
     }
     return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
-      notebookDbID + '" ' + editable + '>' + noteText +
+      notebookDbID + '" tabindex="0">' + noteText +
       '</div><div class="pull-right note-footer"></div>';
   }
 
@@ -436,13 +452,13 @@ var NotesClient = function() {
     if (noteObj.isBlur && noteObj.noteElem) {
       var noteHtml = marked(noteObj.text);
       noteObj.noteElem.innerHTML = noteHtml;
+      turnOffEditing(noteObj.noteElem);
     }
   }
 
   return {
     buildNotes: buildNotes,
     addNewNote: addNewNote,
-    addNotesEvents: addNoteEvents,
     removeAllNoteEvents: removeAllNoteEvents,
     removeNotesFromNotebook: removeNotesFromNotebook
   };
