@@ -4,6 +4,8 @@ var App = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
 var AppConfig = require(__dirname + '/../../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
+var ipc = require('ipc');
+
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -25,7 +27,8 @@ App.on('ready', function() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600
+    height: 600,
+    icon : AppConfig.basePath + 'img/markdown-notes-ico.png',
   });
 
   // Open the dev tools.
@@ -50,4 +53,8 @@ App.on('ready', function() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+});
+
+ipc.on('exit-app', function(event, arg) {
+  App.quit();
 });

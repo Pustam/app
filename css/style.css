@@ -204,14 +204,14 @@ Div that contains each notes.
 	color:skyblue;
 	cursor:pointer;
 }
-.help-btn {
+.app-menu {
 	right:30px;
 }
-.about-btn {
-	right:60px;
-}
-.app-shortcut:hover {
-	color : #45b3e0;
+
+.app-menu .dropdown-menu {
+	top : 110%;
+	right:0;
+	left: auto;
 }
 /**
  * End of shortcuts
@@ -225,6 +225,21 @@ Div that contains each notes.
 #dlgShortcutHelp.modal .modal-dialog{
 	width:65%;
 }
+
 /**
  * End of shortcut
  */
+/**
+ * About dialog
+ */
+#dlgAbout .modal-dialog {
+	width:36%;
+}
+#dlgAbout .version {
+	font-size: 50%;
+	margin-left:0.5em;
+	display: inline-block;
+}
+#dlgAbout .logo {
+	margin: 1em 0em;
+}

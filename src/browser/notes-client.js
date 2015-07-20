@@ -173,12 +173,18 @@ var NotesClient = function() {
   function saveAndCreateNote(note) {
     var notebookID = note.dataset.notebookid;
     try {
-      saveNote(note, true);
+      if(isNoteEditable(note)) {
+          saveNote(note, true);
+      }
       addNewNote(notebookID);
     } catch (e) {
       var errObj = new AppError(e, i18n.__('error.save_and_create_note'));
       errObj.display();
     }
+  }
+
+  function isNoteEditable(note) {
+    return note.getAttribute('contenteditable') === true;
   }
 
   /**
@@ -239,7 +245,24 @@ var NotesClient = function() {
         });
       }
       removeNoteEvents(note);
+
       if (note.parentNode) {
+        // Find a note to focus
+        var parentNodeOfNote = null;
+        if (note.parentNode.nextElementSibling) {
+          // Does it have a next sibling??
+          parentNodeOfNote = note.parentNode.nextElementSibling;
+        } else if(note.parentNode.previousElementSibling) {
+          // Does not have a next sibling, does it have
+          // a previous sibling??
+          parentNodeOfNote = note.parentNode.previousElementSibling;
+        }
+
+        if(parentNodeOfNote) {
+          // Now focus that note.
+          focusNoteInParent(parentNodeOfNote);
+        }
+
         note.parentNode.remove();
       } else {
         note.remove();
@@ -250,6 +273,13 @@ var NotesClient = function() {
     }
   }
 
+  function focusNoteInParent(noteParent) {
+    var note = noteParent.querySelector('.note');
+    if(note) {
+      note.focus();
+    }
+  }
+  
   /**
    * Adds the necessary class depending on whether the note is complete or
    * incomplete. It then calls the `saveNote` method to save the note.

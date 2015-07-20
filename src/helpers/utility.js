@@ -31,11 +31,13 @@ var utility = function() {
       if (typeof data === 'undefined' || !data) {
         data = {
           AppUtil: utility(),
-          i18n: i18n
+          i18n: i18n,
+          basePath : AppConfig.basePath
         };
       } else {
         data.AppUtil = utility();
         data.i18n = i18n;
+        data.basePath = AppConfig.basePath;
       }
       var fileToLoad = '';
       if (isDialog) {

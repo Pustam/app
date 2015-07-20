@@ -23,10 +23,10 @@
   </head>
   <body class="main">
     <section class="col-md-2">
-      <button type="button" class="btn btn-default">
+      <!--<button type="button" class="btn btn-default">
         <span class="glyphicon glyphicon-plus"></span>
           <script>AppUtil.echo('notebook.new_notebook');</script>
-      </button>
+      </button>-->
       <div class="container-fluid notebook-container">
         <ul id="1_lstNotebooks" class="form-horizontal">
         </ul>
@@ -42,8 +42,19 @@
         </div>
       </div>
     </section>
-    <div class="help-btn app-shortcut" id="1_btnShortcutHelp"><span class="glyphicon glyphicon-question-sign"></span></div>
-    <div class="about-btn app-shortcut" id="1_btnShortcutAbout"><span class="glyphicon glyphicon-info-sign"></span></div>
+    <div class="dropdown app-menu app-shortcut">
+      <button class="btn btn-default" id="globalAppMenu" data-toggle="dropdown">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labeledby="globalAppMenu">
+        <li><a href="#" id="1_btnSettings">Settings</a></li>
+        <li><a href="#" id="1_btnShortcutHelp">Shortcuts</a></li>
+        <li><a href="#" id="1_btnAboutUs">About</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#" id="1_btnExitApp">Exit</a></li>
+      </ul>
+    </div>
+
     <div class="clearfix"></div>
     <footer id="appStatusbar" class="footer">
     </footer>
