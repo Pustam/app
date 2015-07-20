@@ -1,0 +1,21 @@
+<div class="modal fade" id="dlgAbout">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title text-center">
+          <%= i18n.__('app.name'); %>
+          <span class="small version"><%= package.version %></span>
+        </h2>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <img src="<%= basePath %>img/markdown-notes-ico.png" alt="Logo" class="logo">
+          <h4 class="app-description"><%= i18n.__('app.description');%></h4>
+          <p><%= i18n.__('about.reporting'); %>
+            <a href="<%= i18n.__('app.issues_link');%>"><%= i18n.__('about.here'); %></a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
