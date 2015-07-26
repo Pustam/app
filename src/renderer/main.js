@@ -1,35 +1,47 @@
 'use strict';
 
-var App = require('app'); // Module to control application life.
-var BrowserWindow = require('browser-window'); // Module to create native browser window.
+var App = require('app');
+var BrowserWindow = require('browser-window');
+var ipc = require('ipc');
+var globalShortcut = require('global-shortcut');
+
+// Custom
 var AppConfig = require(__dirname + '/../../config.js');
 var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
-var ipc = require('ipc');
+var Settings = require(AppConfig.srcPath + 'settings.js');
 
-
-// Report crashes to our server.
-require('crash-reporter').start();
-
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the javascript object is GCed.
+// Keep a global reference of the window object, to avoid GC and close.
 var mainWindow = null;
+
+var settingsUpdated = false;
 
 // Quit when all windows are closed.
 App.on('window-all-closed', function() {
   if (process.platform !== 'darwin') {
+    globalShortcut.unregisterAll();
     App.quit();
   }
 });
 
-// This method will be called when Electron has done everything
-// initialization and ready for creating browser windows.
 App.on('ready', function() {
+  Settings.loadSettings();
+
+  var settings = Settings.getAppSettings();
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     icon : AppConfig.basePath + 'img/markdown-notes-ico.png',
   });
+
+  mainWindow.setMenu(null);
+
+  // Add the shortcut hook;
+  var shortcutKey = settings.globalShortcut;
+  if(shortcutKey) {
+    bindGlobalShortcutKey(shortcutKey, mainWindow);
+  }
 
   // Open the dev tools.
   if (AppConfig.isDevelopment) {
@@ -46,15 +58,51 @@ App.on('ready', function() {
     mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'index.html');
   });
 
-  // Emitted when the window is closed.
+
   mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+    // Delete the corresponding element.
     mainWindow = null;
   });
 });
 
+App.on('will-quit', function(event) {
+  if(settingsUpdated) {
+    // Settings have been updated, apply the settings
+    // and close the app.
+    event.preventDefault();
+    Settings.updateAppSettings(function() {
+      settingsUpdated = false;
+      App.quit();
+    });
+  } else {
+    settingsUpdated = null;
+  }
+});
+
+// Start of IPC messages.
 ipc.on('exit-app', function(event, arg) {
   App.quit();
 });
+
+ipc.on('update-shortcut', function(event, arg) {
+  var oldKey = arg.old;
+  var newKey = arg.new;
+  globalShortcut.unregister('Super+Shift+' + oldKey);
+  event.returnValue = bindGlobalShortcutKey(newKey, mainWindow);
+});
+
+ipc.on('settings-updated', function(event, arg) {
+  settingsUpdated = true;
+});
+
+// Private methods
+function bindGlobalShortcutKey(shortcutKey, mainWindow) {
+  var ret = globalShortcut.register('Super+Shift+' + shortcutKey, function() {
+    NotesApp.evtGlobalShortcutKey(mainWindow);
+  });
+
+  if(!ret) {
+    return false;
+  }
+  return true;
+}

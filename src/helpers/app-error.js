@@ -44,7 +44,7 @@ AppError.prototype.log = function() {
   errorString += END_OF_LOG_DIVIDER;
   var that = this;
   if (AppConfig.isDevelopment) {
-    window.alert(AppConfig.EOL + errorString, 'You moron, fix this error!');
+    showAlert(AppConfig.EOL + errorString, 'You moron, fix this error!');    
   }
   fs.appendFile(AppConfig.logPath + 'error.log', errorString, function(err) {
     if (err) {
@@ -52,10 +52,17 @@ AppError.prototype.log = function() {
       errorString = 'Things seem to be going really really wrong. ' +
         'We just encountered an error while processing an error!!! Error inside error! KABOOM!' +
         AppConfig.EOL + LOG_DIVIDER + errorString;
-      window.alert(errorString, 'Unhandled Error');
+      showAlert(errorString, 'Unhandled Error');
     }
     that.logged = true;
   });
 };
+
+function showAlert(msg, title) {
+  if(!window) {
+    return;
+  }
+  window.alert(msg, title);
+}
 
 module.exports = AppError;

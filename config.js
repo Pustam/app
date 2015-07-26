@@ -1,4 +1,5 @@
 var fs = require('fs');
+var os = require('os');
 
 var AppConfig = {
 	basePath: __dirname + '/',
@@ -38,15 +39,8 @@ var AppConfig = {
 AppConfig.partialsPath = AppConfig.htmlPath + 'partials/';
 AppConfig.dialogsPath = AppConfig.htmlPath + 'dialogs/';
 AppConfig.logPath = AppConfig.basePath + 'logs/';
-AppConfig.EOL = require('os').EOL;
+AppConfig.settingsPath = AppConfig.basePath + 'settings.json';
 
-AppConfig.getPackageJSON = function(cbMain) {
-	fs.readFile(__dirname + '/package.json', function(err, data) {
-		if(err) {
-			return cbMain(err);
-		}
-		return cbMain(null, data);
-	});
-}
+AppConfig.EOL = os.EOL;
 
 module.exports = AppConfig;

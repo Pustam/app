@@ -198,7 +198,7 @@ Div that contains each notes.
  * Shortcuts
  */
 .app-shortcut {
-	position : fixed;
+	position : absolute;
 	top:10px;
 	font-size:2em;
 	color:skyblue;
@@ -242,4 +242,38 @@ Div that contains each notes.
 }
 #dlgAbout .logo {
 	margin: 1em 0em;
+}
+/**
+ * Settings dialog
+ */
+#dlgSettings .modal-dialog {
+	width:73%;
+}
+#dlgSettings .settings-tab {
+	display : none;
+}
+#dlgSettings .global-shortcut {
+	height:38px;
+	line-height: 32px;
+	display:inline-block;
+	font-weight: bold;
+}
+#dlgSettings .global-shortcut kbd {
+	margin:0 4px;
+}
+#dlgSettings .global-shortcut input {
+	text-align: center;
+}
+#dlgSettings .settings-info {
+	padding:15px;
+}
+/**
+ * End of settings dialog.
+ */
+.file-paths {
+	margin-left:10px;
+	margin-right:10px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

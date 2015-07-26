@@ -61,10 +61,30 @@ var utility = function() {
     }
   }
 
+  var mvFile = function(oldPath, newPath, cbMain) {
+    var source = fs.createReadStream(oldPath);
+    var dest = fs.createWriteStream(newPath);
+
+    source.pipe(dest);
+    source.on('end', function() {
+      fs.unlink(oldPath, function(err) {
+        if(err) {
+          return cbMain(new AppError(err, 'There was an error while moving the file.'));
+        }
+        return cbMain();
+      });
+    });
+    
+    source.on('error', function(err) {
+      return cbMain(new AppError(err, 'There was an error while moving the file.'));
+    });
+  }
+
   return {
     echo: echo,
     loadPartial: loadPartial,
-    loadDialog: loadDialog
+    loadDialog: loadDialog,
+    mvFile : mvFile
   };
 };
 

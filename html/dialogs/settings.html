@@ -2,14 +2,79 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title text-center">
-          <h4 class="modal-title"><%= i18n.__('settings.name');%></h4>          
-        </h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-cent"><%= i18n.__('settings.name');%></h4>
       </div>
-      <div class="modal-body">
-        <div>
-
+      <form class="modal-body container-fluid" id="frmSettings">
+        <div class="container-fluid">
+          <p id="pSettingsInfo_7"></p>
         </div>
+        <div class="col-md-3 list-group">
+          <a href="#" class="list-group-item active" data-show="tbSettingsGeneral_7">
+            <%= i18n.__('settings.general');%>
+          </a>
+          <a href="#" class="list-group-item" data-show="tbSettingsNotebooks_7">
+            <%= i18n.__('settings.notebooks');%>
+          </a>
+          <a href="#" class="list-group-item" data-show="tbSettingsNotes_7">
+            <%= i18n.__('settings.notes');%>
+          </a>
+        </div>
+        <div class="col-md-9">
+          <div id="tbSettingsGeneral_7" class="settings-tab">
+            <!-- GENERAL SETTINGS FORM -->
+            <div class="form-horizontal">
+              <!-- DB LOCATION -->
+              <div class="form-group">
+                <label for="btnChooseDbLocation_7" class="col-sm-3 control-label">
+                  <%= i18n.__('settings.database_location');%>
+                </label>
+                <div class="col-sm-9">
+                  <pre title="<%= settings.dbLocation %>" id="preDbLocation_7"
+                    class="file-paths col-sm-10"><%= settings.dbLocation %></pre>
+                    <input type="button" id="btnChooseDbLocation_7" class="btn btn-default col-sm-1"
+                      value="<%= i18n.__('settings.choose_file');%>">
+                  <input type="hidden" name="dbLocation" id="hdnDbLocation_7"
+                    value="<%= settings.dbLocation %>">
+                </div>
+              </div>
+              <!-- GLOBAL SHORTCUT -->
+              <div class="form-group">
+                <label for="txtGlobalShortcut_7" class="col-sm-3 control-label">
+                  <%= i18n.__('settings.global_shortcut_key');%>
+                </label>
+                <div class="col-sm-9">
+                  <span class="pull-left global-shortcut">
+                    <kbd><%= i18n.__('settings.super_key');%></kbd> +
+                    <kbd><%= i18n.__('settings.shift_key');%></kbd> +
+                  </span>
+                  <div class="col-sm-2">
+                    <input type="text" class="form-control text-center"
+                      value="<%= settings.globalShortcut %>" name="globalShortcut"
+                      maxlength="1" id="txtGlobalShortcut_7">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END OF GENERAL SETTINGS FORM -->
+          </div>
+          <div id="tbSettingsNotebooks_7" class="settings-tab">
+            <h4><%= i18n.__('settings.work_in_progress'); %></h4>
+          </div>
+          <div id="tbSettingsNotes_7" class="settings-tab">
+            <h4><%= i18n.__('settings.work_in_progress'); %></h4>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" id="btnSettingsSave_7" class="btn btn-primary">
+          <%= i18n.__('settings.save_changes');%>
+        </button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <%= i18n.__('settings.close');%>
+        </button>
       </div>
     </div>
   </div>

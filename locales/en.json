@@ -62,7 +62,21 @@
 		"about_dialog_display": "There was an error while loading About us."
 	},
 	"settings": {
-		"name": "Settings"
+		"name": "Settings",
+		"general" : "General",
+		"notebooks" : "Notebooks",
+		"notes" : "Notes",
+		"save_changes" : "Save changes",
+		"close" : "Close",
+		"work_in_progress" : "Work in progress.",
+		"database_location" : "Database Location",
+		"global_shortcut_key" : "Global Shortcut Key",
+		"super_key" : "Super",
+		"shift_key" : "Shift",
+		"choose_file" : "...",
+		"settings_applied" : "Settings saved and applied successfully.",
+		"settings_applied_restart" : "Settings saved successfully, but some of the changes require an application restart.",
+		"settings_error" : "There was an error while saving your settings. We suggest you restart the application."
 	},
 	"about": {
 		"reporting": "Found an issue or want a feature? Report ",

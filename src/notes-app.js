@@ -9,13 +9,22 @@ var Datastore = require('nedb');
 var AppConfig = require(__dirname + '/../config.js');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
 var i18n = require('i18n');
+var Settings = require(AppConfig.srcPath + 'settings.js');
 
 var NotesApp = function() {
   var dbObjs = {};
 
+  // Generate the db storage locations based on settings.
+  var settings = Settings.getAppSettings();
+  var dbBasePath = settings.dbLocation;
+
+  if(!dbBasePath) {
+    dbBasePath = AppConfig.database.path;
+  }
+
   var dbPaths = {
-    notesDb: AppConfig.database.path + AppConfig.database.notes,
-    notebookDb: AppConfig.database.path + AppConfig.database.notebooks
+    notesDb: dbBasePath + AppConfig.database.notes,
+    notebookDb: dbBasePath + AppConfig.database.notebooks
   };
 
   /**
@@ -69,10 +78,24 @@ var NotesApp = function() {
     return dbObjs.notebookDb;
   };
 
+  /**
+   * Called when the global shortcut key is pressed
+   * @return {undefined} No return type
+   */
+  var evtGlobalShortcutKey = function(mainWindow) {
+    if(mainWindow.isFocused()) {
+      mainWindow.hide();
+    } else {
+      // TODO : highlight first note.
+      mainWindow.show();
+    }
+  }
+
   return {
     init: init,
     getNotebooksDb: getNotebooksDb,
-    getNotesDb: getNotesDb
+    getNotesDb: getNotesDb,
+    evtGlobalShortcutKey : evtGlobalShortcutKey
   };
 };
 
