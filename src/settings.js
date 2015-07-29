@@ -5,7 +5,9 @@ var path =  require('path');
 var async = require('async');
 var ipc = require('ipc');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
-var i18n =
+var i18n = require('i18n');
+
+
 var appSettings = null;
 var newSettingsToApply = {};
 
@@ -50,7 +52,7 @@ var Settings = function() {
     fs.writeFile(AppConfig.settingsPath, settingsJSON, function(err) {
       var customErr = null;
       if(err) {
-        var customErr = new AppError(err, 'There was an error while storing the settings.'));
+        var customErr = new AppError(err, 'There was an error while storing the settings.');
       }
       appSettings = settings;
       if(cbMain) {
