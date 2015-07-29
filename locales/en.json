@@ -2,7 +2,9 @@
 	"app": {
 		"name": "Markdown notes",
 		"issues_link": "https://github.com/markdown-note/markdown-notes/issues",
-		"description": "A note taking app with markdown at the core, designed for advanced users."
+		"description": "A note taking app with markdown at the core, designed for advanced users.",
+		"app_fatal_close" : "The application can no longer function normally and is going to close.",
+		"app_support"  : "Please raise your issues here - https://github.com/markdown-note/markdown-notes/issues"
 	},
 	"notebook": {
 		"new_notebook": "New notebook",
@@ -76,7 +78,8 @@
 		"choose_file" : "...",
 		"settings_applied" : "Settings saved and applied successfully.",
 		"settings_applied_restart" : "Settings saved successfully, but some of the changes require an application restart.",
-		"settings_error" : "There was an error while saving your settings. We suggest you restart the application."
+		"settings_error" : "There was an error while saving your settings. We suggest you restart the application.",
+		"settings_save_fatal" : "There was an error while moving/saving your default settings. Please check that you have the ability to write to the application's directory."
 	},
 	"about": {
 		"reporting": "Found an issue or want a feature? Report ",

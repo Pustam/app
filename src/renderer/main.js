@@ -4,6 +4,8 @@ var App = require('app');
 var BrowserWindow = require('browser-window');
 var ipc = require('ipc');
 var globalShortcut = require('global-shortcut');
+var dialog = require('dialog');
+var i18n = require('i18n');
 
 // Custom
 var AppConfig = require(__dirname + '/../../config.js');
@@ -93,6 +95,12 @@ ipc.on('update-shortcut', function(event, arg) {
 
 ipc.on('settings-updated', function(event, arg) {
   settingsUpdated = true;
+});
+
+ipc.on('fatal-error', function(event, arg) {
+  dialog.showErrorBox(i18n.__('app.fatal_error'), arg.message);
+  settingsUpdated = false;
+  App.quit();
 });
 
 // Private methods
