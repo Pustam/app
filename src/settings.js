@@ -22,7 +22,7 @@ var Settings = function() {
       }
       appSettings = JSON.parse(jsonStrSettings);
     } catch (e) {
-      new AppError(e, 'Error while reading the settings.');
+      AppError(e, 'Error while reading the settings.');
       appSettings = getDefaultSettings();
       if(e.code === 'ENOENT') {
         // Creating the settings file
@@ -50,7 +50,7 @@ var Settings = function() {
     fs.writeFile(AppConfig.settingsPath, settingsJSON, function(err) {
       var customErr = null;
       if(err) {
-        var customErr = new AppError(err, 'There was an error while storing the settings.');
+        customErr = new AppError(err, 'There was an error while storing the settings.');
       }
       appSettings = settings;
       if(cbMain) {
@@ -104,7 +104,7 @@ var Settings = function() {
         return cbMain(err);
       }
       return cbMain();
-    })
+    });
   }
 
 
@@ -136,7 +136,7 @@ var Settings = function() {
       var arg = {
         old : oldSettings.globalShortcut,
         new : newSettings.globalShortcut
-      }
+      };
       if(!ipc.sendSync('update-shortcut', arg)) {
         // TODO Show error message about shortcut register error.
         // Reset the value since there was an error.
@@ -162,7 +162,7 @@ var Settings = function() {
       newSettingsToApply = null;
       cbMain(null, requiresRestart);
     });
-  }
+  };
 
   function normalizeSettings(oldSettings, newSettings) {
     for(var prop in newSettings) {
@@ -187,13 +187,13 @@ var Settings = function() {
     AppUtil.mvFile(AppConfig.settingsPath,
       AppConfig.settingsPath + '_' + Date.now(), function(err) {
         if(err) {
-          ipc.sendSync('fatal-error', generateSettingsFatalError());
+          ipc.sendSync('fatal-error', generateSettingsFatalError(err));
           return;
         }
         // 2. Write the defaults to settings.json
         saveAppSettings(appSettings, function(err) {
           if(err) {
-            ipc.sendSync('fatal-error', generateSettingsFatalError());
+            ipc.sendSync('fatal-error', generateSettingsFatalError(err));
           }
         });
     });
@@ -204,7 +204,7 @@ var Settings = function() {
    * backup or write settings.
    * @return {AppError} An error object.
    */
-  function generateSettingsFatalError() {
+  function generateSettingsFatalError(err) {
     return new AppError(err, i18n.__('settings.settings_save_fatal') + '\n\n' +
       i18n.__('settings.app_fatal_close') + '\n\n' + i18n.__('settings.app_support'));
   }
@@ -227,7 +227,7 @@ var Settings = function() {
     loadSettings : loadSettings,
     updateAppSettings : updateAppSettings,
     updateSettings : updateSettings
-  }
-}
+  };
+};
 
 module.exports = new Settings();

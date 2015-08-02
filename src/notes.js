@@ -44,7 +44,8 @@ var Notes = function() {
    */
   var modifyNote = function(noteObj, isNewNote, cbMain) {
     if (!validateNote(noteObj, isNewNote)) {
-      return cbMain(new AppError(err, i18n.__('error.notes_save_validation_err')));
+      return cbMain(new AppError(new Error('Invalid note object'),
+        i18n.__('error.notes_save_validation_err')));
     }
     var noteElem = noteObj.noteElem;
     var isBlur = noteObj.isBlur;
@@ -158,35 +159,34 @@ var Notes = function() {
     var notesDb = NotesApp.getNotesDb();
     var dtNow = new Date().getTime();
     var dtNowString = new Date().toDateString();
-    var dateInt =
-      notesDb.find({
-        $where: function() {
-          // Check if belongs to current notebook.
-          if (this.notebookID !== notebookID) {
-            return false;
-          }
-
-          // Check if date is current date
-          if (this.targetDate.toDateString() === dtNowString) {
-            return true;
-          }
-
-          // Check if date is less than current date, and note
-          // is not complete.
-          if (this.targetDate.getTime() < dtNow && this.isComplete === false) {
-            return true;
-          }
-
+    notesDb.find({
+      $where: function() {
+        // Check if belongs to current notebook.
+        if (this.notebookID !== notebookID) {
           return false;
         }
-      }).sort({
-        createdOn: -1
-      }).exec(function(err, notes) {
-        if (err) {
-          return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
+
+        // Check if date is current date
+        if (this.targetDate.toDateString() === dtNowString) {
+          return true;
         }
-        return cbMain(null, notes);
-      });
+
+        // Check if date is less than current date, and note
+        // is not complete.
+        if (this.targetDate.getTime() < dtNow && this.isComplete === false) {
+          return true;
+        }
+
+        return false;
+      }
+    }).sort({
+      createdOn: -1
+    }).exec(function(err, notes) {
+      if (err) {
+        return cbMain(new AppError(err, i18n.__('error.notes_fetch_error')));
+      }
+      return cbMain(null, notes);
+    });
   };
 
   /**
@@ -221,7 +221,7 @@ var Notes = function() {
       }
       return cbMain(null, notes);
     });
-  }
+  };
 
   var getFutureNotesByDate = function(notebookID, futureDate, cbMain) {
     var notesDb = NotesApp.getNotesDb();

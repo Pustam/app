@@ -89,7 +89,7 @@ App.on('will-quit', function(event) {
 });
 
 // Start of IPC messages.
-ipc.on('exit-app', function(event, arg) {
+ipc.on('exit-app', function(event) {
   App.quit();
 });
 
@@ -106,7 +106,7 @@ ipc.on('settings-updated', function(event, arg) {
 
 ipc.on('fatal-error', function(event, arg) {
   dialog.showErrorBox(i18n.__('app.fatal_error'), arg.message);
-  settingsUpdated = false;
+  settingsToBeApplied = null;
   App.quit();
 });
 

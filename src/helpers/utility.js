@@ -74,11 +74,11 @@ var utility = function() {
         return cbMain();
       });
     });
-    
+
     source.on('error', function(err) {
       return cbMain(new AppError(err, 'There was an error while moving the file.'));
     });
-  }
+  };
 
   return {
     echo: echo,

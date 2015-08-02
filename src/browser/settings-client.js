@@ -33,7 +33,7 @@ var SettingsClient = function() {
     btnSubmit.addEventListener('click', evtSaveClicked);
 
     for(var i = 0; i !== allTabAnchors.length; ++i) {
-      allTabAnchors[i].addEventListener('click', evtTabClicked)
+      allTabAnchors[i].addEventListener('click', evtTabClicked);
     }
 
     var btnChooseDialog = dlg.querySelector('#btnChooseDbLocation_7');
@@ -45,7 +45,7 @@ var SettingsClient = function() {
     btnSubmit.removeEventListener('click', evtSaveClicked);
 
     for(var i = 0; i !== allTabAnchors.length; ++i) {
-      allTabAnchors[i].removeEventListener('click', evtTabClicked)
+      allTabAnchors[i].removeEventListener('click', evtTabClicked);
     }
   }
 
@@ -55,7 +55,7 @@ var SettingsClient = function() {
     showActiveTab(event.target);
   }
 
-  function evtSaveClicked(event) {
+  function evtSaveClicked() {
     // TODO Show loading screen
     // TODO Perform validations
     var newSettings = readSettings();
@@ -64,7 +64,7 @@ var SettingsClient = function() {
       if(err) {
         hadError = true;
       }
-      settingsAppliedInfo(hadError, requiresRestart)
+      settingsAppliedInfo(hadError, requiresRestart);
     });
   }
 
@@ -139,6 +139,6 @@ var SettingsClient = function() {
     init : init,
     destroy : destroy
   };
-}
+};
 
 module.exports = new SettingsClient();

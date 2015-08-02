@@ -87,7 +87,7 @@ var Notebooks = function() {
         var notebook = AppConfig.defaultNotebook;
         notebook.createdOn = new Date();
         notebook.modifiedOn = notebook.createdOn;
-        notebookDb.insert(notebook, function(err, data) {
+        notebookDb.insert(notebook, function(err) {
           if (err) {
             return cbMain(new AppError(err, i18n.__('errors.creating_default_notebook')));
           }
