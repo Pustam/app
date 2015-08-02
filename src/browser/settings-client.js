@@ -47,6 +47,8 @@ var SettingsClient = function() {
     for(var i = 0; i !== allTabAnchors.length; ++i) {
       allTabAnchors[i].removeEventListener('click', evtTabClicked);
     }
+
+    dlg.querySelector('#btnChooseDbLocation_7').removeEventListener('click', evtChooseFolder);
   }
 
   /** Events!! **/

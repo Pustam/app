@@ -8,6 +8,7 @@ var Settings = require(AppConfig.srcPath + 'settings.js');
 
 var i18n = require('i18n');
 var ipc = require('ipc');
+var shell = require('shell');
 
 var AppClient = function() {
   var init = function() {
@@ -54,8 +55,26 @@ var AppClient = function() {
       }
       var $dlg = jQuery('#dlgAbout');
       $dlg.modal('show');
-      addCloseEvent($dlg);
+      addAboutEvents();
+      addCloseEvent($dlg, removeAboutEvents);
     });
+  }
+
+  function showIssuesList(event) {
+    var href = event.target.getAttribute('href');
+    event.preventDefault();
+    if(href) {
+      shell.openExternal(href);
+    }
+  }
+
+  function removeAboutEvents() {
+    document.getElementById('9_lnkAppIssues').removeEventListener('click', showIssuesList);
+  }
+
+
+  function addAboutEvents() {
+    document.getElementById('9_lnkAppIssues').addEventListener('click', showIssuesList, false);
   }
 
   function exitApp() {
