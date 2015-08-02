@@ -279,7 +279,7 @@ var NotesClient = function() {
       note.focus();
     }
   }
-  
+
   /**
    * Adds the necessary class depending on whether the note is complete or
    * incomplete. It then calls the `saveNote` method to save the note.
@@ -313,6 +313,10 @@ var NotesClient = function() {
   function makeNoteEditable(note) {
     addEditableNoteEvents(note);
     currentlyFocusedNote = note;
+    // Completed notes are not editable.
+    if(currentlyFocusedNote.classList.contains(NOTE_COMPLETE_CLASS)) {
+      return;
+    }
     if (!currentlyFocusedNote.dataset.noteid) {
       turnOnEditing(currentlyFocusedNote);
       return;
