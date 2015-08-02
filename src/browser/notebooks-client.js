@@ -84,7 +84,7 @@ var NotebooksClient = function() {
           var notebookContents = document.getElementById(notebookContentID);
 
           // Generate the datepicker!
-          var $datePicker = jQuery(notebookContents.querySelector('.notebook-date')).datepicker({
+          jQuery(notebookContents.querySelector('.notebook-date')).datepicker({
             todayBtn: true,
             orientation: 'top',
             todayHighlight: true,
@@ -191,9 +191,9 @@ var NotebooksClient = function() {
       selectedDate = e.date;
       selectedDateInt = e.date.getTime();
       currentDateInt = new Date().setHours(0, 0, 0, 0);
-      notebookDbID = jQuery(this).data('notebookid');
-      if (!notebookDbID) {
-        // Notebook id not found!!
+      notebookDbID = jQuery(e.target).data('notebookid');
+      if (!notebookDbID) {        
+        // TODO - Notebook ID not found, throw error.
         return;
       }
 
