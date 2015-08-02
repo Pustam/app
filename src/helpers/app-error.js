@@ -44,7 +44,7 @@ AppError.prototype.log = function() {
   errorString += END_OF_LOG_DIVIDER;
   var that = this;
   if (AppConfig.isDevelopment) {
-    showAlert(AppConfig.EOL + errorString, 'You moron, fix this error!');    
+    showAlert(AppConfig.EOL + errorString, 'You moron, fix this error!');
   }
   fs.appendFile(AppConfig.logPath + 'error.log', errorString, function(err) {
     if (err) {
@@ -59,7 +59,7 @@ AppError.prototype.log = function() {
 };
 
 function showAlert(msg, title) {
-  if(!window) {
+  if(typeof window === 'undefined') {
     return;
   }
   window.alert(msg, title);

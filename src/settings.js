@@ -7,16 +7,13 @@ var ipc = require('ipc');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
 var i18n = require('i18n');
 
-
 var appSettings = null;
-var newSettingsToApply = {};
 
 var Settings = function() {
-  // TODO Test the whole flow, with all conditions.
-  var loadSettings = function() {
+    var loadSettings = function() {
     try {
       var jsonStrSettings = fs.readFileSync(AppConfig.settingsPath);
-      if(jsonStrSettings.trim().length === 0) {
+      if(jsonStrSettings && jsonStrSettings.toString().trim().length === 0) {
         // Empty settings, throw an error and let
         // the code handle it.
         var e = new Error('Empty settings!');
@@ -25,6 +22,7 @@ var Settings = function() {
       }
       appSettings = JSON.parse(jsonStrSettings);
     } catch (e) {
+      new AppError(e, 'Error while reading the settings.');
       appSettings = getDefaultSettings();
       if(e.code === 'ENOENT') {
         // Creating the settings file
@@ -36,8 +34,8 @@ var Settings = function() {
     }
   };
 
-  var getAppSettings = function() {
-    if(!appSettings) {
+  var getAppSettings = function(readFromFile) {
+    if(!appSettings || readFromFile) {
       loadSettings();
     }
     return appSettings;
@@ -61,8 +59,8 @@ var Settings = function() {
     });
   };
 
-  var updateAppSettings = function(cbMain) {
-    var oldSettings = getAppSettings();
+  var updateAppSettings = function(newSettingsToApply, cbMain) {
+    var oldSettings = getAppSettings(true);
     var settingsToApply = [];
     if(newSettingsToApply.dbLocation) {
       // Time to move the database.
@@ -72,13 +70,14 @@ var Settings = function() {
     }
 
     async.parallel(settingsToApply, function(err) {
+      settingsToApply = null;
       if(err) {
         // TODO Do not apply any settings! Maybe show an error!
         return cbMain(err);
       }
       // Normalize and write the settings to file.
       var finalSettings = normalizeSettings(oldSettings, newSettingsToApply);
-      newSettingsToApply = {};
+      newSettingsToApply = null;
       saveAppSettings(finalSettings, cbMain);
     });
   };
@@ -108,6 +107,7 @@ var Settings = function() {
     })
   }
 
+
   /**
    * Compares the new settings with the old ones, and performs necessary updates.
    * Called when the user clicks on Save in the settings dialog. Applies whatever
@@ -119,10 +119,14 @@ var Settings = function() {
   var updateSettings = function(newSettings, cbMain) {
     var oldSettings = getAppSettings();
     var requiresRestart = false;
+    var newSettingsToApply = {};
     if(newSettings.dbLocation !== oldSettings.dbLocation) {
       // Store the location of the new path and change when
       // app is about to restart.
-      newSettingsToApply.dbLocation = newSettings.dbLocation;
+      var newDbLocation = newSettings.dbLocation;
+      newDbLocation += path.sep;
+      newDbLocation = path.normalize(newDbLocation);
+      newSettingsToApply.dbLocation = newDbLocation;
       requiresRestart = true;
     }
 
@@ -152,8 +156,10 @@ var Settings = function() {
 
       if(requiresRestart) {
         // Hook the updateAppSettings to be called on restart.
-        ipc.send('settings-updated');
+        var arg = { newSettings : newSettingsToApply };
+        ipc.send('settings-updated', arg);
       }
+      newSettingsToApply = null;
       cbMain(null, requiresRestart);
     });
   }

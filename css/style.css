@@ -267,6 +267,11 @@ Div that contains each notes.
 #dlgSettings .settings-info {
 	padding:15px;
 }
+#pSettingsInfo_7 {
+	font-size: 14px;
+	font-weight: bold;
+	padding: 10px;
+}
 /**
  * End of settings dialog.
  */

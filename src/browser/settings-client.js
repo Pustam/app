@@ -1,11 +1,13 @@
 var Settings = require(AppConfig.srcPath + 'settings.js');
 var i18n = require('i18n');
+var remote = require('remote');
+var dialog = remote.require('dialog');
 
 var SettingsClient = function() {
   var dlg = null;
   var allTabs = null;
   var allTabAnchors = null;
-  var defaultMsgClass = 'settings-info';
+  var defaultMsgClass = 'alert';
 
   var init = function(dlgRef) {
     dlg = dlgRef;
@@ -33,6 +35,9 @@ var SettingsClient = function() {
     for(var i = 0; i !== allTabAnchors.length; ++i) {
       allTabAnchors[i].addEventListener('click', evtTabClicked)
     }
+
+    var btnChooseDialog = dlg.querySelector('#btnChooseDbLocation_7');
+    btnChooseDialog.addEventListener('click', evtChooseFolder);
   }
 
   function removeEventHandlers() {
@@ -61,6 +66,16 @@ var SettingsClient = function() {
       }
       settingsAppliedInfo(hadError, requiresRestart)
     });
+  }
+
+  function evtChooseFolder(event) {
+    var path = dialog.showOpenDialog(null, {
+      properties : ['openDirectory', 'createDirectory']
+    });
+    if(path !== 'undefined') {
+        document.getElementById('hdnDbLocation_7').value = path;
+        document.getElementById('preDbLocation_7').innerHTML = path;
+    }
   }
   /** End of events!! **/
 
@@ -107,13 +122,13 @@ var SettingsClient = function() {
     var msgToShow = '';
     settingInfo.className = 'hidden';
     if(hadError) {
-      classToUse = ' text-danger bg-danger';
+      classToUse += ' alert-danger';
       msgToShow = i18n.__('settings.settings_error');
     } else if(requiresRestart) {
-      classToUse = ' text-info bg-info';
+      classToUse += ' alert-info';
       msgToShow = i18n.__('settings.settings_applied_restart');
     } else {
-      classToUse = ' text-success bg-success';
+      classToUse += ' alert-success';
       msgToShow = i18n.__('settings.settings_applied');
     }
     settingInfo.className = classToUse;

@@ -15,7 +15,13 @@ var Settings = require(AppConfig.srcPath + 'settings.js');
 // Keep a global reference of the window object, to avoid GC and close.
 var mainWindow = null;
 
-var settingsUpdated = false;
+// Keep a track of whether the settings have changed.
+// Some settings need to be applied at application
+// close.
+var settingsToBeApplied = null;
+
+// Let's load the settings first!
+Settings.loadSettings();
 
 // Quit when all windows are closed.
 App.on('window-all-closed', function() {
@@ -26,8 +32,6 @@ App.on('window-all-closed', function() {
 });
 
 App.on('ready', function() {
-  Settings.loadSettings();
-
   var settings = Settings.getAppSettings();
 
   // Create the browser window.
@@ -52,14 +56,17 @@ App.on('ready', function() {
 
   // and load the index.html of the app.
   mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'loading.html');
-  NotesApp.init(function(err) {
-    if (err) {
-      // TODO Load error html.
-      return;
-    }
-    mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'index.html');
-  });
 
+  setTimeout(function() {
+    NotesApp.init(function(err) {
+      if (err) {
+        // TODO Load error html.
+        return;
+      }
+      mainWindow.loadUrl('file://' + AppConfig.htmlPath + 'index.html');
+    });
+    // TODO See if you can eventually come up with a better alternative!
+  }, 500);
 
   mainWindow.on('closed', function() {
     // Delete the corresponding element.
@@ -68,16 +75,16 @@ App.on('ready', function() {
 });
 
 App.on('will-quit', function(event) {
-  if(settingsUpdated) {
+  if(settingsToBeApplied) {
     // Settings have been updated, apply the settings
     // and close the app.
     event.preventDefault();
-    Settings.updateAppSettings(function() {
-      settingsUpdated = false;
+    Settings.updateAppSettings(settingsToBeApplied, function() {
+      settingsToBeApplied = null;
       App.quit();
     });
   } else {
-    settingsUpdated = null;
+    settingsToBeApplied = null;
   }
 });
 
@@ -94,7 +101,7 @@ ipc.on('update-shortcut', function(event, arg) {
 });
 
 ipc.on('settings-updated', function(event, arg) {
-  settingsUpdated = true;
+  settingsToBeApplied = arg.newSettings;
 });
 
 ipc.on('fatal-error', function(event, arg) {

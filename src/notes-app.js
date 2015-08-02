@@ -14,19 +14,6 @@ var Settings = require(AppConfig.srcPath + 'settings.js');
 var NotesApp = function() {
   var dbObjs = {};
 
-  // Generate the db storage locations based on settings.
-  var settings = Settings.getAppSettings();
-  var dbBasePath = settings.dbLocation;
-
-  if(!dbBasePath) {
-    dbBasePath = AppConfig.database.path;
-  }
-
-  var dbPaths = {
-    notesDb: dbBasePath + AppConfig.database.notes,
-    notebookDb: dbBasePath + AppConfig.database.notebooks
-  };
-
   /**
    * Called when the application starts.
    * - Checks if the databases are present, if not creates and
@@ -34,6 +21,19 @@ var NotesApp = function() {
    * - Checks if the default data is present in the database.
    */
   var init = function(cbMain) {
+    // Generate the db storage locations based on settings.
+    var settings = Settings.getAppSettings();
+    var dbBasePath = settings.dbLocation;
+
+    if(!dbBasePath) {
+      dbBasePath = AppConfig.database.path;
+    }
+
+    var dbPaths = {
+      notesDb: dbBasePath + AppConfig.database.notes,
+      notebookDb: dbBasePath + AppConfig.database.notebooks
+    };
+
     // Check for databases and load them as needed.
     async.each(Object.keys(dbPaths), function(dbName, callback) {
       var dbPath = dbPaths[dbName];
@@ -89,7 +89,7 @@ var NotesApp = function() {
       // TODO : highlight first note.
       mainWindow.show();
     }
-  }
+  };
 
   return {
     init: init,
