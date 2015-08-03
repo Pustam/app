@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var AppConfig = require(__dirname + '/../config.js');
 var AppUtil = require(AppConfig.helperPath + 'utility.js');
@@ -22,7 +24,7 @@ var Settings = function() {
       }
       appSettings = JSON.parse(jsonStrSettings);
     } catch (e) {
-      AppError(e, 'Error while reading the settings.');
+      var err = new AppError(e, 'Error while reading the settings.');
       appSettings = getDefaultSettings();
       if(e.code === 'ENOENT') {
         // Creating the settings file

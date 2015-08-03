@@ -72,7 +72,6 @@ var AppClient = function() {
     document.getElementById('9_lnkAppIssues').removeEventListener('click', showIssuesList);
   }
 
-
   function addAboutEvents() {
     document.getElementById('9_lnkAppIssues').addEventListener('click', showIssuesList, false);
   }

@@ -116,6 +116,7 @@ var NotesClient = function() {
   function removeNoteEvents(note) {
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
+    note.removeEventListener('keydown', evtNoteKeyDown);
     note = null;
   }
 
@@ -164,6 +165,14 @@ var NotesClient = function() {
     }
   }
 
+  function evtNoteKeyDown(event) {
+    if(event.ctrlKey === true) {
+      if(isNoteEditable(event.target)) {
+        return;
+      }
+    }
+  }
+
   /**
    * Saves and creates a note. This is called when the user presses
    * Shift + Enter. Calls `saveNote` and the calls `addNewNote`
@@ -183,8 +192,16 @@ var NotesClient = function() {
     }
   }
 
+  /**
+   * Checks if a note is editable
+   * @param  {Object}  note The note element
+   * @return {Boolean}      Returns true if the note is editable, else false
+   */
   function isNoteEditable(note) {
-    return note.getAttribute('contenteditable') === true;
+    if(!note) {
+      return false;
+    }
+    return note.getAttribute('contenteditable') === "true";
   }
 
   /**
@@ -425,6 +442,7 @@ var NotesClient = function() {
     // key's pressed.
     if(isEditable) {
       currNote.addEventListener('keypress', evtNoteKeyPress, false);
+      currNote.addEventListener('keydown', evtNoteKeyDown, false);
     }
 
     return currNote;

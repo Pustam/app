@@ -1,3 +1,5 @@
+'use strict';
+
 var Settings = require(AppConfig.srcPath + 'settings.js');
 var i18n = require('i18n');
 var remote = require('remote');
