@@ -13,4 +13,12 @@ var options = {
     "node_modules/grunt", "node_modules/grunt-jsbeautifier"]
 }
 
-packager(options, function done (err, appPath) { })
+packager(options, function done (err, appPath) {
+  if(err) {
+    console.log('There was an error while building the release.')
+    console.log('\n------- ERROR ------- \n');
+    console.log(err);
+  } else {
+    console.log('SUCCESS ---- Application built!');
+  }
+})
