@@ -7,7 +7,7 @@ var AppConfig = {
 	browserSrcPath: __dirname + '/src/browser/',
 	helperPath : __dirname + '/src/helpers/',
 	srcPath : __dirname + '/src/',
-	isDevelopment: false,
+	isDevelopment: true,
 	database: {
 		path: __dirname + '/db/',
 		notes: 'notes.db',

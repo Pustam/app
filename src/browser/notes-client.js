@@ -4,6 +4,7 @@
 'use strict';
 
 var Notes = require(AppConfig.srcPath + 'notes.js');
+var NoteEvents = require(AppConfig.browserSrcPath + 'lib/note-events.js');
 var marked = require('marked');
 var AppError = require(AppConfig.helperPath + 'app-error.js');
 var i18n = require('i18n');
@@ -106,6 +107,7 @@ var NotesClient = function() {
   function addEditableNoteEvents(note) {
     // Blur - Save
     note.addEventListener('blur', evtNoteBlur, false);
+    NoteEvents.addEvents(note);
   }
 
   /**
@@ -117,6 +119,7 @@ var NotesClient = function() {
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
     note.removeEventListener('keydown', evtNoteKeyDown);
+    NoteEvents.deleteEvents(note);
     note = null;
   }
 
@@ -161,14 +164,8 @@ var NotesClient = function() {
         // Ctrl + E - Need to make the note editable
         makeNoteEditable(event.target);
         event.preventDefault();
-      }
-    }
-  }
-
-  function evtNoteKeyDown(event) {
-    if(event.ctrlKey === true) {
-      if(isNoteEditable(event.target)) {
-        return;
+      } else if(event.which ===2222 ) {
+        makeTextBold(event.target);
       }
     }
   }
@@ -304,6 +301,9 @@ var NotesClient = function() {
    * @return {undefined}      No return type.
    */
   function markNoteAsComplete(note) {
+    if(isNoteEditable(note)) {
+      return;
+    }
     var isComplete = false;
     try {
       if (!note.innerText) {
@@ -328,6 +328,9 @@ var NotesClient = function() {
   }
 
   function makeNoteEditable(note) {
+    if(isNoteEditable(note)) {
+      return;
+    }
     addEditableNoteEvents(note);
     currentlyFocusedNote = note;
     // Completed notes are not editable.
@@ -348,6 +351,12 @@ var NotesClient = function() {
           turnOnEditing(currentlyFocusedNote);
         }
     });
+  }
+
+  function makeTextBold(note) {
+    debugger;
+    // 1. Find the selected text
+    // 2, Wrap it in * *
   }
 
   function turnOnEditing(note) {
@@ -442,7 +451,6 @@ var NotesClient = function() {
     // key's pressed.
     if(isEditable) {
       currNote.addEventListener('keypress', evtNoteKeyPress, false);
-      currNote.addEventListener('keydown', evtNoteKeyDown, false);
     }
 
     return currNote;
