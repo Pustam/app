@@ -1,4 +1,10 @@
 var packager = require('electron-packager');
+var config = require(__dirname + '/../config.js');
+
+if(config.isDevelopment) {
+  console.log('Development mode is still on!!');
+  return;
+}
 
 var options = {
   "dir" : ".",
@@ -7,10 +13,11 @@ var options = {
   "version" : "0.30.1",
   "out" : "/home/abijeet/Projects/markdown-notes/releases/",
   "icon" : "/home/abijeet/Pictures/markdown-notes-ico.png",
-  "app-version" : "0.1.3",
+  "app-version" : "0.2.0",
   "arch" : "x64",
-  "ignore" : ["settings.json", "utils", "Gruntfile.js", ".bowerrc",
-    "node_modules/grunt", "node_modules/grunt-jsbeautifier"]
+  "ignore" : ["settings.json", "markdown-notes/utils", "Gruntfile.js", ".bowerrc",
+    "node_modules/grunt", "node_modules/grunt-jsbeautifier", "logs/error.log"],
+  "overwrite" : true
 }
 
 packager(options, function done (err, appPath) {
