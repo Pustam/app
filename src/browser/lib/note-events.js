@@ -20,11 +20,12 @@ var NoteEvents = function() {
       if(event.which === 66) {
         // Bold
         handleTextModifier(event.target, TEXT_MODIFIERS.BOLD);
+        event.preventDefault();
       } else if(event.which === 73) {
         // Italics
         handleTextModifier(event.target, TEXT_MODIFIERS.ITALICS);
+        event.preventDefault();
       }
-      event.preventDefault();
     }
   }
 
