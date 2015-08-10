@@ -118,7 +118,6 @@ var NotesClient = function() {
   function removeNoteEvents(note) {
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
-    note.removeEventListener('keydown', evtNoteKeyDown);
     NoteEvents.deleteEvents(note);
     note = null;
   }

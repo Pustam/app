@@ -1,10 +1,12 @@
 {
   "name"    : "markdown-notes",
-  "version" : "0.1.3",
+  "version" : "0.2.0",
   "main"    : "src/renderer/main.js",
   "contributors" : [
     "Abijeet Patro"
   ],
+  "license": "MIT",
+  "author": "Abijeet Patro <abijeetpatro@gmail.com> (http://www.thecurlybraces.com)",
   "repository": {
     "type": "git",
     "url": "https://github.com/markdown-note/markdown-notes.git"
