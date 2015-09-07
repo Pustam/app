@@ -6,20 +6,19 @@
     </title>
     <link rel="stylesheet" href="../css/bootstrap-lumen.css">
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../dist/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"></link>
-    <link rel="stylesheet" href="../dist/font-awesome/css/font-awesome.css"></link>
-    <link rel="stylesheet" href="../dist/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
+    <link rel="stylesheet" href="../../dist/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"></link>
+    <link rel="stylesheet" href="../../dist/font-awesome/css/font-awesome.css"></link>
+    <link rel="stylesheet" href="../../dist/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
     <script>
       // Plugins/Modules
       window.$ = window.jQuery = require('jquery');
 
       // Custom loads
-      var AppConfig = require('../config.js');
-      var AppUtil = require(AppConfig.helperPath + 'utility.js');
-      var MainScript = require(AppConfig.browserSrcPath + 'index.js');
+      var _appConfig = require(__dirname + '/../../config.js');
     </script>
-    <script type="text/javascript" src="../dist/bootstrap/dist/js/bootstrap.js"></script>
-    <script type="text/javascript" src="../dist/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="../../dist/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../dist/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="../browser/index.js"></script>
   </head>
   <body class="main">
     <section class="col-md-2">

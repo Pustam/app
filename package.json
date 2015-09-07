@@ -1,7 +1,7 @@
 {
   "name"    : "markdown-notes",
-  "version" : "0.2.0",
-  "main"    : "src/renderer/main.js",
+  "version" : "0.2.1",
+  "main"    : "src/renderer/markdown-notes.js",
   "contributors" : [
     "Abijeet Patro"
   ],

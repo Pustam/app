@@ -1,19 +1,26 @@
-/*global AppConfig */
-/*jshint esnext: true */
-
 'use strict';
+var _i18n = require('i18n');
+var _marked = require('marked');
 
-var Notes = require(AppConfig.srcPath + 'notes.js');
-var NoteEvents = require(AppConfig.browserSrcPath + 'lib/note-events.js');
-var marked = require('marked');
-var AppError = require(AppConfig.helperPath + 'app-error.js');
-var i18n = require('i18n');
+var _appConfig = require(__dirname + '/../../../config.js');
+var _notes = require(_appConfig.browserSrcPath + 'notes/note.js');
+var _noteEvents = require(_appConfig.browserSrcPath + 'notes/note-events.js');
+var _noteEditor = require(_appConfig.browserSrcPath + 'notes/note-editor.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
 
-var NotesClient = function() {
-  const NOTE_COMPLETE_CLASS = 'complete';
-  const DEFAULT_NOTE_CLASS = 'note';
-  const NOTE_NOT_EDITABLE_CLASS = 'readonly';
+var NoteClient = function() {
   var currentlyFocusedNote = null;
+
+  function _init() {
+    // Initialize note events with callback events.
+    _noteEvents.init({
+      saveNote : saveNote,
+      markNoteAsComplete : markNoteAsComplete,
+      saveAndCreateNote : saveAndCreateNote,
+      deleteNote : deleteNote,
+      makeNoteEditable : makeNoteEditable
+    });
+  }
 
   /**
    * Used to generate the note elements inside a notebook. Whenever the user
@@ -27,7 +34,7 @@ var NotesClient = function() {
   var buildNotes = function(notes, notebookDbID, notebookContainer, isEditable) {
     if (!notebookContainer) {
       notebookContainer =
-        document.getElementById(AppConfig.getNotebookContentID(notebookDbID));
+        document.getElementById(_appConfig.getNotebookContentID(notebookDbID));
     }
 
     if (isEditable === undefined) {
@@ -36,7 +43,7 @@ var NotesClient = function() {
 
     var notebooksContainer = notebookContainer.querySelector('.notes-container');
     if (!notebooksContainer) {
-      throw new Error(i18n.__('error.notebook_container_not_found'));
+      throw new Error(_i18n.__('error.notebook_container_not_found'));
     }
     if (notes.length === 0) {
 
@@ -60,7 +67,7 @@ var NotesClient = function() {
       throw new ReferenceError('Notebook ID not provided!');
     }
     if (!notebookContainer) {
-      var notebookID = AppConfig.getNotebookContentID(notebookDbID);
+      var notebookID = _appConfig.getNotebookContentID(notebookDbID);
       notebookContainer = document.getElementById(notebookID);
     }
 
@@ -72,102 +79,18 @@ var NotesClient = function() {
     makeNoteEditable(currNote);
   };
 
-
   var removeNotesFromNotebook = function(notebookDbID) {
     if (!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
-    var notebookID = AppConfig.getNotebookContentID(notebookDbID);
+    var notebookID = _appConfig.getNotebookContentID(notebookDbID);
     var notebookContainer = document.getElementById(notebookID);
-    removeAllNoteEvents(notebookContainer);
+    _noteEvents.removeAllEvents(notebookContainer);
     var notesContainer = notebookContainer.querySelector('.notes-container');
     while (notesContainer.firstChild) {
       notesContainer.removeChild(notesContainer.firstChild);
     }
   };
-
-  /**
-   * Cleanup function, removes all the events from the all notes inside a
-   * given notebook. Calls `removeNoteEvents`.
-   * @param  {Object} notebookContainer Notebook container HTML element
-   * @return {undefined}                No return type
-   */
-  var removeAllNoteEvents = function(notebookContainer) {
-    var allNotes = notebookContainer.querySelectorAll('.note');
-    for (var i = 0; i !== allNotes.length; ++i) {
-      removeNoteEvents(allNotes[i]);
-    }
-    allNotes = null;
-  };
-
-  /**
-   * Used to add events to the note element that has been created.
-   * @param {Object} note HTML note element
-   */
-  function addEditableNoteEvents(note) {
-    // Blur - Save
-    note.addEventListener('blur', evtNoteBlur, false);
-    NoteEvents.addEvents(note);
-  }
-
-  /**
-   * Removes events from an individual note.
-   * @param  {Object} note HTML note element
-   * @return {undefined}   No return type.
-   */
-  function removeNoteEvents(note) {
-    note.removeEventListener('blur', evtNoteBlur);
-    note.removeEventListener('keypress', evtNoteKeyPress);
-    NoteEvents.deleteEvents(note);
-    note = null;
-  }
-
-
-  /**
-   * Fired whenever focus is lost on a note. Then calls `saveNote`
-   * @param  {Object} event Event object
-   * @return {undefined}    No return type.
-   */
-  function evtNoteBlur(event) {
-    saveNote(event.target, true);
-  }
-
-  /**
-   * Fires whenever a key is pressed in the note event. Checks if Shift + Enter
-   * has been pressed, if so calls the `saveAndCreateNote`,
-   * if Ctrl + S has been pressed, if so calls `saveNote`
-   * @param  {Object} event Event object
-   * @return {undefined}    No return type.
-   */
-  function evtNoteKeyPress(event) {
-    if(event.ctrlKey === true && event.shiftKey === true) {
-      if (event.which === 3) {
-         // Ctrl + Shift + C - Mark note as complete.
-         markNoteAsComplete(event.target);
-         event.preventDefault();
-       }
-    } else if(event.ctrlKey === true) {
-      if (event.which === 19) {
-        // Ctrl + S - Need to save...
-        saveNote(event.target, false);
-        event.preventDefault();
-      } else if (event.which === 14) {
-        // Ctrl + N - Need to save and create a new note.
-        saveAndCreateNote(event.target);
-        event.preventDefault();
-      } else if (event.which === 4) {
-        // Ctrl + D - Need to delete the note
-        deleteNote(event.target);
-        event.preventDefault();
-      } else if (event.which === 5) {
-        // Ctrl + E - Need to make the note editable
-        makeNoteEditable(event.target);
-        event.preventDefault();
-      } else if(event.which ===2222 ) {
-        makeTextBold(event.target);
-      }
-    }
-  }
 
   /**
    * Saves and creates a note. This is called when the user presses
@@ -178,26 +101,14 @@ var NotesClient = function() {
   function saveAndCreateNote(note) {
     var notebookID = note.dataset.notebookid;
     try {
-      if(isNoteEditable(note)) {
-          saveNote(note, true);
+      if (_noteEditor.isEditable(note)) {
+        saveNote(note, true);
       }
       addNewNote(notebookID);
     } catch (e) {
-      var errObj = new AppError(e, i18n.__('error.save_and_create_note'));
+      var errObj = new _appError(e, _i18n.__('error.save_and_create_note'));
       errObj.display();
     }
-  }
-
-  /**
-   * Checks if a note is editable
-   * @param  {Object}  note The note element
-   * @return {Boolean}      Returns true if the note is editable, else false
-   */
-  function isNoteEditable(note) {
-    if(!note) {
-      return false;
-    }
-    return note.getAttribute('contenteditable') === "true";
   }
 
   /**
@@ -215,20 +126,20 @@ var NotesClient = function() {
         var noteObj = createNoteObjFromElement(note, isBlur, isNoteComplete);
         if (noteID && notebookID) {
           // Update
-          Notes.modifyNote(noteObj, false, cbModifiedNote);
+          _notes.modifyNote(noteObj, false, cbModifiedNote);
         } else if (notebookID) {
           // Insert
-          Notes.modifyNote(noteObj, true, function(err, noteObj) {
+          _notes.modifyNote(noteObj, true, function(err, noteObj) {
             if (noteObj) {
               noteObj.noteElem.dataset.noteid = noteObj._id;
             }
             cbModifiedNote(err, noteObj);
           });
         } else {
-          throw new Error(i18n.__('error.savenote_invalid_call'));
+          throw new Error(_i18n.__('error.savenote_invalid_call'));
         }
       } catch (e) {
-        var errObj = new AppError(e, i18n.__('error.notes_modification_err'));
+        var errObj = new _appError(e, _i18n.__('error.notes_modification_err'));
         errObj.display();
       }
     }
@@ -242,22 +153,22 @@ var NotesClient = function() {
    */
   function deleteNote(note) {
     try {
-      var respConfirm = window.confirm(i18n.__('note.deletion_confirmation_text'),
-        i18n.__('note.deletion_confirmation_title'));
+      var respConfirm = window.confirm(_i18n.__('note.deletion_confirmation_text'),
+        _i18n.__('note.deletion_confirmation_title'));
       if (!respConfirm) {
         return;
       }
       var noteID = note.dataset.noteid;
       if (noteID) {
-        Notes.deleteNote(noteID, function(err) {
+        _notes.deleteNote(noteID, function(err) {
           if (err) {
-            var errObj = new AppError(err, i18n.__('error.notes_deletion_err'));
+            var errObj = new _appError(err, _i18n.__('error.notes_deletion_err'));
             errObj.display();
             return;
           }
         });
       }
-      removeNoteEvents(note);
+      _noteEvents.removeAllEvents(note);
 
       if (note.parentNode) {
         // Find a note to focus
@@ -265,13 +176,13 @@ var NotesClient = function() {
         if (note.parentNode.nextElementSibling) {
           // Does it have a next sibling??
           parentNodeOfNote = note.parentNode.nextElementSibling;
-        } else if(note.parentNode.previousElementSibling) {
+        } else if (note.parentNode.previousElementSibling) {
           // Does not have a next sibling, does it have
           // a previous sibling??
           parentNodeOfNote = note.parentNode.previousElementSibling;
         }
 
-        if(parentNodeOfNote) {
+        if (parentNodeOfNote) {
           // Now focus that note.
           focusNoteInParent(parentNodeOfNote);
         }
@@ -281,14 +192,14 @@ var NotesClient = function() {
         note.remove();
       }
     } catch (e) {
-      var appErrObj = new AppError(e, i18n.__('error.notes_deletion_err'));
+      var appErrObj = new _appError(e, _i18n.__('error.notes_deletion_err'));
       appErrObj.display();
     }
   }
 
   function focusNoteInParent(noteParent) {
     var note = noteParent.querySelector('.note');
-    if(note) {
+    if (note) {
       note.focus();
     }
   }
@@ -300,26 +211,9 @@ var NotesClient = function() {
    * @return {undefined}      No return type.
    */
   function markNoteAsComplete(note) {
-    if(isNoteEditable(note)) {
+    var isComplete = _noteEditor.isComplete(note);
+    if(!_noteEditor.markAsComplete(note)) {
       return;
-    }
-    var isComplete = false;
-    try {
-      if (!note.innerText) {
-        // TODO Maybe show a message stating that an empty note
-        // can't be marked as complete.
-        return;
-      }
-      // Toggle the classes as necessary.
-      if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
-        isComplete = true;
-        note.classList.remove(NOTE_COMPLETE_CLASS);
-      } else {
-        note.classList.add(NOTE_COMPLETE_CLASS);
-      }
-    } catch (e) {
-      var appErrObj = new AppError(e, i18n.__('error.mark_note_complete'));
-      appErrObj.display();
     }
     // Save the note, it will update the note or create it.
     // This will also mark it as complete or mark it as uncomplete.
@@ -327,53 +221,29 @@ var NotesClient = function() {
   }
 
   function makeNoteEditable(note) {
-    if(isNoteEditable(note)) {
+    if (_noteEditor.isEditable(note)) {
       return;
     }
-    addEditableNoteEvents(note);
+    _noteEvents.addEditableEvents(note);
     currentlyFocusedNote = note;
     // Completed notes are not editable.
-    if(currentlyFocusedNote.classList.contains(NOTE_COMPLETE_CLASS)) {
+    if (_noteEditor.isComplete(currentlyFocusedNote)) {
       return;
     }
     if (!currentlyFocusedNote.dataset.noteid) {
-      turnOnEditing(currentlyFocusedNote);
+      _noteEditor.turnOnEditing(currentlyFocusedNote);
       return;
     }
     // Fetch the content of the note.
-    Notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
+    _notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
       function(err, noteObj) {
         if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
           // the note is still selected.
           currentlyFocusedNote.innerHTML = "";
           currentlyFocusedNote.innerText = noteObj.text;
-          turnOnEditing(currentlyFocusedNote);
+          _noteEditor.turnOnEditing(currentlyFocusedNote);
         }
-    });
-  }
-
-  function makeTextBold(note) {
-    debugger;
-    // 1. Find the selected text
-    // 2, Wrap it in * *
-  }
-
-  function turnOnEditing(note) {
-    note.setAttribute('contenteditable', true);
-    note.focus();
-
-    // Now set the cursor at the end.
-    var range = document.createRange();
-    range.selectNodeContents(note);
-    range.collapse(false);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
-  function turnOffEditing(note) {
-    note.setAttribute('contenteditable', false);
-    note.removeEventListener('blur', evtNoteBlur);
+      });
   }
 
   /**
@@ -396,21 +266,19 @@ var NotesClient = function() {
       noteObj._id = note.dataset.noteid;
     }
 
-    if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
+    if (_noteEditor.isComplete(note)) {
       noteObj.isComplete = true;
     } else {
       noteObj.isComplete = false;
     }
 
-    if (isNoteComplete !== undefined) {
-      if (isNoteComplete === true) {
-        noteObj.completedOn = new Date();
-      } else {
-        noteObj.completedOn = null;
-      }
+    if (isNoteComplete === true) {
+      noteObj.completedOn = new Date();
+    } else {
+      noteObj.completedOn = null;
     }
 
-    var notebookElemID = AppConfig.getNotebookContentID(note.dataset.notebookid);
+    var notebookElemID = _appConfig.getNotebookContentID(note.dataset.notebookid);
     var notebookDate = jQuery('#' + notebookElemID).find('.notebook-date').datepicker('getDate');
 
     // We need to store this to filter future date!
@@ -438,7 +306,7 @@ var NotesClient = function() {
     }
 
     // Create the inner elements.
-    noteContainer.innerHTML = getNoteHTML(notebookDbID, note, isEditable);
+    noteContainer.innerHTML = _noteEditor.getNoteHTML(notebookDbID, note, isEditable);
 
     // Add it to the notes container
     notebooksContainer.appendChild(noteContainer);
@@ -448,42 +316,14 @@ var NotesClient = function() {
 
     // Keyup event - Perform action according to the
     // key's pressed.
-    if(isEditable) {
-      currNote.addEventListener('keypress', evtNoteKeyPress, false);
+    if (isEditable) {
+      _noteEvents.addEvents(currNote);
     }
 
     return currNote;
   }
 
-  /**
-   * Returns the HTML for a new note. Adds default values if `note` object
-   * is null.
-   * @param  {String} notebookDbID Notebook ID
-   * @param  {Object} note         The note object from the database
-   * @return {String}              HTML String for note
-   */
-  function getNoteHTML(notebookDbID, note, isEditable) {
-    var noteText = '';
-    var noteID = '';
-    var noteClasses = DEFAULT_NOTE_CLASS;
-
-    if (note) {
-      noteText = marked(note.text);
-      noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +
-        NOTE_COMPLETE_CLASS) : DEFAULT_NOTE_CLASS;
-      noteID = 'data-noteid="' + note._id + '"';
-    }
-
-    if (!isEditable) {
-      noteClasses += ' ' + NOTE_NOT_EDITABLE_CLASS;
-    }
-    return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
-      notebookDbID + '" tabindex="0">' + noteText +
-      '</div><div class="pull-right note-footer"></div>';
-  }
-
   // START of CALLBACKS
-
   /**
    * Callback triggered after a note is saved in the database.
    * @param  {AppError} err   App Error object or null if no error
@@ -492,7 +332,7 @@ var NotesClient = function() {
    */
   function cbModifiedNote(err, noteObj) {
     if (err) {
-      var errObj = new AppError(err, i18n.__('error.notes_modification_err'));
+      var errObj = new _appError(err, _i18n.__('error.notes_modification_err'));
       errObj.display();
       return;
     }
@@ -509,18 +349,18 @@ var NotesClient = function() {
    */
   function checkIfBlur(noteObj) {
     if (noteObj.isBlur && noteObj.noteElem) {
-      var noteHtml = marked(noteObj.text);
+      var noteHtml = _marked(noteObj.text);
       noteObj.noteElem.innerHTML = noteHtml;
-      turnOffEditing(noteObj.noteElem);
+      _noteEditor.turnOffEditing(noteObj.noteElem);
     }
   }
 
   return {
     buildNotes: buildNotes,
     addNewNote: addNewNote,
-    removeAllNoteEvents: removeAllNoteEvents,
-    removeNotesFromNotebook: removeNotesFromNotebook
+    removeNotesFromNotebook: removeNotesFromNotebook,
+    init : _init
   };
 };
 
-module.exports = NotesClient();
+module.exports = new NoteClient();

@@ -1,21 +1,23 @@
 'use strict';
 
-var fs = require('fs');
-var AppConfig = require(__dirname + '/../config.js');
-var AppUtil = require(AppConfig.helperPath + 'utility.js');
-var path =  require('path');
-var async = require('async');
-var ipc = require('ipc');
-var AppError = require(AppConfig.helperPath + 'app-error.js');
-var i18n = require('i18n');
+var _fs = require('fs');
+var _path = require('path');
+var _async = require('async');
+var _ipc = require('ipc');
+var _i18n = require('i18n');
 
-var appSettings = null;
+// Custom
+var _appConfig = require(__dirname + '/../../config.js');
+var _appUtil = require(_appConfig.commonsPath + 'utility.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
 
 var Settings = function() {
-    var loadSettings = function() {
+  var appSettings = null;
+
+  var loadSettings = function() {
     try {
-      var jsonStrSettings = fs.readFileSync(AppConfig.settingsPath);
-      if(jsonStrSettings && jsonStrSettings.toString().trim().length === 0) {
+      var jsonStrSettings = _fs.readFileSync(_appConfig.settingsPath);
+      if (jsonStrSettings && jsonStrSettings.toString().trim().length === 0) {
         // Empty settings, throw an error and let
         // the code handle it.
         var e = new Error('Empty settings!');
@@ -24,9 +26,9 @@ var Settings = function() {
       }
       appSettings = JSON.parse(jsonStrSettings);
     } catch (e) {
-      var err = new AppError(e, 'Error while reading the settings.');
+      var err = new _appError(e, 'Error while reading the settings.');
       appSettings = getDefaultSettings();
-      if(e.code === 'ENOENT') {
+      if (e.code === 'ENOENT') {
         // Creating the settings file
         saveAppSettings(appSettings);
       } else {
@@ -37,25 +39,25 @@ var Settings = function() {
   };
 
   var getAppSettings = function(readFromFile) {
-    if(!appSettings || readFromFile) {
+    if (!appSettings || readFromFile) {
       loadSettings();
     }
     return appSettings;
   };
 
   var saveAppSettings = function(settings, cbMain) {
-    if(!settings) {
-      return cbMain(new AppError(new Error('Invalid settings object passed!'),
+    if (!settings) {
+      return cbMain(new _appError(new Error('Invalid settings object passed!'),
         'Invalid settings object passed!'));
     }
     var settingsJSON = JSON.stringify(settings, null, 2);
-    fs.writeFile(AppConfig.settingsPath, settingsJSON, function(err) {
+    _fs.writeFile(_appConfig.settingsPath, settingsJSON, function(err) {
       var customErr = null;
-      if(err) {
-        customErr = new AppError(err, 'There was an error while storing the settings.');
+      if (err) {
+        customErr = new _appError(err, 'There was an error while storing the settings.');
       }
       appSettings = settings;
-      if(cbMain) {
+      if (cbMain) {
         return cbMain(customErr, null);
       }
     });
@@ -64,16 +66,16 @@ var Settings = function() {
   var updateAppSettings = function(newSettingsToApply, cbMain) {
     var oldSettings = getAppSettings(true);
     var settingsToApply = [];
-    if(newSettingsToApply.dbLocation) {
+    if (newSettingsToApply.dbLocation) {
       // Time to move the database.
       settingsToApply.push(function(next) {
         moveDbFiles(oldSettings.dbLocation, newSettingsToApply.dbLocation, next);
       });
     }
 
-    async.parallel(settingsToApply, function(err) {
+    _async.parallel(settingsToApply, function(err) {
       settingsToApply = null;
-      if(err) {
+      if (err) {
         // TODO Do not apply any settings! Maybe show an error!
         return cbMain(err);
       }
@@ -85,24 +87,25 @@ var Settings = function() {
   };
 
   function moveDbFiles(oldPath, newPath, cbMain) {
-    var oldNotesPath = path.normalize(oldPath + path.sep +
-      AppConfig.database.notes);
-    var newNotesPath = path.normalize(newPath + path.sep +
-      AppConfig.database.notes);
+    var oldNotesPath = _path.normalize(oldPath + _path.sep +
+      _appConfig.database.notes);
+    var newNotesPath = _path.normalize(newPath + _path.sep +
+      _appConfig.database.notes);
 
-    var oldNotebookPath = path.normalize(oldPath + path.sep +
-      AppConfig.database.notebooks);
-    var newNotebookPath = path.normalize(newPath + path.sep +
-      AppConfig.database.notebooks);
+    var oldNotebookPath = _path.normalize(oldPath + _path.sep +
+      _appConfig.database.notebooks);
+    var newNotebookPath = _path.normalize(newPath + _path.sep +
+      _appConfig.database.notebooks);
 
-    async.parallel([
+    _async.parallel([
       function(next) {
-        AppUtil.mvFile(oldNotesPath, newNotesPath, next);
-      }, function(next) {
-        AppUtil.mvFile(oldNotebookPath, newNotebookPath, next);
+        _appUtil.mvFile(oldNotesPath, newNotesPath, next);
+      },
+      function(next) {
+        _appUtil.mvFile(oldNotebookPath, newNotebookPath, next);
       }
     ], function(err) {
-      if(err) {
+      if (err) {
         return cbMain(err);
       }
       return cbMain();
@@ -122,24 +125,24 @@ var Settings = function() {
     var oldSettings = getAppSettings();
     var requiresRestart = false;
     var newSettingsToApply = {};
-    if(newSettings.dbLocation !== oldSettings.dbLocation) {
+    if (newSettings.dbLocation !== oldSettings.dbLocation) {
       // Store the location of the new path and change when
       // app is about to restart.
       var newDbLocation = newSettings.dbLocation;
-      newDbLocation += path.sep;
-      newDbLocation = path.normalize(newDbLocation);
+      newDbLocation += _path.sep;
+      newDbLocation = _path.normalize(newDbLocation);
       newSettingsToApply.dbLocation = newDbLocation;
       requiresRestart = true;
     }
 
-    if(newSettings.globalShortcut.toLowerCase() !==
+    if (newSettings.globalShortcut.toLowerCase() !==
       oldSettings.globalShortcut.toLowerCase()) {
       // Update the keystrokes
       var arg = {
-        old : oldSettings.globalShortcut,
-        new : newSettings.globalShortcut
+        old: oldSettings.globalShortcut,
+        new: newSettings.globalShortcut
       };
-      if(!ipc.sendSync('update-shortcut', arg)) {
+      if (!_ipc.sendSync('update-shortcut', arg)) {
         // TODO Show error message about shortcut register error.
         // Reset the value since there was an error.
         newSettings.globalShortcut = oldSettings.globalShortcut;
@@ -152,14 +155,16 @@ var Settings = function() {
     // Normalize and write the settings to file.
     var finalSettings = normalizeSettings(oldSettings, newSettings);
     saveAppSettings(finalSettings, function(err) {
-      if(err) {
+      if (err) {
         return cbMain(err);
       }
 
-      if(requiresRestart) {
+      if (requiresRestart) {
         // Hook the updateAppSettings to be called on restart.
-        var arg = { newSettings : newSettingsToApply };
-        ipc.send('settings-updated', arg);
+        var arg = {
+          newSettings: newSettingsToApply
+        };
+        _ipc.send('settings-updated', arg);
       }
       newSettingsToApply = null;
       cbMain(null, requiresRestart);
@@ -167,8 +172,8 @@ var Settings = function() {
   };
 
   function normalizeSettings(oldSettings, newSettings) {
-    for(var prop in newSettings) {
-      if(!oldSettings.hasOwnProperty(prop)) {
+    for (var prop in newSettings) {
+      if (!oldSettings.hasOwnProperty(prop)) {
         continue;
       }
       oldSettings[prop] = newSettings[prop];
@@ -186,19 +191,20 @@ var Settings = function() {
    */
   function handleInvalidSettings() {
     // 1. Take a backup of the existing settings file.
-    AppUtil.mvFile(AppConfig.settingsPath,
-      AppConfig.settingsPath + '_' + Date.now(), function(err) {
-        if(err) {
-          ipc.sendSync('fatal-error', generateSettingsFatalError(err));
+    _appUtil.mvFile(_appConfig.settingsPath,
+      _appConfig.settingsPath + '_' + Date.now(),
+      function(err) {
+        if (err) {
+          _ipc.sendSync('fatal-error', generateSettingsFatalError(err));
           return;
         }
         // 2. Write the defaults to settings.json
         saveAppSettings(appSettings, function(err) {
-          if(err) {
-            ipc.sendSync('fatal-error', generateSettingsFatalError(err));
+          if (err) {
+            _ipc.sendSync('fatal-error', generateSettingsFatalError(err));
           }
         });
-    });
+      });
   }
 
   /**
@@ -207,8 +213,8 @@ var Settings = function() {
    * @return {AppError} An error object.
    */
   function generateSettingsFatalError(err) {
-    return new AppError(err, i18n.__('settings.settings_save_fatal') + '\n\n' +
-      i18n.__('settings.app_fatal_close') + '\n\n' + i18n.__('settings.app_support'));
+    return new _appError(err, _i18n.__('settings.settings_save_fatal') + '\n\n' +
+      _i18n.__('settings.app_fatal_close') + '\n\n' + _i18n.__('settings.app_support'));
   }
 
   /**
@@ -218,17 +224,17 @@ var Settings = function() {
    */
   function getDefaultSettings() {
     return {
-      "dbLocation": AppConfig.database.path,
+      "dbLocation": _appConfig.database.path,
       "globalShortcut": "D"
-    }
+    };
   }
 
   return {
-    saveAppSettings : saveAppSettings,
-    getAppSettings : getAppSettings,
-    loadSettings : loadSettings,
-    updateAppSettings : updateAppSettings,
-    updateSettings : updateSettings
+    saveAppSettings: saveAppSettings,
+    getAppSettings: getAppSettings,
+    loadSettings: loadSettings,
+    updateAppSettings: updateAppSettings,
+    updateSettings: updateSettings
   };
 };
 

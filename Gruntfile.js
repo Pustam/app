@@ -4,8 +4,12 @@ module.exports = function(grunt) {
     jsbeautifier: {
       files: [__dirname + '/src/*.js',
         __dirname + '/src/browser/*.js',
-        __dirname + '/src/helpers/*.js',
-        __dirname + '/src/renderer/*.js'
+        __dirname + '/src/common/*.js',
+        __dirname + '/src/browser/about/*.js',
+        __dirname + '/src/browser/help/*.js',
+        __dirname + '/src/browser/notes/*.js',
+        __dirname + '/src/browser/notebooks/*.js',
+        __dirname + '/src/browser/app/*.js',
       ],
       options: {
         js: {

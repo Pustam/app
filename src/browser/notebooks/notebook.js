@@ -6,22 +6,23 @@
  * @author : Abijeet Patro
  *************************************************/
 
-var AppConfig = require(__dirname + '/../config.js');
-var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
-var Notes = require(AppConfig.srcPath + 'notes.js');
-var AppError = require(AppConfig.helperPath + 'app-error.js');
-var async = require('async');
-var i18n = require('i18n');
+var _async = require('async');
+var _i18n = require('i18n');
+
+var _appConfig = require(__dirname + '/../../../config.js');
+var _app = require(_appConfig.browserSrcPath + 'app/app.js');
+var _notes = require(_appConfig.browserSrcPath + 'notes/note.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
 
 var Notebooks = function() {
   /**
    * Fetches all the notebooks.
    */
   var getAll = function(cbMain) {
-    var notebooksDb = NotesApp.getNotebooksDb();
+    var notebooksDb = _app.getNotebooksDb();
     notebooksDb.find({}, function(err, notebooks) {
       if (err) {
-        return cbMain(new AppError(err, i18n.__('errors.retrieving_notebooks')));
+        return cbMain(new _appError(err, _i18n.__('errors.retrieving_notebooks')));
       }
       return cbMain(null, notebooks);
     });
@@ -35,9 +36,9 @@ var Notebooks = function() {
    * @return {undefined}         None
    */
   var getFullDetailByID = function(notebookID, cbMain) {
-    var notebooksDb = NotesApp.getNotebooksDb();
+    var notebooksDb = _app.getNotebooksDb();
 
-    async.parallel([function(cb) {
+    _async.parallel([function(cb) {
         // Fetch all details about notebook.
         notebooksDb.findOne({
           _id: notebookID
@@ -45,18 +46,18 @@ var Notebooks = function() {
           if (err) {
             return cb(err);
           } else if (notebook === null) {
-            return cb(new Error(i18n.__('errors.notebook_not_found', notebookID)));
+            return cb(new Error(_i18n.__('errors.notebook_not_found', notebookID)));
           }
           cb(null, notebook);
         });
       },
       function(cb) {
         // Now fetch all the ACTIVE notes in a notebook.
-        Notes.getAllActiveNotes(notebookID, cb);
+        _notes.getAllActiveNotes(notebookID, cb);
       }
     ], function(err, results) {
       if (err) {
-        return cbMain(new AppError(err, i18n.__('errors.retrieving_notebook')));
+        return cbMain(new _appError(err, _i18n.__('errors.retrieving_notebook')));
       }
       // Create a property under the notebook object,
       // and assign all notes and return object.
@@ -70,26 +71,26 @@ var Notebooks = function() {
    * consists of the "Daily" notebook
    */
   var initializeDefaults = function(cbMain) {
-    var notebookDb = NotesApp.getNotebooksDb();
+    var notebookDb = _app.getNotebooksDb();
     // Checking if the default notebook exists
     notebookDb.find({
       $and: [{
-        'name': AppConfig.defaultNotebook.name
+        'name': _appConfig.defaultNotebook.name
       }, {
-        'type': AppConfig.defaultNotebook.type
+        'type': _appConfig.defaultNotebook.type
       }]
     }, function(err, docs) {
       if (err) {
-        return cbMain(new AppError(err, i18n.__('errors.checking_default_notebook')));
+        return cbMain(new _appError(err, _i18n.__('errors.checking_default_notebook')));
       }
       if (docs.length === 0) {
         // It doesn't so let's create the notebook.
-        var notebook = AppConfig.defaultNotebook;
+        var notebook = _appConfig.defaultNotebook;
         notebook.createdOn = new Date();
         notebook.modifiedOn = notebook.createdOn;
         notebookDb.insert(notebook, function(err) {
           if (err) {
-            return cbMain(new AppError(err, i18n.__('errors.creating_default_notebook')));
+            return cbMain(new _appError(err, _i18n.__('errors.creating_default_notebook')));
           }
           return cbMain(null);
         });
@@ -107,4 +108,4 @@ var Notebooks = function() {
   };
 };
 
-module.exports = Notebooks();
+module.exports = new Notebooks();

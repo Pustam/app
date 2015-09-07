@@ -1,34 +1,100 @@
-var NoteEvents = function() {
-  var addEvents = function(note) {
-    note.addEventListener('keydown', evtNoteKeyDown, false);
-  };
+/***********************************************************
+ * Contains code to determine and change the current state
+ * of the note. For example where the note is currently editable,
+ * complete and to make it editable. Only deals with the DOM
+ * side of things.
+ *
+ * @author : Abijeet Patro
+ ***********************************************************/
+'use strict';
 
+var _appConfig = require(__dirname + '/../../../config.js');
+var _marked = require('marked');
+
+var NoteEditor = function() {
+  const NOTE_COMPLETE_CLASS = 'complete';
+  const DEFAULT_NOTE_CLASS = 'note';
+  const NOTE_NOT_EDITABLE_CLASS = 'readonly';
   var TEXT_MODIFIERS = {
     BOLD : 1,
     ITALICS : 2
   };
 
-  var deleteEvents = function(note) {
-    note.removeEventListener('keydown', evtNoteKeyDown);
-  };
-
-  function evtNoteKeyDown(event) {
-    if(event.ctrlKey === true) {
-      if(!isNoteEditable(event.target)) {
-        return;
-      }
-      if(event.which === 66) {
-        // Bold
-        handleTextModifier(event.target, TEXT_MODIFIERS.BOLD);
-        event.preventDefault();
-      } else if(event.which === 73) {
-        // Italics
-        handleTextModifier(event.target, TEXT_MODIFIERS.ITALICS);
-        event.preventDefault();
-      }
+  /**
+   * Checks if a note is editable
+   * @param  {Object}  note The note element
+   * @return {Boolean}      Returns true if the note is editable, else false
+   */
+  function _isEditable(note) {
+    if (!note) {
+      return false;
     }
+    return note.getAttribute('contenteditable') === "true";
   }
 
+  function _turnOnEditing(note) {
+    note.setAttribute('contenteditable', true);
+    note.focus();
+
+    // Now set the cursor at the end.
+    var range = document.createRange();
+    range.selectNodeContents(note);
+    range.collapse(false);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function _turnOffEditing(note) {
+    note.setAttribute('contenteditable', false);
+  }
+
+  function _toggleNoteComplete(note) {
+    var isComplete = false;
+    if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
+      isComplete = true;
+      note.classList.remove(NOTE_COMPLETE_CLASS);
+    } else {
+      note.classList.add(NOTE_COMPLETE_CLASS);
+    }
+    return isComplete;
+  }
+
+  /**
+   * Returns the HTML for a new note. Adds default values if `note` object
+   * is null.
+   * @param  {String} notebookDbID Notebook ID
+   * @param  {Object} note         The note object from the database
+   * @return {String}              HTML String for note
+   */
+  function _getNoteHTML(notebookDbID, note, isEditable) {
+    var noteText = '';
+    var noteID = '';
+    var noteClasses = DEFAULT_NOTE_CLASS;
+
+    if (note) {
+      noteText = _marked(note.text);
+      noteClasses = note.isComplete ? (DEFAULT_NOTE_CLASS + ' ' +
+        NOTE_COMPLETE_CLASS) : DEFAULT_NOTE_CLASS;
+      noteID = 'data-noteid="' + note._id + '"';
+    }
+
+    if (!isEditable) {
+      noteClasses += ' ' + NOTE_NOT_EDITABLE_CLASS;
+    }
+    return '<div class="' + noteClasses + '" ' + noteID + ' data-notebookid="' +
+      notebookDbID + '" tabindex="0">' + noteText +
+      '</div><div class="pull-right note-footer"></div>';
+  }
+
+  function _isComplete(note) {
+    if (note.classList.contains(NOTE_COMPLETE_CLASS)) {
+      return true;
+    }
+    return false;
+  }
+
+  // TODO Refactor this code
   function handleTextModifier(note, modifierType) {
     var sel = window.getSelection();
     if (sel.rangeCount) {
@@ -100,19 +166,6 @@ var NoteEvents = function() {
     }
   }
 
-  /**
-  * DUPLICATED --- NEEDS REFACTORING!!!!!!!
-  * Checks if a note is editable
-  * @param  {Object}  note The note element
-  * @return {Boolean}      Returns true if the note is editable, else false
-  */
-  function isNoteEditable(note) {
-    if(!note) {
-      return false;
-    }
-    return note.getAttribute('contenteditable') === "true";
-  }
-
   function getNormalizedRange(range, note) {
     var preSelectionRange = range.cloneRange();
     preSelectionRange.selectNodeContents(note);
@@ -149,9 +202,9 @@ var NoteEvents = function() {
     var prevStars = Math.min(starsBefore.length, starsAfter.length);
 
     // Remove stars if we have to since the button acts as a toggle.
-    if ((prevStars >= nStars) && (prevStars != 2 || nStars != 1)) {
-      chunk.before = chunk.before.replace(RegExp("[*]{" + nStars + "}$", ""), "");
-      chunk.after = chunk.after.replace(RegExp("^[*]{" + nStars + "}", ""), "");
+    if ((prevStars >= nStars) && (prevStars !== 2 || nStars !== 1)) {
+      chunk.before = chunk.before.replace(new RegExp("[*]{" + nStars + "}$", ""), "");
+      chunk.after = chunk.after.replace(new RegExp("^[*]{" + nStars + "}", ""), "");
       chunk.added = -nStars;
     } else {
       chunk.added = nStars;
@@ -164,10 +217,41 @@ var NoteEvents = function() {
     return chunk;
   }
 
+  function _getCurrentStateOfNote(currNote) {
+    var noteState = {};
+    noteState.isComplete = _isComplete(currNote);
+    noteState.isEditable = _isEditable(currNote);
+    return noteState;
+  }
+
+  function _markAsComplete(note) {
+    if(_isEditable(note)) {
+      return false;
+    }
+    if (!note.innerText) {
+      // TODO Maybe show a message stating that an empty note
+      // can't be marked as complete.
+      return false;
+    }
+    // Toggle the classes as necessary.
+    if (_isComplete(note)) {
+      note.classList.remove(NOTE_COMPLETE_CLASS);
+    } else {
+      note.classList.add(NOTE_COMPLETE_CLASS);
+    }
+    return true;
+  }
+
   return {
-    addEvents : addEvents,
-    deleteEvents : deleteEvents
+    isEditable: _isEditable,
+    turnOnEditing: _turnOnEditing,
+    markAsComplete: _markAsComplete,
+    getNoteHTML: _getNoteHTML,
+    isComplete: _isComplete,
+    toggleNoteComplete: _toggleNoteComplete,
+    getCurrState : _getCurrentStateOfNote,
+    TEXT_MODIFIERS : TEXT_MODIFIERS
   };
 };
 
-module.exports = new NoteEvents();
+module.exports = new NoteEditor();

@@ -1,88 +1,41 @@
 {
-	"app": {
-		"name": "Markdown notes",
-		"issues_link": "https://github.com/markdown-note/markdown-notes/issues",
-		"description": "A note taking app with markdown at the core, designed for advanced users.",
-		"app_fatal_close" : "The application can no longer function normally and is going to close.",
-		"app_support"  : "Please raise your issues here - https://github.com/markdown-note/markdown-notes/issues"
+	"error": {
+		"app_init": "error.app_init",
+		"partial_load_error": "error.partial_load_error",
+		"notebook_display_error": "error.notebook_display_error",
+		"app_unstable": "error.app_unstable",
+		"shortcut_dialog_display": "error.shortcut_dialog_display",
+		"about_dialog_display": "error.about_dialog_display"
+	},
+	"errors": {
+		"app_init": "errors.app_init"
 	},
 	"notebook": {
-		"new_notebook": "New notebook",
-		"add_note": "Add note",
-		"settings": "Settings",
-		"empty_notebook": "This notebook does not seem to have any notes on this day."
-	},
-	"note": {
-		"deletion_confirmation_text": "Are you sure you want to delete the note?",
-		"deletion_confirmation_title": "Deletion confirmation"
+		"add_note": "notebook.add_note",
+		"settings": "notebook.settings",
+		"empty_notebook": "notebook.empty_notebook"
 	},
 	"shortcut": {
-		"shortcut": "Shortcut",
-		"description": "Description",
-		"kbd_new_note": "<kbd>Ctrl</kbd> + <kbd>N</kbd>",
-		"desc_new_note": "Creates a new note when focused on an existing note.",
-		"kbd_save_note": "<kbd>Ctrl</kbd> + <kbd>S</kbd>",
-		"desc_save_note": "Saves the currently focused note.",
-		"kbd_delete_note": "<kbd>Ctrl</kbd> + <kbd>D</kbd>",
-		"desc_delete_note": "Deletes the currently focused note.",
-		"kbd_complete_note": "<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd>",
-		"desc_complete_note": "Marks the currently focused note as complete.",
-		"kbd_edit_note": "<kbd>Ctrl</kbd> + <kbd>E</kbd>",
-		"desc_edit_note": "Makes the currently focused note editable."
+		"shortcut": "shortcut.shortcut",
+		"description": "shortcut.description",
+		"kbd_new_note": "shortcut.kbd_new_note",
+		"desc_new_note": "shortcut.desc_new_note",
+		"kbd_save_note": "shortcut.kbd_save_note",
+		"desc_save_note": "shortcut.desc_save_note",
+		"kbd_delete_note": "shortcut.kbd_delete_note",
+		"desc_delete_note": "shortcut.desc_delete_note",
+		"kbd_complete_note": "shortcut.kbd_complete_note",
+		"desc_complete_note": "shortcut.desc_complete_note",
+		"kbd_edit_note": "shortcut.kbd_edit_note",
+		"desc_edit_note": "shortcut.desc_edit_note"
 	},
-	"error": {
-		"loading_database": "There was an error while creating/loading the database.",
-		"empty_database_path": "Empty database path found!",
-		"checking_default_notebook": "There was an error while checking if the default notebook exists.",
-		"creating_default_notebook": "'There was an error while creating the default notebook.'",
-		"retrieving_notebooks": "There was an error while retrieving your notebooks.",
-		"retrieving_notebook": "There was an error while retrieving information about your notebook.",
-		"notes_fetch_error": "There was an error while fetching the notes. ",
-		"notes_save_validation_err": "Hmph! Some of the expected info for the note seems to be missing. Sorry, we couldn't save the note.",
-		"note_delete_validation_err": "Whew! Unexpected error while deleting the note.",
-		"note_delete_err": "There was an error while deleting the note.",
-		"note_delete_not_found": "Unknown note sent for deletion!",
-		"partial_load_error": "Error while loading your file - '%s'.",
-		"notebook_display_error": "There was an error while displaying the notes.",
-		"notebook_hide_error": "There was an error while closing the notebook.",
-		"app_init": "There was an error while initializing the app.",
-		"notes_display_error": "There was an error while displaying the notes.",
-		"app_unstable": "The application is in an unstable state and should be restarted. Sorry for the inconvinience.",
-		"notebook_not_found": "Notebook with ID '%s' was not found.",
-		"shortcut_dialog_display": "There was an error while displaying the shortcuts.",
-		"notes_update_err": "There was an error while updating the note.",
-		"notes_modification_err": "There was an error while inserting or updating the note.",
-		"note_fetch_error": "There was an error while fetching the contents of the note.",
-		"notebook_container_not_found": "There was an error while fetching the notebook container.",
-		"savenote_invalid_call": "saveNote called without notebookID and noteID.",
-		"notes_deletion_err": "There was an error while deleting the note.",
-		"mark_note_complete": "There was an error while marking the note as complete.",
-		"err_date_change": "There was an error while showing the notes for the given date.",
-		"add_new_error": "There was an error while adding the note.",
-		"save_and_create_note": "Unexpected error while saving the note.",
-		"settings_dialog_display": "There was an error while loading the settings dialog.",
-		"about_dialog_display": "There was an error while loading About us."
-	},
-	"settings": {
-		"name": "Settings",
-		"general" : "General",
-		"notebooks" : "Notebooks",
-		"notes" : "Notes",
-		"save_changes" : "Save changes",
-		"close" : "Close",
-		"work_in_progress" : "Work in progress.",
-		"database_location" : "Database Location",
-		"global_shortcut_key" : "Global Shortcut Key",
-		"super_key" : "Super",
-		"shift_key" : "Shift",
-		"choose_file" : "...",
-		"settings_applied" : "Settings saved and applied successfully.",
-		"settings_applied_restart" : "Settings saved successfully, but some of the changes require an application restart.",
-		"settings_error" : "There was an error while saving your settings. We suggest you restart the application.",
-		"settings_save_fatal" : "There was an error while moving/saving your default settings. Please check that you have the ability to write to the application's directory."
+	"app": {
+		"name": "app.name",
+		"description": "app.description",
+		"issues_link": "app.issues_link"
 	},
 	"about": {
-		"reporting": "Found an issue or want a feature? Report ",
-		"here": "here"
+		"reporting": "about.reporting",
+		"here": "about.here"
 	}
 }

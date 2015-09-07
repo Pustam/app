@@ -1,17 +1,14 @@
 'use strict';
-/**
- * Contains functions that run at app startup. Also supplies references to the
- * databases used by the app.
- */
 
-var async = require('async');
-var Datastore = require('nedb');
-var AppConfig = require(__dirname + '/../config.js');
-var AppError = require(AppConfig.helperPath + 'app-error.js');
-var i18n = require('i18n');
-var Settings = require(AppConfig.srcPath + 'settings.js');
+var _async = require('async');
+var _i18n = require('i18n');
+var _nedb = require('nedb');
 
-var NotesApp = function() {
+var _appConfig = require(__dirname + '/../../../config.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
+var _settings = require(_appConfig.commonsPath + 'settings.js');
+
+var App = function() {
   var dbObjs = {};
 
   /**
@@ -22,25 +19,25 @@ var NotesApp = function() {
    */
   var init = function(cbMain) {
     // Generate the db storage locations based on settings.
-    var settings = Settings.getAppSettings();
+    var settings = _settings.getAppSettings();
     var dbBasePath = settings.dbLocation;
 
-    if(!dbBasePath) {
-      dbBasePath = AppConfig.database.path;
+    if (!dbBasePath) {
+      dbBasePath = _appConfig.database.path;
     }
 
     var dbPaths = {
-      notesDb: dbBasePath + AppConfig.database.notes,
-      notebookDb: dbBasePath + AppConfig.database.notebooks
+      notesDb: dbBasePath + _appConfig.database.notes,
+      notebookDb: dbBasePath + _appConfig.database.notebooks
     };
 
     // Check for databases and load them as needed.
-    async.each(Object.keys(dbPaths), function(dbName, callback) {
+    _async.each(Object.keys(dbPaths), function(dbName, callback) {
       var dbPath = dbPaths[dbName];
       if (!dbPath) {
-        return callback(new Error(i18n.__('error.empty_database_path')));
+        return callback(new Error(_i18n.__('error.empty_database_path')));
       }
-      var db = new Datastore({
+      var db = new _nedb({
         filename: dbPath
       });
 
@@ -58,7 +55,7 @@ var NotesApp = function() {
     }, function(err) {
       if (err) {
         // Error while loading the databases.
-        return cbMain(new AppError(err, i18n.__('error.loading_database')));
+        return cbMain(new _appError(err, _i18n.__('error.loading_database')));
       }
       return cbMain(null);
     });
@@ -78,25 +75,11 @@ var NotesApp = function() {
     return dbObjs.notebookDb;
   };
 
-  /**
-   * Called when the global shortcut key is pressed
-   * @return {undefined} No return type
-   */
-  var evtGlobalShortcutKey = function(mainWindow) {
-    if(mainWindow.isFocused()) {
-      mainWindow.hide();
-    } else {
-      // TODO : highlight first note.
-      mainWindow.show();
-    }
-  };
-
   return {
     init: init,
     getNotebooksDb: getNotebooksDb,
-    getNotesDb: getNotesDb,
-    evtGlobalShortcutKey : evtGlobalShortcutKey
+    getNotesDb: getNotesDb
   };
 };
 
-module.exports = NotesApp();
+module.exports = new App();

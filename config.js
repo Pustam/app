@@ -1,13 +1,17 @@
+'use strict';
+
 var os = require('os');
 
 var AppConfig = {
 	basePath: __dirname + '/',
-	htmlPath: __dirname + '/html/',
+	htmlPath: __dirname + '/src/html/',
 	rendererPath: __dirname + '/src/renderer/',
 	browserSrcPath: __dirname + '/src/browser/',
-	helperPath : __dirname + '/src/helpers/',
+	commonsPath : __dirname + '/src/common/',
 	srcPath : __dirname + '/src/',
-	isDevelopment: false,
+	dialogsPath : __dirname + '',
+	partialsPath : __dirname + '',
+	isDevelopment: true,
 	database: {
 		path: __dirname + '/db/',
 		notes: 'notes.db',

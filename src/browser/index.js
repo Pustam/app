@@ -1,44 +1,38 @@
-/*global AppConfig */
-
 'use strict';
 
-var NotesApp = require(AppConfig.srcPath + 'notes-app.js');
-var Notebooks = require(AppConfig.srcPath + 'notebooks.js');
-var NotebooksClient = require(AppConfig.browserSrcPath + 'notebooks-client.js');
-var AppClient = require(AppConfig.browserSrcPath + 'app-client.js');
-var AppError = require(AppConfig.helperPath + 'app-error.js');
-var async = require('async');
-var i18n = require('i18n');
+var _async = require('async');
+var _i18n = require('i18n');
+
+var _appConfig = require(__dirname + '/../../config.js');
+var _notebooksClient = require(_appConfig.browserSrcPath + 'notebooks/notebook-client.js');
+var _appClient = require(_appConfig.browserSrcPath + 'app/app-client.js');
+var _notesClient = require(_appConfig.browserSrcPath + 'notes/note-client.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
 
 function onDOMReady() {
-  // Inititalize classes
-  AppClient.init();
-  NotebooksClient.init();
+
+  function initializeApp(cbMain) {
+    _async.waterfall([_appClient.init, function(cb) {
+      _notebooksClient.init();
+      _notesClient.init();
+      cb();
+    }], function(err) {
+      cbMain(err);
+    });
+  }
 
   // 1. Initialize the app
-  // 2. Get the list of notebooks
-  // 3. Bind the notebooks
-  async.waterfall([NotesApp.init, Notebooks.initializeDefaults, Notebooks.getAllNotebooks], function(err, notebooks) {
+  // 2. Get and bind the list of notebooks
+  // 3. Select the first notebook
+  _async.waterfall([initializeApp, _notebooksClient.getAndBindNotebooks], function(err) {
     if (err) {
       err.display();
       return;
     }
     try {
-      NotebooksClient.cbBindNotebooks(notebooks);
-      var notebooksContainerUL = document.getElementById('1_lstNotebooks');
-
-      // Check the first checkbox.
-      var firstChkBox = notebooksContainerUL.querySelector('input[type="checkbox"]');
-      firstChkBox.checked = true;
-
-      // Then simulate the change event.
-      var changeEvent = new Event('HTMLEvents');
-      changeEvent.initEvent("change", false, true);
-      firstChkBox.dispatchEvent(changeEvent);
-      changeEvent = null;
-      firstChkBox = null;
+      _notebooksClient.selectFirstNotebook();
     } catch (err) {
-      var errObj = new AppError(err, i18n.__('errors.app_init'));
+      var errObj = new _appError(err, _i18n.__('errors.app_init'));
       errObj.display();
     }
   });
