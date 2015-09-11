@@ -20,7 +20,6 @@ var keybindings = {
     3: [{
       comment : 'Mark a note as complete on Ctrl + Shift + C',
       isEditable: false,
-      isComplete: false,
       shiftModifier: true,
       cb : 'markNoteAsComplete'
     }],

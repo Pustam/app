@@ -45,7 +45,7 @@ var NoteEditor = function() {
     sel.addRange(range);
   }
 
-  function _turnOffEditing(note) {
+  function  _turnOffEditing(note) {
     note.setAttribute('contenteditable', false);
   }
 
@@ -245,6 +245,7 @@ var NoteEditor = function() {
   return {
     isEditable: _isEditable,
     turnOnEditing: _turnOnEditing,
+    turnOffEditing : _turnOffEditing,
     markAsComplete: _markAsComplete,
     getNoteHTML: _getNoteHTML,
     isComplete: _isComplete,

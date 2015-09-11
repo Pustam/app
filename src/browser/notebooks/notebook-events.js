@@ -4,6 +4,7 @@ var _i18n = require('i18n');
 var _appConfig = require(__dirname + '/../../../config.js');
 var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
 var _appError = require(_appConfig.commonsPath  + 'app-error.js');
+var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events.js');
 
 var NotebookEvents = function() {
   var containerUL = null;
@@ -48,7 +49,7 @@ var NotebookEvents = function() {
     jQuery(notebookContents.querySelector('.notebook-date')).datepicker('remove');
 
     // Removing the notes.
-    _notesClient.removeAllNoteEvents(notebookContents);
+    _noteEvents.removeAllEvents(notebookContents);
   }
 
   /**

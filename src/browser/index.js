@@ -4,10 +4,12 @@ var _async = require('async');
 var _i18n = require('i18n');
 
 var _appConfig = require(__dirname + '/../../config.js');
-var _notebooksClient = require(_appConfig.browserSrcPath + 'notebooks/notebook-client.js');
-var _appClient = require(_appConfig.browserSrcPath + 'app/app-client.js');
-var _notesClient = require(_appConfig.browserSrcPath + 'notes/note-client.js');
-var _appError = require(_appConfig.commonsPath + 'app-error.js');
+
+var _notebooksClient = require(_appConfig.browserSrcPath + 'notebooks/notebook-client');
+var _appClient = require(_appConfig.browserSrcPath + 'app/app-client');
+var _notesClient = require(_appConfig.browserSrcPath + 'notes/note-client');
+
+var _appError = require(_appConfig.commonsPath + 'app-error');
 
 function onDOMReady() {
 

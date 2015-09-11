@@ -101,7 +101,7 @@ var NoteEvents = function() {
     if(Array.isArray(callbacks)) {
         for(var i = 0; i !== callbacks.length; i++) {
           if(_checkIfCbIsValid(event, callbacks[i], currState)) {
-            cbToFire = callbacks;
+            cbToFire = callbacks[i];
           }
         }
     } else {

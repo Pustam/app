@@ -7,6 +7,8 @@ var _shell = require('shell');
 var _appConfig = require(__dirname + '/../../../config.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
+var _settings = require(_appConfig.commonsPath + 'settings.js');
+var _settingsClient = require(_appConfig.browserSrcPath + 'settings/setting-client');
 
 var AppEvents = function() {
 
@@ -14,6 +16,7 @@ var AppEvents = function() {
     document.getElementById('1_btnShortcutHelp').addEventListener('click', showShortcutDialog, false);
     document.getElementById('1_btnAboutUs').addEventListener('click', showAboutDialog, false);
     document.getElementById('1_btnExitApp').addEventListener('click', exitApp, false);
+    document.getElementById('1_btnSettings').addEventListener('click', showSettingsDialog, false);
   }
 
   function showShortcutDialog() {
@@ -50,6 +53,20 @@ var AppEvents = function() {
     }
   }
 
+  function showSettingsDialog() {
+    var settings = _settings.getAppSettings();
+    _appUtil.loadDialog('settings.html', { settings : settings }, function(err, html) {
+      if(!checkAndInsertDialogHTML(err, html, _18n.__('error.settings_dialog_display'))) {
+        return;
+      }
+      var $dlg = jQuery('#dlgSettings');
+      if($dlg) {
+        _settingsClient.init($dlg[0]);
+        $dlg.modal('show');
+        addCloseEvent($dlg, _settingsClient.destroy);
+      }
+    });
+  }
   function removeAboutEvents() {
     document.getElementById('9_lnkAppIssues').removeEventListener('click', showIssuesList);
   }

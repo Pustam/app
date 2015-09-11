@@ -1,6 +1,7 @@
 'use strict';
 
 var os = require('os');
+var _i18n = require('i18n');
 
 var AppConfig = {
 	basePath: __dirname + '/',
