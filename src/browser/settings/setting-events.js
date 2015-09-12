@@ -9,13 +9,13 @@ var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _settings = require(_appConfig.commonsPath + 'settings.js');
 
 var SettingEvents = function() {
-  var settingsRef;
+  var settingsClient;
   var dlg = null;
   var allTabs = null;
   var allTabAnchors = null;
 
   function init(refObj) {
-    settingsRef = refObj;
+    settingsClient = refObj;
 
     // Add the settings dialog hook.
     document.getElementById('1_btnSettings').addEventListener('click', showSettingsDialog, false);
@@ -34,12 +34,12 @@ var SettingEvents = function() {
         allTabAnchors = dlg.querySelectorAll('.list-group-item');
 
         addEventHandlers();
-        settingsRef.dialogOpened(dlg, allTabs, allTabAnchors);
+        settingsClient.dialogOpened(dlg, allTabs, allTabAnchors);
         $dlg.modal('show');
 
         _appUtil.addCloseEvent($dlg, function() {
           removeEventHandlers();
-          settingsRef.destroy();
+          settingsClient.destroy();
         });
       }
     });
@@ -73,20 +73,24 @@ var SettingEvents = function() {
   }
 
   function evtTabClicked(event) {
-    settingsRef.hideAllTabs();
-    settingsRef.showActiveTab(event.target);
+    settingsClient.hideAllTabs();
+    settingsClient.showActiveTab(event.target);
   }
 
   function evtSaveClicked() {
     // TODO Show loading screen
     // TODO Perform validations
-    var newSettings = settingsRef.readSettings();
+    var settingsForm = dlg.querySelector('#frmSettings');
+    if(!settingsForm) {
+      return false;
+    }
+    var newSettings = _appUtil.readFormData(settingsForm.elements);
     _settings.updateSettings(newSettings, function(err, requiresRestart) {
       var hadError = false;
       if(err) {
         hadError = true;
       }
-      settingsRef.settingsAppliedInfo(hadError, requiresRestart);
+      settingsClient.settingsAppliedInfo(hadError, requiresRestart);
     });
   }
 
@@ -100,9 +104,7 @@ var SettingEvents = function() {
     }
   }
 
-  return {
-    removeEventHandlers : removeEventHandlers,
-    addEventHandlers : addEventHandlers,
+  return {    
     init : init
   };
 };

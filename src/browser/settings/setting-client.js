@@ -18,8 +18,7 @@ var SettingsClient = function() {
   var init = function(dlgRef) {
     _settingEvents.init({
       showActiveTab : showActiveTab,
-      hideAllTabs : hideAllTabs,
-      readSettings : readSettings,
+      hideAllTabs : hideAllTabs,      
       settingsAppliedInfo : settingsAppliedInfo,
       dialogOpened : settingsDialogOpened,
       destroy : destroy
@@ -31,8 +30,8 @@ var SettingsClient = function() {
     var currActiveTabAnchor = dlg.querySelector('.active');
     showActiveTab(currActiveTabAnchor);
 
-    allTabs = dlg.querySelectorAll('.settings-tab');
-    allTabAnchors = dlg.querySelectorAll('.list-group-item');
+    allTabs = settingsTabs;
+    allTabAnchors = tagAnchors;
   }
 
   function destroy() {
@@ -58,12 +57,6 @@ var SettingsClient = function() {
     for(i = 0; i !== allTabAnchors.length; ++i) {
       allTabAnchors[i].className = 'list-group-item';
     }
-  }
-
-  function readSettings() {
-    var settingsForm = dlg.querySelector('#frmSettings');
-    var settingsElems = settingsForm.elements;
-    return _appUtil.readFormData(settingsElems);
   }
 
   function settingsAppliedInfo(hadError, requiresRestart) {

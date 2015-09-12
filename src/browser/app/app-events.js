@@ -7,7 +7,6 @@ var _shell = require('shell');
 var _appConfig = require(__dirname + '/../../../config.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
-var _settings = require(_appConfig.commonsPath + 'settings.js');
 
 var AppEvents = function() {
 

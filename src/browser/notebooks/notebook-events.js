@@ -132,7 +132,7 @@ var NotebookEvents = function() {
     if(!dlgForm) {
       return false;
     }
-    var notebookData = client.readFormData(dlgForm.elements);
+    var notebookData = _appUtil.readFormData(dlgForm.elements);
   }
 
   function evtAddNotebook(event) {

@@ -115,7 +115,8 @@ var Utility = function() {
     loadDialog: loadDialog,
     mvFile: mvFile,
     checkAndInsertDialog : checkAndInsertDialog,
-    addCloseEvent : addCloseEvent
+    addCloseEvent : addCloseEvent,
+    readFormData : readFormData
   };
 };
 
