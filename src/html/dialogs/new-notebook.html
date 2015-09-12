@@ -1,0 +1,43 @@
+<div class="modal fade" id="dlgNewNotebook">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-cent"><%= i18n.__('notebook.new_notebook');%></h4>
+      </div>
+      <form class="modal-body container-fluid" id="frmNewNotebook">
+        <p id="pNewNotebookInfo_7" class="hidden"></p>
+        <div class="form-group col-md-12">
+          <label for="txtNotebookName_9" class="control-label">
+            <%= i18n.__('notebook.notebook_name');%>
+          </label>
+          <input type="text" id="txtNotebookName_9" class="form-control" name="notebookName">
+          <div class="clear"></div>
+        </div>
+        <div class="form-group">
+            <label for="btnChooseDbLocation_7" class="control-label col-md-6">
+              <%= i18n.__('notebook.is_task_based');%>
+            </label>
+            <div class="col-md-6">
+              <label class="radio-inline">
+                  <input type="radio" name="taskBased" value="yes"> Yes
+              </label>
+              <label class="radio-inline">
+                  <input type="radio" name="taskBased" value="no"> No
+              </label>
+            </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" id="btnNewNotebook" class="btn btn-primary">
+          <%= i18n.__('notebook.save_changes');%>
+        </button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <%= i18n.__('notebook.close');%>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
