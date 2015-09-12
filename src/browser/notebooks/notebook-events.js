@@ -5,6 +5,7 @@ var _appConfig = require(__dirname + '/../../../config.js');
 var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
 var _appError = require(_appConfig.commonsPath  + 'app-error.js');
 var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events.js');
+var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 
 var NotebookEvents = function() {
   var containerUL = null;
@@ -17,6 +18,8 @@ var NotebookEvents = function() {
     containerUL = notebooksContainerUL;
     tabHeading = notebooksTabHeading;
     tabContainer = notebooksTabContainer;
+
+    document.getElementById('btnAddNotebook').addEventListener('click', evtAddNotebook);
   }
 
   function _addNotebookSelectedEvent() {
@@ -119,6 +122,31 @@ var NotebookEvents = function() {
       client.hideTab(event.target.id);
     }
   }
+
+  function evtNotebookDlgClose(event) {
+
+  }
+
+  function evtNotebookSave(event) {
+    var dlgForm = document.getElementById('#frmNewNotebook');
+    if(!dlgForm) {
+      return false;
+    }
+    var notebookData = client.readFormData(dlgForm.elements);
+  }
+
+  function evtAddNotebook(event) {
+    // Show the dialog box
+    _appUtil.loadDialog('new-notebook.html', {}, function(err, html) {
+      if(!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.new_notebook_display_error'))) {
+        return;
+      }
+      var $dlg = jQuery('#dlgNewNotebook');
+      $dlg.modal('show');
+      _appUtil.addCloseEvent($dlg, evtNotebookDlgClose);
+    });
+  }
+
   /**
    * End of events
    */

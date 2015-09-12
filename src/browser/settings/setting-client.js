@@ -16,30 +16,30 @@ var SettingsClient = function() {
   var defaultMsgClass = 'alert';
 
   var init = function(dlgRef) {
+    _settingEvents.init({
+      showActiveTab : showActiveTab,
+      hideAllTabs : hideAllTabs,
+      readSettings : readSettings,
+      settingsAppliedInfo : settingsAppliedInfo,
+      dialogOpened : settingsDialogOpened,
+      destroy : destroy
+    });
+  };
+
+  function settingsDialogOpened(dlgRef, settingsTabs, tagAnchors) {
     dlg = dlgRef;
     var currActiveTabAnchor = dlg.querySelector('.active');
     showActiveTab(currActiveTabAnchor);
 
     allTabs = dlg.querySelectorAll('.settings-tab');
     allTabAnchors = dlg.querySelectorAll('.list-group-item');
+  }
 
-    _settingEvents.init({
-      allTabAnchors : allTabAnchors,
-      dlg : dlg,
-      showActiveTab : showActiveTab,
-      hideAllTabs : hideAllTabs,
-      readSettings : readSettings,
-      settingsAppliedInfo : settingsAppliedInfo
-    });
-  };
-
-  var destroy = function() {
-    _settingEvents.removeEventHandlers();
-
+  function destroy() {
     dlg = null;
     allTabs = null;
     allTabAnchors = null;
-  };
+  }
 
   function showActiveTab(currActiveTabAnchor) {
     currActiveTabAnchor.className += " active";
@@ -63,19 +63,7 @@ var SettingsClient = function() {
   function readSettings() {
     var settingsForm = dlg.querySelector('#frmSettings');
     var settingsElems = settingsForm.elements;
-    var newSettings = {};
-    for(var i = 0, len = settingsElems.length; i !== len; ++i) {
-      var elem = settingsElems[i];
-      if(elem.type === 'button' || elem.name === "") {
-        continue;
-      }
-      var ctrlName = elem.name;
-      var ctrlVal = elem.value;
-      if(ctrlVal) {
-        newSettings[ctrlName] = ctrlVal;
-      }
-    }
-    return newSettings;
+    return _appUtil.readFormData(settingsElems);
   }
 
   function settingsAppliedInfo(hadError, requiresRestart) {
@@ -98,8 +86,7 @@ var SettingsClient = function() {
   }
 
   return {
-    init : init,
-    destroy : destroy
+    init : init
   };
 };
 

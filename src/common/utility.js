@@ -73,10 +73,49 @@ var Utility = function() {
     });
   };
 
+  function checkAndInsertDialog(err, html, errMsg) {
+    if (err) {
+      var errParse = new _appError(err, errMsg, false, true);
+      errParse.display();
+      return false;
+    }
+    document.querySelector('body').insertAdjacentHTML('beforeend', html);
+    return true;
+  }
+
+  function addCloseEvent($dlg, cbOnClose) {
+    $dlg.on('hidden.bs.modal', function() {
+      $dlg.off('hidden.bs.modal');
+      if(cbOnClose) {
+        cbOnClose();
+      }
+      $dlg = null;
+      this.remove();
+    });
+  }
+
+  function readFormData(formElements) {
+    var formData = {};
+    for(var i = 0, len = formElements.length; i !== len; ++i) {
+      var elem = formElements[i];
+      if(elem.type === 'button' || elem.name === "") {
+        continue;
+      }
+      var ctrlName = elem.name;
+      var ctrlVal = elem.value;
+      if(ctrlVal) {
+        formData[ctrlName] = ctrlVal;
+      }
+    }
+    return formData;
+  }
+
   return {
     loadPartial: loadPartial,
     loadDialog: loadDialog,
-    mvFile: mvFile
+    mvFile: mvFile,
+    checkAndInsertDialog : checkAndInsertDialog,
+    addCloseEvent : addCloseEvent
   };
 };
 

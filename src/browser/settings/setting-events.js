@@ -2,19 +2,47 @@
 
 var _remote = require('remote');
 var _dialog = _remote.require('dialog');
+var _i18n = require('i18n');
 
 var _appConfig = require(__dirname + '/../../../config.js');
+var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _settings = require(_appConfig.commonsPath + 'settings.js');
 
 var SettingEvents = function() {
-  var dlg;
-  var allTabAnchors;
   var settingsRef;
+  var dlg = null;
+  var allTabs = null;
+  var allTabAnchors = null;
 
   function init(refObj) {
-    dlg = refObj.dlg;
-    allTabAnchors = refObj.allTabAnchors;
     settingsRef = refObj;
+
+    // Add the settings dialog hook.
+    document.getElementById('1_btnSettings').addEventListener('click', showSettingsDialog, false);
+  }
+
+  function showSettingsDialog() {
+    var settings = _settings.getAppSettings();
+    _appUtil.loadDialog('settings.html', { settings : settings }, function(err, html) {
+      if(!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.settings_dialog_display'))) {
+        return;
+      }
+      var $dlg = jQuery('#dlgSettings');
+      if($dlg) {
+        dlg = $dlg[0];
+        allTabs = dlg.querySelectorAll('.settings-tab');
+        allTabAnchors = dlg.querySelectorAll('.list-group-item');
+
+        addEventHandlers();
+        settingsRef.dialogOpened(dlg, allTabs, allTabAnchors);
+        $dlg.modal('show');
+
+        _appUtil.addCloseEvent($dlg, function() {
+          removeEventHandlers();
+          settingsRef.destroy();
+        });
+      }
+    });
   }
 
   function addEventHandlers() {
@@ -41,7 +69,7 @@ var SettingEvents = function() {
 
     dlg = null;
     allTabAnchors = null;
-    settingsRef = null;
+    allTabs = null;
   }
 
   function evtTabClicked(event) {

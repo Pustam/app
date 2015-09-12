@@ -21,7 +21,7 @@ var NotebooksClient = function() {
   function _init() {
     notebooksContainerUL = document.getElementById('1_lstNotebooks');
     notebooksTabHeading = document.getElementById('1_openTab');
-    notebooksTabContainer = document.getElementById('1_openTabContainer');
+    notebooksTabContainer = document.getElementById('1_openTabContainer');    
 
     // Expose a limited API to the events handler.
     _notebookEvents.init(eventsApi, notebooksContainerUL,

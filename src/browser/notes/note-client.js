@@ -1,3 +1,11 @@
+/*****************************************************************
+ * Acts like a controller and contains code to handle notes in the
+ * application. It calls and coordinates the activities of other
+ * note-related modules such as the notes, note editor and events.
+ *
+ * @author : Abijeet Patro
+ ****************************************************************/
+
 'use strict';
 var _i18n = require('i18n');
 var _marked = require('marked');
@@ -168,39 +176,14 @@ var NoteClient = function() {
           }
         });
       }
+      // Remove the events
       _noteEvents.removeAllEvents(note);
 
-      if (note.parentNode) {
-        // Find a note to focus
-        var parentNodeOfNote = null;
-        if (note.parentNode.nextElementSibling) {
-          // Does it have a next sibling??
-          parentNodeOfNote = note.parentNode.nextElementSibling;
-        } else if (note.parentNode.previousElementSibling) {
-          // Does not have a next sibling, does it have
-          // a previous sibling??
-          parentNodeOfNote = note.parentNode.previousElementSibling;
-        }
-
-        if (parentNodeOfNote) {
-          // Now focus that note.
-          focusNoteInParent(parentNodeOfNote);
-        }
-
-        note.parentNode.remove();
-      } else {
-        note.remove();
-      }
+      // Remove the note from DOM.
+      _noteEditor.removeNote(note);
     } catch (e) {
       var appErrObj = new _appError(e, _i18n.__('error.notes_deletion_err'));
       appErrObj.display();
-    }
-  }
-
-  function focusNoteInParent(noteParent) {
-    var note = noteParent.querySelector('.note');
-    if (note) {
-      note.focus();
     }
   }
 

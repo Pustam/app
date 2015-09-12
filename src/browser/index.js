@@ -8,6 +8,7 @@ var _appConfig = require(__dirname + '/../../config.js');
 var _notebooksClient = require(_appConfig.browserSrcPath + 'notebooks/notebook-client');
 var _appClient = require(_appConfig.browserSrcPath + 'app/app-client');
 var _notesClient = require(_appConfig.browserSrcPath + 'notes/note-client');
+var _settingsClient = require(_appConfig.browserSrcPath + 'settings/setting-client');
 
 var _appError = require(_appConfig.commonsPath + 'app-error');
 
@@ -17,6 +18,7 @@ function onDOMReady() {
     _async.waterfall([_appClient.init, function(cb) {
       _notebooksClient.init();
       _notesClient.init();
+      _settingsClient.init();
       cb();
     }], function(err) {
       cbMain(err);

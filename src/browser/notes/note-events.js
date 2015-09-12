@@ -1,3 +1,9 @@
+/*****************************************************************
+ * Handles events associated with notes.
+ *
+ * @author : Abijeet Patro
+ ****************************************************************/
+
 'use strict';
 
 var _appConfig = require(__dirname + '/../../../config');
@@ -80,7 +86,6 @@ var NoteEvents = function() {
     if(event.shiftKey !== callback.shiftModifier) {
       return false;
     }
-
     return true;
   }
 
