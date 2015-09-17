@@ -86,13 +86,11 @@ var Notebooks = function() {
       if (docs.length === 0) {
         // It doesn't so let's create the notebook.
         var notebook = _appConfig.defaultNotebook;
-        notebook.createdOn = new Date();
-        notebook.modifiedOn = notebook.createdOn;
-        notebookDb.insert(notebook, function(err) {
-          if (err) {
-            return cbMain(new _appError(err, _i18n.__('errors.creating_default_notebook')));
+        return createNotebook(notebook, function(err) {
+          if(err) {
+            return cbMain(new _appError(err, _i18n.__('errors.creating_default_notebook'), false, true));
           }
-          return cbMain(null);
+          return cbMain();
         });
       } else {
         // The default notebook is present, move on...
@@ -101,10 +99,36 @@ var Notebooks = function() {
     });
   };
 
+  function createNotebook(notebook, cbMain) {
+    delete notebook._id;
+    if(!validate(notebook)) {
+      return cbMain(new _appError(new Error('No name provided for notebook.'),
+        _i18n.__('errors.no_notebook_name')));
+    }
+    notebook.createdOn = new Date();
+    notebook.modifiedOn = notebook.createdOn;
+    var notebookDb = _app.getNotebooksDb();
+    notebookDb.insert(notebook, function(err, newNotebook) {
+      if (err) {
+        return cbMain(new _appError(err, _i18n.__('errors.notebook_creation')));
+      }
+      return cbMain(null, newNotebook);
+    });
+    return true;
+  }
+
+  function validate(notebook) {
+    if(!notebook.name) {
+      return false;
+    }
+    return true;
+  }
+
   return {
     getAllNotebooks: getAll,
     getFullDetailByID: getFullDetailByID,
-    initializeDefaults: initializeDefaults
+    initializeDefaults: initializeDefaults,
+    createNotebook : createNotebook
   };
 };
 

@@ -21,7 +21,7 @@ var NotebooksClient = function() {
   function _init() {
     notebooksContainerUL = document.getElementById('1_lstNotebooks');
     notebooksTabHeading = document.getElementById('1_openTab');
-    notebooksTabContainer = document.getElementById('1_openTabContainer');    
+    notebooksTabContainer = document.getElementById('1_openTabContainer');
 
     // Expose a limited API to the events handler.
     _notebookEvents.init(eventsApi, notebooksContainerUL,
@@ -36,8 +36,7 @@ var NotebooksClient = function() {
       try {
         var notebooksHTML = '';
         for (var i = 0, len = notebooks.length; i !== len; ++i) {
-          notebooksHTML += '<li class="checkbox"><input type="checkbox" id="' + notebooks[i]._id + '">' +
-            '<label for="' + notebooks[i]._id + '">' + notebooks[i].name + '</label></li>';
+          notebooksHTML += getNotebookItem(notebooks[i]);
         }
         notebooksContainerUL.innerHTML = notebooksHTML;
         _notebookEvents.addNotebookSelectedEvent();
@@ -51,8 +50,6 @@ var NotebooksClient = function() {
   // Displays a notebook with the given ID
   function showTab(notebookID) {
     // Fetch the notebook details
-    // TODO Write a wrapper method to fetch the notes..no dependency
-    // should exist between notebook.js and note.js
     _notebooks.getFullDetailByID(notebookID, function(err, notebookData) {
       if (err) {
         err.display();
@@ -67,6 +64,9 @@ var NotebooksClient = function() {
         }
         try {
           var notebookContentID = _appConfig.getNotebookContentID(notebookID);
+
+          // Remove current active tabs and heading.
+          removeActiveTab(notebooksTabHeading, notebooksTabContainer);
 
           // Add <li> to tab header
           notebooksTabHeading.insertAdjacentHTML('beforeend', '<li role="presentation" id="' + _appConfig.getNotebookHeaderID(
@@ -123,12 +123,32 @@ var NotebooksClient = function() {
       if (notebookContents) {
         notebookContents.remove();
       }
+      showNextNotebook();
     } catch (e) {
       var errObj = new _appError(e, _i18n.__('error.notebook_hide_error') + ' ' + _i18n.__('error.app_unstable'));
       errObj.display();
     }
     notebookContents = null;
     notebookHeader = null;
+  }
+
+  function showNextNotebook() {
+    var checkedBoxes = notebooksContainerUL.querySelectorAll('input[type="checkbox"]:checked');
+    var chkLength = checkedBoxes.length;
+    if(chkLength === 0) {
+      return;
+    }
+    var lastCheckboxSelected = checkedBoxes[chkLength - 1];
+    var notebookDbID = lastCheckboxSelected.id;
+    changeActiveNotebook(notebookDbID);
+  }
+
+  function changeActiveNotebook(notebookDbId) {
+    var notebookContentID = _appConfig.getNotebookContentID(notebookDbId);
+    var notebookHeaderID = _appConfig.getNotebookHeaderID(notebookDbId);
+    removeActiveTab(notebooksTabHeading, notebooksTabContainer);
+    notebooksTabHeading.querySelector('#' + notebookHeaderID).classList.add('active');
+    notebooksTabContainer.querySelector('#' + notebookContentID).classList.add('active');
   }
 
   function showNotesForPastDate(notebookDbID, selectedDate) {
@@ -229,6 +249,42 @@ var NotebooksClient = function() {
     firstChkBox = null;
   }
 
+  function saveNotebook(notebookData) {
+    _notebooks.createNotebook(notebookData, cbHandleNotebookSave);
+  }
+
+
+  function cbHandleNotebookSave(err, newNotebook) {
+    if(err) {
+      // TODO : Show error!
+      return;
+    }
+    var notebookLi = getNotebookItem(newNotebook, true);
+    notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
+    showTab(newNotebook._id);
+  }
+
+  function removeActiveTab(notebooksTabHeading, notebooksTabContainer) {
+    var activeTab = notebooksTabHeading.querySelector('.active');
+    if(activeTab) {
+        activeTab.classList.remove('active');
+    }
+
+    var activeTabContainer = notebooksTabContainer.querySelector('.active');
+    if(activeTabContainer) {
+        activeTabContainer.classList.remove('active');
+    }
+  }
+
+  function getNotebookItem(notebook, isChecked) {
+    var checkedHTML = '';
+    if(isChecked) {
+      checkedHTML = 'checked';
+    }
+    return '<li class="checkbox"><input type="checkbox" ' + checkedHTML + ' id="' + notebook._id + '">' +
+      '<label for="' + notebook._id + '">' + notebook.name + '</label></li>';
+  }
+
   var eventsApi = {
     showTab: showTab,
     hideTab: hideTab,
@@ -236,6 +292,7 @@ var NotebooksClient = function() {
     showFutureNotes: showFutureNotes,
     showActiveNotes: showActiveNotes,
     clearEmptyNotebook: clearEmptyNotebook,
+    saveNotebook : saveNotebook
   };
 
   return {

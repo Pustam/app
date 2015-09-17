@@ -36,8 +36,8 @@ var AppEvents = function() {
         return;
       }
       var $dlg = jQuery('#dlgAbout');
-      $dlg.modal('show');
       addAboutEvents();
+      $dlg.modal('show');
       _appUtil.addCloseEvent($dlg, removeAboutEvents);
     });
   }

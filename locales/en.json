@@ -11,8 +11,8 @@
 		"add_note": "Add note",
 		"settings": "Settings",
 		"empty_notebook": "This notebook does not seem to have any notes on this day.",
-		"notebook_name" : "Name",
-		"is_task_based" : "Will the notebook contain tasks?",
+		"notebook_name": "Name",
+		"is_task_based": "Will the notebook contain tasks?",
 		"save_changes": "Save changes",
 		"close": "Close"
 	},
@@ -66,7 +66,8 @@
 		"save_and_create_note": "Unexpected error while saving the note.",
 		"settings_dialog_display": "There was an error while loading the settings dialog.",
 		"about_dialog_display": "There was an error while loading About us.",
-		"new_notebook_display_error": "error.new_notebook_display_error"
+		"new_notebook_display_error": "There was an error while displaying the newly created notebook.",
+		"notebook_creation": "There was an error while creating the notebook."
 	},
 	"settings": {
 		"name": "Settings",
@@ -89,5 +90,8 @@
 	"about": {
 		"reporting": "Found an issue or want a feature? Report ",
 		"here": "here"
+	},
+	"errors": {
+		"no_notebook_name": "errors.no_notebook_name"
 	}
 }

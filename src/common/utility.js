@@ -96,6 +96,7 @@ var Utility = function() {
 
   function readFormData(formElements) {
     var formData = {};
+    // TODO Perform validation based on the classes / data attributes.
     for(var i = 0, len = formElements.length; i !== len; ++i) {
       var elem = formElements[i];
       if(elem.type === 'button' || elem.name === "") {

@@ -13,8 +13,7 @@ var AppError = function(err, customMsg, log, overrideMsg) {
   if (!err) {
     throw new ReferenceError('Invalid error object.');
   }
-  console.log(err);
-  console.log(customMsg);
+
   // If log is anything other than false,
   // set it to true.
   log = log !== false ? true : false;

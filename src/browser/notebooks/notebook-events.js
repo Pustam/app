@@ -6,6 +6,7 @@ var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
 var _appError = require(_appConfig.commonsPath  + 'app-error.js');
 var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
+var _notebook = require(__dirname + '/notebook');
 
 var NotebookEvents = function() {
   var containerUL = null;
@@ -124,15 +125,21 @@ var NotebookEvents = function() {
   }
 
   function evtNotebookDlgClose(event) {
+    document.getElementById('btnNewNotebook').removeEventListener('click', evtNotebookSave);
+  }
 
+
+  function evtNotebookDlgOpen() {
+    document.getElementById('btnNewNotebook').addEventListener('click', evtNotebookSave);
   }
 
   function evtNotebookSave(event) {
-    var dlgForm = document.getElementById('#frmNewNotebook');
+    var dlgForm = document.getElementById('frmNewNotebook');
     if(!dlgForm) {
       return false;
     }
     var notebookData = _appUtil.readFormData(dlgForm.elements);
+    client.saveNotebook(notebookData);
   }
 
   function evtAddNotebook(event) {
@@ -142,6 +149,7 @@ var NotebookEvents = function() {
         return;
       }
       var $dlg = jQuery('#dlgNewNotebook');
+      evtNotebookDlgOpen();
       $dlg.modal('show');
       _appUtil.addCloseEvent($dlg, evtNotebookDlgClose);
     });
