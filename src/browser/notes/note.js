@@ -279,13 +279,43 @@ var Notes = function() {
     return noteObj;
   }
 
+  function changeNoteDate(noteID, updatedDate, cbMain) {
+    var notesDb = _app.getNotesDb();
+    var err = null;
+    if (updatedDate.getTime() < new Date().getTime()) {
+      err = new _appError(new Error('Tried to set target date in the past.'),
+        _i18n.__('error.target_date_in_past'));
+      return cbMain(err);
+    }
+
+    if (!noteID) {
+      err = new _appError(new Error('Please provide the note ID.'),
+        _i18n.__('error.invalid_note_id'));
+      return cbMain(err);
+    }
+    var noteObj = {
+      targetDate: updatedDate
+    };
+    notesDb.update({
+      _id: noteID
+    }, {
+      $set: noteObj
+    }, function(err, numReplaced) {
+      if (numReplaced <= 0) {
+        err = new _appError(err, _i18n.__('error.notes_update_err'));
+      }
+      return cbMain(err, noteObj);
+    });
+  }
+
   return {
     getNoteByID: getNoteByID,
     modifyNote: _modifyNote,
     deleteNote: deleteNote,
     getAllActiveNotes: getAllActiveNotes,
     getCompletedNotesForDate: getCompletedNotesForDate,
-    getFutureNotesByDate: getFutureNotesByDate
+    getFutureNotesByDate: getFutureNotesByDate,
+    changeDate: changeNoteDate
   };
 };
 

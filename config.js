@@ -37,6 +37,15 @@ var AppConfig = {
 	},
 	getNotebookHeaderID : function(notebookDbID) {
 		return 'notebookHeader_' + notebookDbID;
+	},
+	getDatepickerConfig : function() {
+		return {
+			todayBtn: true,
+			orientation: 'top',
+			todayHighlight: true,
+			autoclose: true,
+			format: AppConfig.dateFormat
+		};
 	}
 };
 

@@ -1,0 +1,22 @@
+<div class="modal fade" id="dlgMoveNote_88">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title text-center">
+          <%= i18n.__('note.change_date'); %>
+        </h2>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <form>
+            <div class="form-group">
+              <input type="text" id="txtTargetDate_88" name="targetDate" class="form-control" >
+            </div>
+            <input type="hidden" value="<%= note._id %>" id="hdnNoteID_88" name="noteID">
+            <input type="submit" value="Move" id="btnMoveNote_88" class="btn btn-default">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

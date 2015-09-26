@@ -15,6 +15,7 @@ var _notes = require(_appConfig.browserSrcPath + 'notes/note.js');
 var _noteEvents = require(_appConfig.browserSrcPath + 'notes/note-events.js');
 var _noteEditor = require(_appConfig.browserSrcPath + 'notes/note-editor.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
+var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 
 var NoteClient = function() {
   var currentlyFocusedNote = null;
@@ -22,11 +23,13 @@ var NoteClient = function() {
   function _init() {
     // Initialize note events with callback events.
     _noteEvents.init({
-      saveNote : saveNote,
-      markNoteAsComplete : markNoteAsComplete,
-      saveAndCreateNote : saveAndCreateNote,
-      deleteNote : deleteNote,
-      makeNoteEditable : makeNoteEditable
+      saveNote: saveNote,
+      markNoteAsComplete: markNoteAsComplete,
+      saveAndCreateNote: saveAndCreateNote,
+      deleteNote: deleteNote,
+      makeNoteEditable: makeNoteEditable,
+      displayNoteDateDlg: displayNoteDateDlg,
+      modifyNoteDate: modifyNoteDate
     });
   }
 
@@ -54,7 +57,6 @@ var NoteClient = function() {
       throw new Error(_i18n.__('error.notebook_container_not_found'));
     }
     if (notes.length === 0) {
-
       return;
     }
     for (var i = 0, len = notes.length; i !== len; ++i) {
@@ -174,13 +176,13 @@ var NoteClient = function() {
             errObj.display();
             return;
           }
+          // Remove the events
+          _noteEvents.removeAllEvents(note);
+
+          // Remove the note from DOM.
+          _noteEditor.removeNote(note);
         });
       }
-      // Remove the events
-      _noteEvents.removeAllEvents(note);
-
-      // Remove the note from DOM.
-      _noteEditor.removeNote(note);
     } catch (e) {
       var appErrObj = new _appError(e, _i18n.__('error.notes_deletion_err'));
       appErrObj.display();
@@ -195,7 +197,7 @@ var NoteClient = function() {
    */
   function markNoteAsComplete(note) {
     var isComplete = _noteEditor.isComplete(note);
-    if(!_noteEditor.markAsComplete(note)) {
+    if (!_noteEditor.markAsComplete(note)) {
       return;
     }
     // Save the note, it will update the note or create it.
@@ -338,11 +340,62 @@ var NoteClient = function() {
     }
   }
 
+  function displayNoteDateDlg(note) {
+    // Show the dialog box to handle the note update.
+    _appUtil.loadDialog('change-note-date.html', {
+      note: note
+    }, function(err, html) {
+      if (!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.note_dlg_change_open'))) {
+        return;
+      }
+      var $dlg = jQuery('#dlgMoveNote_88');
+      // Set the value in the hidden field
+      var noteID = note.dataset.noteid;
+      if (!noteID) {
+        // TODO User tried to move an unsaved note.
+        return;
+      }
+      $dlg.find('#hdnNoteID_88').val(noteID);
+
+      _noteEvents.evtNoteDateChangeOpen($dlg[0]);
+      $dlg.on('shown.bs.modal', function() {
+        this.querySelector('#txtTargetDate_88').focus();
+      });
+
+      $dlg.modal('show');
+      _appUtil.addCloseEvent($dlg, function() {
+        _noteEvents.evtNoteDateChangeClose($dlg[0]);
+        $dlg = null;
+      });
+    });
+  }
+
+  function modifyNoteDate(noteID, newDate, $dlg) {
+    _notes.changeDate(noteID, newDate, function(err) {
+      if (err) {
+        var errObj = new _appError(err, _i18n.__('error.notes_modification_err'));
+        errObj.display();
+      } else {
+        var note = _noteEditor.getNoteByID(noteID);
+        if (!note) {
+          return;
+        }
+        // Remove the events
+        _noteEvents.removeAllEvents(note);
+        $dlg.modal('hide');
+        // Remove the note from DOM.
+        _noteEditor.removeNote(note);
+
+        // TODO If all notes are gone, need to show empty notebook message.
+      }
+    });
+  }
+
   return {
     buildNotes: buildNotes,
     addNewNote: addNewNote,
     removeNotesFromNotebook: removeNotesFromNotebook,
-    init : _init
+    init: _init
   };
 };
 

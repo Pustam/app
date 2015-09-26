@@ -282,3 +282,10 @@ Div that contains each notes.
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+/**
+ * Move notes dialog
+ */
+#dlg .modal-sm {
+	width:450px;
+}

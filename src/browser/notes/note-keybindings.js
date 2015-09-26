@@ -47,8 +47,9 @@ var keybindings = {
       shiftModifier: false,
       cb : 'makeNoteEditable'
     }],
-    3333 : [{
-
+    15 : [{
+      comment : 'Move the note to another date',
+      cb: 'displayNoteDateDlg'
     }],
     5555 : [{
 

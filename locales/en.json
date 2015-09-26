@@ -18,7 +18,9 @@
 	},
 	"note": {
 		"deletion_confirmation_text": "Are you sure you want to delete the note?",
-		"deletion_confirmation_title": "Deletion confirmation"
+		"deletion_confirmation_title": "Deletion confirmation",
+		"": "",
+		"change_date": "Change the date..."
 	},
 	"shortcut": {
 		"shortcut": "Shortcut",
@@ -67,7 +69,9 @@
 		"settings_dialog_display": "There was an error while loading the settings dialog.",
 		"about_dialog_display": "There was an error while loading About us.",
 		"new_notebook_display_error": "There was an error while displaying the newly created notebook.",
-		"notebook_creation": "There was an error while creating the notebook."
+		"notebook_creation": "There was an error while creating the notebook.",
+		"note_dlg_change_open": "error.note_dlg_change_open",
+		"invalid_note_id": "error.invalid_note_id"
 	},
 	"settings": {
 		"name": "Settings",

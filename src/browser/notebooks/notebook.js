@@ -87,7 +87,7 @@ var Notebooks = function() {
         // It doesn't so let's create the notebook.
         var notebook = _appConfig.defaultNotebook;
         return createNotebook(notebook, function(err) {
-          if(err) {
+          if (err) {
             return cbMain(new _appError(err, _i18n.__('errors.creating_default_notebook'), false, true));
           }
           return cbMain();
@@ -101,7 +101,7 @@ var Notebooks = function() {
 
   function createNotebook(notebook, cbMain) {
     delete notebook._id;
-    if(!validate(notebook)) {
+    if (!validate(notebook)) {
       return cbMain(new _appError(new Error('No name provided for notebook.'),
         _i18n.__('errors.no_notebook_name')));
     }
@@ -118,7 +118,7 @@ var Notebooks = function() {
   }
 
   function validate(notebook) {
-    if(!notebook.name) {
+    if (!notebook.name) {
       return false;
     }
     return true;
@@ -128,7 +128,7 @@ var Notebooks = function() {
     getAllNotebooks: getAll,
     getFullDetailByID: getFullDetailByID,
     initializeDefaults: initializeDefaults,
-    createNotebook : createNotebook
+    createNotebook: createNotebook
   };
 };
 

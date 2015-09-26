@@ -86,7 +86,7 @@ var Utility = function() {
   function addCloseEvent($dlg, cbOnClose) {
     $dlg.on('hidden.bs.modal', function() {
       $dlg.off('hidden.bs.modal');
-      if(cbOnClose) {
+      if (cbOnClose) {
         cbOnClose();
       }
       $dlg = null;
@@ -97,14 +97,14 @@ var Utility = function() {
   function readFormData(formElements) {
     var formData = {};
     // TODO Perform validation based on the classes / data attributes.
-    for(var i = 0, len = formElements.length; i !== len; ++i) {
+    for (var i = 0, len = formElements.length; i !== len; ++i) {
       var elem = formElements[i];
-      if(elem.type === 'button' || elem.name === "") {
+      if (elem.type === 'button' || elem.name === "") {
         continue;
       }
       var ctrlName = elem.name;
       var ctrlVal = elem.value;
-      if(ctrlVal) {
+      if (ctrlVal) {
         formData[ctrlName] = ctrlVal;
       }
     }
@@ -115,9 +115,9 @@ var Utility = function() {
     loadPartial: loadPartial,
     loadDialog: loadDialog,
     mvFile: mvFile,
-    checkAndInsertDialog : checkAndInsertDialog,
-    addCloseEvent : addCloseEvent,
-    readFormData : readFormData
+    checkAndInsertDialog: checkAndInsertDialog,
+    addCloseEvent: addCloseEvent,
+    readFormData: readFormData
   };
 };
 

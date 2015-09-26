@@ -3,7 +3,7 @@ var _i18n = require('i18n');
 
 var _appConfig = require(__dirname + '/../../../config.js');
 var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
-var _appError = require(_appConfig.commonsPath  + 'app-error.js');
+var _appError = require(_appConfig.commonsPath + 'app-error.js');
 var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _notebook = require(__dirname + '/notebook');
@@ -135,7 +135,7 @@ var NotebookEvents = function() {
 
   function evtNotebookSave(event) {
     var dlgForm = document.getElementById('frmNewNotebook');
-    if(!dlgForm) {
+    if (!dlgForm) {
       return false;
     }
     var notebookData = _appUtil.readFormData(dlgForm.elements);
@@ -145,7 +145,7 @@ var NotebookEvents = function() {
   function evtAddNotebook(event) {
     // Show the dialog box
     _appUtil.loadDialog('new-notebook.html', {}, function(err, html) {
-      if(!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.new_notebook_display_error'))) {
+      if (!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.new_notebook_display_error'))) {
         return;
       }
       var $dlg = jQuery('#dlgNewNotebook');
@@ -163,7 +163,7 @@ var NotebookEvents = function() {
     addNotebookSelectedEvent: _addNotebookSelectedEvent,
     addEvents: _addEvents,
     removeEvents: _removeEvents,
-    init : _init
+    init: _init
   };
 };
 

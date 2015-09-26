@@ -30,7 +30,7 @@ var NotebooksClient = function() {
 
   function _getAndBindNotebooks(cbMain) {
     _notebooks.getAllNotebooks(function(err, notebooks) {
-      if(err) {
+      if (err) {
         return cbMain(err);
       }
       try {
@@ -41,7 +41,7 @@ var NotebooksClient = function() {
         notebooksContainerUL.innerHTML = notebooksHTML;
         _notebookEvents.addNotebookSelectedEvent();
         cbMain();
-      } catch(e) {
+      } catch (e) {
         return cbMain(e);
       }
     });
@@ -80,13 +80,8 @@ var NotebooksClient = function() {
           var notebookContents = document.getElementById(notebookContentID);
 
           // Generate the datepicker!
-          jQuery(notebookContents.querySelector('.notebook-date')).datepicker({
-            todayBtn: true,
-            orientation: 'top',
-            todayHighlight: true,
-            autoclose: true,
-            format: _appConfig.dateFormat
-          }).datepicker('update', new Date()).element.data('notebookid', notebookID);
+          var datePicker = jQuery(notebookContents.querySelector('.notebook-date')).datepicker(_appConfig.getDatepickerConfig());
+          datePicker.datepicker('update', new Date()).element.data('notebookid', notebookID);
 
           if (notebookData.notes.length !== 0) {
             // Build the notes html.
@@ -135,7 +130,7 @@ var NotebooksClient = function() {
   function showNextNotebook() {
     var checkedBoxes = notebooksContainerUL.querySelectorAll('input[type="checkbox"]:checked');
     var chkLength = checkedBoxes.length;
-    if(chkLength === 0) {
+    if (chkLength === 0) {
       return;
     }
     var lastCheckboxSelected = checkedBoxes[chkLength - 1];
@@ -255,7 +250,7 @@ var NotebooksClient = function() {
 
 
   function cbHandleNotebookSave(err, newNotebook) {
-    if(err) {
+    if (err) {
       // TODO : Show error!
       return;
     }
@@ -266,24 +261,25 @@ var NotebooksClient = function() {
 
   function removeActiveTab(notebooksTabHeading, notebooksTabContainer) {
     var activeTab = notebooksTabHeading.querySelector('.active');
-    if(activeTab) {
-        activeTab.classList.remove('active');
+    if (activeTab) {
+      activeTab.classList.remove('active');
     }
 
     var activeTabContainer = notebooksTabContainer.querySelector('.active');
-    if(activeTabContainer) {
-        activeTabContainer.classList.remove('active');
+    if (activeTabContainer) {
+      activeTabContainer.classList.remove('active');
     }
   }
 
   function getNotebookItem(notebook, isChecked) {
     var checkedHTML = '';
-    if(isChecked) {
+    if (isChecked) {
       checkedHTML = 'checked';
     }
     return '<li class="checkbox"><input type="checkbox" ' + checkedHTML + ' id="' + notebook._id + '">' +
       '<label for="' + notebook._id + '">' + notebook.name + '</label></li>';
   }
+
 
   var eventsApi = {
     showTab: showTab,
@@ -292,12 +288,12 @@ var NotebooksClient = function() {
     showFutureNotes: showFutureNotes,
     showActiveNotes: showActiveNotes,
     clearEmptyNotebook: clearEmptyNotebook,
-    saveNotebook : saveNotebook
+    saveNotebook: saveNotebook
   };
 
   return {
     getAndBindNotebooks: _getAndBindNotebooks,
-    selectFirstNotebook : _selectFirstNotebook,
+    selectFirstNotebook: _selectFirstNotebook,
     init: _init
   };
 };

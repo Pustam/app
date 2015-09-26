@@ -16,8 +16,8 @@ var NoteEditor = function() {
   const DEFAULT_NOTE_CLASS = 'note';
   const NOTE_NOT_EDITABLE_CLASS = 'readonly';
   var TEXT_MODIFIERS = {
-    BOLD : 1,
-    ITALICS : 2
+    BOLD: 1,
+    ITALICS: 2
   };
 
   /**
@@ -45,7 +45,7 @@ var NoteEditor = function() {
     sel.addRange(range);
   }
 
-  function  _turnOffEditing(note) {
+  function _turnOffEditing(note) {
     note.setAttribute('contenteditable', false);
   }
 
@@ -106,8 +106,8 @@ var NoteEditor = function() {
       var chunk = {};
 
       var nodeStack = [note],
-      node, foundStart = false,
-      stop = false;
+        node, foundStart = false,
+        stop = false;
       var foundStartNode = false;
       var charIndex = 0;
       while (!stop && (node = nodeStack.pop())) {
@@ -142,9 +142,9 @@ var NoteEditor = function() {
       chunk.after = chunk.afterNode.nodeValue.substr(range.endOffset, chunk.afterNode.nodeValue.length);
       chunk.before = chunk.beforeNode.nodeValue.substr(0, range.startOffset);
 
-      if(modifierType === TEXT_MODIFIERS.BOLD) {
+      if (modifierType === TEXT_MODIFIERS.BOLD) {
         doBoldOrItalics(chunk, 2);
-      } else if(modifierType === TEXT_MODIFIERS.ITALICS) {
+      } else if (modifierType === TEXT_MODIFIERS.ITALICS) {
         doBoldOrItalics(chunk, 1);
       }
 
@@ -153,7 +153,7 @@ var NoteEditor = function() {
 
       // after first, before later.
       // if the node is same, and the node value changes, the range collapses.
-      if(chunk.sameNodes) {
+      if (chunk.sameNodes) {
         var finalStr = chunk.afterNode.nodeValue.substr(0, range.endOffset) + chunk.after;
         finalStr = chunk.before + finalStr.substr(range.startOffset, finalStr.length);
         chunk.afterNode.nodeValue = finalStr;
@@ -182,9 +182,9 @@ var NoteEditor = function() {
     var sel = window.getSelection();
     sel.removeAllRanges();
     var range = document.createRange();
-    if(chunk.added) {
+    if (chunk.added) {
       startRangeOffset = startRangeOffset + chunk.added;
-      if(chunk.sameNodes) {
+      if (chunk.sameNodes) {
         endRangeOffset = endRangeOffset + chunk.added;
       }
     }
@@ -225,7 +225,7 @@ var NoteEditor = function() {
   }
 
   function _markAsComplete(note) {
-    if(_isEditable(note)) {
+    if (_isEditable(note)) {
       return false;
     }
     if (!note.innerText) {
@@ -268,24 +268,34 @@ var NoteEditor = function() {
           noteToFocus.focus();
         }
       }
-
       note.parentNode.remove();
     } else {
       note.remove();
     }
   }
 
+  function _getNoteByID(noteID, container) {
+    var note = null;
+    if (container) {
+      note = container.querySelector('.note[data-noteid="' + noteID + '"]');
+    } else {
+      note = document.querySelector('.note[data-noteid="' + noteID + '"]');
+    }
+    return note;
+  }
+
   return {
     isEditable: _isEditable,
     turnOnEditing: _turnOnEditing,
-    turnOffEditing : _turnOffEditing,
+    turnOffEditing: _turnOffEditing,
     markAsComplete: _markAsComplete,
     getNoteHTML: _getNoteHTML,
     isComplete: _isComplete,
     toggleNoteComplete: _toggleNoteComplete,
-    getCurrState : _getCurrentStateOfNote,
-    removeNote : _removeNote,
-    TEXT_MODIFIERS : TEXT_MODIFIERS
+    getCurrState: _getCurrentStateOfNote,
+    removeNote: _removeNote,
+    TEXT_MODIFIERS: TEXT_MODIFIERS,
+    getNoteByID: _getNoteByID
   };
 };
 

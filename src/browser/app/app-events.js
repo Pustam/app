@@ -19,20 +19,21 @@ var AppEvents = function() {
   function showShortcutDialog() {
     // TODO Fix localization in dialog html
     _appUtil.loadDialog('shortcuts-help.html', {}, function(err, html) {
-      if(!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.shortcut_dialog_display'))) {
+      if (!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.shortcut_dialog_display'))) {
         return;
       }
       var $dlg = jQuery('#dlgShortcutHelp');
       $dlg.modal('show');
-      _appUtil.addCloseEvent($dlg);
     });
   }
 
   function showAboutDialog() {
     // Load the JSON file for information regarding the version
     var pjJson = require(_appConfig.basePath + 'package.json');
-    _appUtil.loadDialog('about.html', { package : pjJson }, function(err, html) {
-      if(!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.about_dialog_display'))) {
+    _appUtil.loadDialog('about.html', {
+      package: pjJson
+    }, function(err, html) {
+      if (!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.about_dialog_display'))) {
         return;
       }
       var $dlg = jQuery('#dlgAbout');
@@ -45,7 +46,7 @@ var AppEvents = function() {
   function showIssuesList(event) {
     var href = event.target.getAttribute('href');
     event.preventDefault();
-    if(href) {
+    if (href) {
       _shell.openExternal(href);
     }
   }

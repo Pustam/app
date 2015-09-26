@@ -9,6 +9,7 @@
 var _appConfig = require(__dirname + '/../../../config');
 var _noteKeyBindings = require(__dirname + '/note-keybindings');
 var _noteEditor = require(__dirname + '/note-editor');
+var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 
 var NoteEvents = function() {
   var _noteHandler = {};
@@ -25,6 +26,7 @@ var NoteEvents = function() {
 
   function _addEvents(note) {
     note.addEventListener('keypress', evtNoteKeyPress, false);
+
   }
 
   function _removeEvents(note) {
@@ -43,7 +45,7 @@ var NoteEvents = function() {
   }
 
   function evtNoteKeyPress(event) {
-    if(!event.ctrlKey) {
+    if (!event.ctrlKey) {
       // Ctrl key not pressed, nothing to do.
       return;
     }
@@ -51,7 +53,7 @@ var NoteEvents = function() {
   }
 
   function evtNoteKeyDown(event) {
-    if(!event.ctrlKey) {
+    if (!event.ctrlKey) {
       // Ctrl key not pressed, nothing to do.
       return;
     }
@@ -73,17 +75,17 @@ var NoteEvents = function() {
   };
 
   function _checkIfCbIsValid(event, callback, noteState) {
-    if(callback.hasOwnProperty('isEditable') &&
+    if (callback.hasOwnProperty('isEditable') &&
       callback.isEditable !== noteState.isEditable) {
       return false;
     }
 
-    if(callback.hasOwnProperty('isComplete') &&
+    if (callback.hasOwnProperty('isComplete') &&
       callback.isComplete !== noteState.isComplete) {
       return false;
     }
 
-    if(event.shiftKey !== callback.shiftModifier) {
+    if (callback.shiftModifier && event.shiftKey !== callback.shiftModifier) {
       return false;
     }
     return true;
@@ -96,44 +98,94 @@ var NoteEvents = function() {
   function _handleKeyNoteEvents(event, eventType) {
     var keyCode = event.which;
     var callbacks = _noteKeyBindings[eventType][keyCode];
-    if(callbacks === undefined) {
+    if (callbacks === undefined) {
       // No keybindings exist
       return;
     }
 
     var currState = _noteEditor.getCurrState(event.target);
     var cbToFire = false;
-    if(Array.isArray(callbacks)) {
-        for(var i = 0; i !== callbacks.length; i++) {
-          if(_checkIfCbIsValid(event, callbacks[i], currState)) {
-            cbToFire = callbacks[i];
-          }
+    if (Array.isArray(callbacks)) {
+      for (var i = 0; i !== callbacks.length; i++) {
+        if (_checkIfCbIsValid(event, callbacks[i], currState)) {
+          cbToFire = callbacks[i];
         }
+      }
     } else {
-      if(_checkIfCbIsValid(event, callbacks, currState)) {
+      if (_checkIfCbIsValid(event, callbacks, currState)) {
         cbToFire = callbacks;
       }
     }
 
-    if(!cbToFire) {
+    if (!cbToFire) {
       return;
     }
 
-    if(cbToFire && _noteHandler[cbToFire.cb]) {
+    if (cbToFire && _noteHandler[cbToFire.cb]) {
       _noteHandler[cbToFire.cb](event.target, event, currState);
     }
 
-    if(cbToFire.allowDefault) {
+    if (cbToFire.allowDefault) {
       return;
     }
     event.preventDefault();
   }
 
+  function evtNoteDateChangeOpen(dlg) {
+    // 1. Generate the date picker
+    var datePicker = dlg.querySelector('#txtTargetDate_88');
+
+    // Config for datepicker, don't allow past dates.
+    var datePickerConfig = _appConfig.getDatepickerConfig();
+    datePickerConfig.startDate = new Date();
+    $(datePicker).datepicker(datePickerConfig);
+
+    // 2. Add the event
+    dlg.querySelector('#btnMoveNote_88').addEventListener('click', moveNoteToNewDate);
+    dlg.querySelector('form').addEventListener('submit', moveNoteToNewDate);
+
+    // 3. Focus the textbox.
+    dlg.querySelector('#txtTargetDate_88').focus();
+  }
+
+  function evtNoteDateChangeClose(dlg) {
+    var datePicker = dlg.querySelector('#txtTargetDate_88');
+    $(datePicker).datepicker('remove');
+
+    dlg.querySelector('#btnMoveNote_88').removeEventListener('click', moveNoteToNewDate);
+    dlg.querySelector('form').removeEventListener('submit', moveNoteToNewDate);
+    var noteID = dlg.querySelector('#hdnNoteID_88').value;
+    if (!noteID) {
+      return;
+    }
+    var note = _noteEditor.getNoteByID(noteID);
+    if (note) {
+      // If the note still exists, focus it.
+      note.focus();
+    }
+
+    $(dlg).data('modal', null).remove();
+  }
+
+  function moveNoteToNewDate(event) {
+    var $dlg = jQuery('#dlgMoveNote_88');
+    var formElements = $dlg.find('form')[0].elements;
+    var formData = _appUtil.readFormData(formElements);
+    var selectedDate = $dlg.find('#txtTargetDate_88').datepicker('getDate');
+    if (selectedDate) {
+      formData.targetDate = selectedDate;
+      _noteHandler.modifyNoteDate(formData.noteID, formData.targetDate, $dlg);
+    }
+    event.preventDefault();
+  }
+
   return {
-    init : init,
-    addEditableEvents : _addEditableEvents,
-    addEvents : _addEvents,
-    removeAllEvents : _removeAllEvents,
+    init: init,
+    addEditableEvents: _addEditableEvents,
+    addEvents: _addEvents,
+    removeAllEvents: _removeAllEvents,
+    evtNoteDateChangeOpen: evtNoteDateChangeOpen,
+    evtNoteDateChangeClose: evtNoteDateChangeClose
   };
 };
 
