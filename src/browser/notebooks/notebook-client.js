@@ -18,7 +18,7 @@ var NotebooksClient = function() {
   var notebooksTabContainer = null;
   const EMPTY_NOTES_CLASS = 'empty-notebook';
 
-  function _init() {
+  function _init(cbMain) {
     notebooksContainerUL = document.getElementById('1_lstNotebooks');
     notebooksTabHeading = document.getElementById('1_openTab');
     notebooksTabContainer = document.getElementById('1_openTabContainer');
@@ -26,6 +26,8 @@ var NotebooksClient = function() {
     // Expose a limited API to the events handler.
     _notebookEvents.init(eventsApi, notebooksContainerUL,
       notebooksTabHeading, notebooksTabContainer);
+
+    _notebooks.initializeDefaults(cbMain);
   }
 
   function _getAndBindNotebooks(cbMain) {

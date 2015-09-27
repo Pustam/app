@@ -15,8 +15,7 @@ var _appError = require(_appConfig.commonsPath + 'app-error');
 function onDOMReady() {
 
   function initializeApp(cbMain) {
-    _async.waterfall([_appClient.init, function(cb) {
-      _notebooksClient.init();
+    _async.waterfall([_appClient.init, _notebooksClient.init, function(cb) {
       _notesClient.init();
       _settingsClient.init();
       cb();
