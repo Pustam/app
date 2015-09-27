@@ -34,7 +34,9 @@
 		"kbd_complete_note": "<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd>",
 		"desc_complete_note": "Marks the currently focused note as complete.",
 		"kbd_edit_note": "<kbd>Ctrl</kbd> + <kbd>E</kbd>",
-		"desc_edit_note": "Makes the currently focused note editable."
+		"desc_edit_note": "Makes the currently focused note editable.",
+		"kbd_move_note_date" : "<kbd>Ctrl</kbd> + <kbd>O</kbd>",
+		"desc_move_note_date" : "Move the note from one date to another in the future."
 	},
 	"error": {
 		"loading_database": "There was an error while creating/loading the database.",
@@ -70,8 +72,8 @@
 		"about_dialog_display": "There was an error while loading About us.",
 		"new_notebook_display_error": "There was an error while displaying the newly created notebook.",
 		"notebook_creation": "There was an error while creating the notebook.",
-		"note_dlg_change_open": "error.note_dlg_change_open",
-		"invalid_note_id": "error.invalid_note_id"
+		"note_dlg_change_open": "There was an error while displaying the dialog.",
+		"invalid_note_id": "Invalid note was sent. Please ensure that the note has been saved first!"
 	},
 	"settings": {
 		"name": "Settings",
