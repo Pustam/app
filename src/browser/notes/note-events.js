@@ -45,7 +45,7 @@ var NoteEvents = function() {
    * @return {undefined}    No return type.
    */
   function evtNoteBlur(event) {
-    if(!_noteEditor.isEditable(event.target)) {
+    if (!_noteEditor.isEditable(event.target)) {
       return;
     }
     _noteHandler.saveNote(event.target, true);
@@ -191,7 +191,7 @@ var NoteEvents = function() {
     addEditableEvents: _addEditableEvents,
     addEvents: _addEvents,
     removeAllEvents: _removeAllEvents,
-    addNonEditableEvents : _addNonEditableEvents,
+    addNonEditableEvents: _addNonEditableEvents,
     evtNoteDateChangeOpen: evtNoteDateChangeOpen,
     evtNoteDateChangeClose: evtNoteDateChangeClose
   };

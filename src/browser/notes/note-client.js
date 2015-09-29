@@ -148,7 +148,7 @@ var NoteClient = function() {
         } else {
           throw new Error(_i18n.__('error.savenote_invalid_call'));
         }
-        if(isBlur) {
+        if (isBlur) {
           // If its' a blur event, save the note and remove the editable property
           // In addition also remove the unnecessary blur event.
           _noteEditor.turnOffEditing(note);

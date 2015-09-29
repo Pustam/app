@@ -18,40 +18,40 @@
 var keybindings = {
   'keypress': {
     3: [{
-      comment : 'Mark a note as complete on Ctrl + Shift + C',
+      comment: 'Mark a note as complete on Ctrl + Shift + C',
       isEditable: false,
       shiftModifier: true,
-      cb : 'markNoteAsComplete'
+      cb: 'markNoteAsComplete'
     }],
-    19 : [{
-      comment : 'Save a note on pressing Ctrl + S',
+    19: [{
+      comment: 'Save a note on pressing Ctrl + S',
       isEditable: true,
       isComplete: false,
       shiftModifier: false,
-      cb : 'saveNote'
+      cb: 'saveNote'
     }],
-    14 : [{
-      comment : 'Save and create a note Ctrl + N',
+    14: [{
+      comment: 'Save and create a note Ctrl + N',
       shiftModifier: false,
-      cb : 'saveAndCreateNote'
+      cb: 'saveAndCreateNote'
     }],
-    4 : [{
-      comment : 'Delete note Ctrl + D',
+    4: [{
+      comment: 'Delete note Ctrl + D',
       shiftModifier: false,
-      cb : 'deleteNote'
+      cb: 'deleteNote'
     }],
-    5 : [{
-      comment : 'Makes a note editable Ctrl + E',
+    5: [{
+      comment: 'Makes a note editable Ctrl + E',
       isEditable: false,
       isComplete: false,
       shiftModifier: false,
-      cb : 'makeNoteEditable'
+      cb: 'makeNoteEditable'
     }],
-    15 : [{
-      comment : 'Move the note to another date',
+    15: [{
+      comment: 'Move the note to another date',
       cb: 'displayNoteDateDlg'
     }],
-    5555 : [{
+    5555: [{
 
     }],
   },
