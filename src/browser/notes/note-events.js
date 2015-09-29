@@ -26,7 +26,6 @@ var NoteEvents = function() {
 
   function _addEvents(note) {
     note.addEventListener('keypress', evtNoteKeyPress, false);
-
   }
 
   function _removeEvents(note) {
@@ -35,12 +34,20 @@ var NoteEvents = function() {
     note = null;
   }
 
+  function _addNonEditableEvents(note) {
+    _removeEvents(note);
+    _addEvents(note);
+  }
+
   /**
    * Fired whenever focus is lost on a note. Then calls `saveNote`
    * @param  {Object} event Event object
    * @return {undefined}    No return type.
    */
   function evtNoteBlur(event) {
+    if(!_noteEditor.isEditable(event.target)) {
+      return;
+    }
     _noteHandler.saveNote(event.target, true);
   }
 
@@ -184,6 +191,7 @@ var NoteEvents = function() {
     addEditableEvents: _addEditableEvents,
     addEvents: _addEvents,
     removeAllEvents: _removeAllEvents,
+    addNonEditableEvents : _addNonEditableEvents,
     evtNoteDateChangeOpen: evtNoteDateChangeOpen,
     evtNoteDateChangeClose: evtNoteDateChangeClose
   };

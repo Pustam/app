@@ -65,7 +65,7 @@ var Notes = function() {
      * @param  {Object} noteObj Updated / Inserted note object
      * @return {undefined}         No return type.
      */
-    function cbNoteModified(err, noteObj, c) {
+    function cbNoteModified(err, noteObj) {
       noteObj.noteElem = noteElem;
       noteObj.isBlur = isBlur;
       if (err) {

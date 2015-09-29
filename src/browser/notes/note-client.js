@@ -148,6 +148,12 @@ var NoteClient = function() {
         } else {
           throw new Error(_i18n.__('error.savenote_invalid_call'));
         }
+        if(isBlur) {
+          // If its' a blur event, save the note and remove the editable property
+          // In addition also remove the unnecessary blur event.
+          _noteEditor.turnOffEditing(note);
+          _noteEvents.addNonEditableEvents(note);
+        }
       } catch (e) {
         var errObj = new _appError(e, _i18n.__('error.notes_modification_err'));
         errObj.display();
@@ -182,6 +188,9 @@ var NoteClient = function() {
           // Remove the note from DOM.
           _noteEditor.removeNote(note);
         });
+      } else {
+        // Remove the note from DOM.
+        _noteEditor.removeNote(note);
       }
     } catch (e) {
       var appErrObj = new _appError(e, _i18n.__('error.notes_deletion_err'));
@@ -216,6 +225,7 @@ var NoteClient = function() {
       return;
     }
     if (!currentlyFocusedNote.dataset.noteid) {
+      // Note has not been saved before, no need to fetch the data.
       _noteEditor.turnOnEditing(currentlyFocusedNote);
       return;
     }
