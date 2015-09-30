@@ -14,7 +14,6 @@ var MainWindow = function() {
   function init() {
     var settings = _settings.getAppSettings();
 
-    console.log(_appConfig.srcPath + 'img/markdown-notes-ico.png');
     // Create the browser window.
     mainWindow = new _browserWindow({
       width: 800,
