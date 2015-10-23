@@ -209,9 +209,19 @@ var NoteClient = function() {
     if (!_noteEditor.markAsComplete(note)) {
       return;
     }
-    // Save the note, it will update the note or create it.
-    // This will also mark it as complete or mark it as uncomplete.
-    saveNote(note, false, isComplete);
+    if(_noteEditor.isEditable(note)) {
+      // Save the note, it will update the note or create it.
+      // This will also mark it as complete or mark it as uncomplete.
+      saveNote(note, false, isComplete);
+    } else {
+      // It's not editable, we don't want to save the whole thing,
+      // just update the isComplete flag.
+      _notes.updateCompletion(note.dataset.noteid, !isComplete, function(err) {
+        if(err) {
+          err.display();
+        }
+      });
+    }
   }
 
   function makeNoteEditable(note) {

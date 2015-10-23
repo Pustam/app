@@ -308,6 +308,22 @@ var Notes = function() {
     });
   }
 
+  function _updateCompletion(noteID, isComplete, cbMain) {
+    var notesDb = _app.getNotesDb();
+    notesDb.update({
+      _id : noteID
+    }, { $set : { isComplete :isComplete, modifiedOn :new Date() }}, {}, function(err, numReplaced) {
+      if(err) {
+        return cbMain(new _appError(err, _i18n.__('error.notes_complete')));
+      }
+      if(numReplaced === 1) {
+        return cbMain(null);
+      }
+      return cbMain(new Error(_i18n.__('error.notes_complete'),
+        _i18n.__('error.notes_complete')));
+    });
+  }
+
   return {
     getNoteByID: getNoteByID,
     modifyNote: _modifyNote,
@@ -315,7 +331,8 @@ var Notes = function() {
     getAllActiveNotes: getAllActiveNotes,
     getCompletedNotesForDate: getCompletedNotesForDate,
     getFutureNotesByDate: getFutureNotesByDate,
-    changeDate: changeNoteDate
+    changeDate: changeNoteDate,
+    updateCompletion : _updateCompletion
   };
 };
 
