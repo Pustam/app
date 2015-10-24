@@ -21,6 +21,7 @@ var NotebookEvents = function() {
     tabContainer = notebooksTabContainer;
 
     document.getElementById('btnAddNotebook').addEventListener('click', evtAddNotebook);
+    tabHeading.addEventListener('click', evtTabChanged);
   }
 
   function _addNotebookSelectedEvent() {
@@ -128,7 +129,6 @@ var NotebookEvents = function() {
     document.getElementById('btnNewNotebook').removeEventListener('click', evtNotebookSave);
   }
 
-
   function evtNotebookDlgOpen() {
     document.getElementById('btnNewNotebook').addEventListener('click', evtNotebookSave);
   }
@@ -155,6 +155,16 @@ var NotebookEvents = function() {
     });
   }
 
+  function evtTabChanged(event) {
+    if(!event.target.href) {
+      return;
+    }
+    var currNotebookID = event.target.getAttribute('aria-controls');
+    if(!currNotebookID) {
+      return;
+    }
+    _notebook.setCurrentNotebook(currNotebookID);
+  }
   /**
    * End of events
    */

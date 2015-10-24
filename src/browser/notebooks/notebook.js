@@ -15,6 +15,9 @@ var _notes = require(_appConfig.browserSrcPath + 'notes/note.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
 
 var Notebooks = function() {
+  const OPEN_NOTEBOOKS = 'open-notebooks';
+  const CURRENT_OPEN_NOTEBOOK = 'current-notebook';
+
   /**
    * Fetches all the notebooks.
    */
@@ -22,7 +25,7 @@ var Notebooks = function() {
     var notebooksDb = _app.getNotebooksDb();
     notebooksDb.find({}, function(err, notebooks) {
       if (err) {
-        return cbMain(new _appError(err, _i18n.__('errors.retrieving_notebooks')));
+        return cbMain(new _appError(err, _i18n.__('error.retrieving_notebooks')));
       }
       return cbMain(null, notebooks);
     });
@@ -46,7 +49,7 @@ var Notebooks = function() {
           if (err) {
             return cb(err);
           } else if (notebook === null) {
-            return cb(new Error(_i18n.__('errors.notebook_not_found', notebookID)));
+            return cb(new Error(_i18n.__('error.notebook_not_found', notebookID)));
           }
           cb(null, notebook);
         });
@@ -57,7 +60,7 @@ var Notebooks = function() {
       }
     ], function(err, results) {
       if (err) {
-        return cbMain(new _appError(err, _i18n.__('errors.retrieving_notebook')));
+        return cbMain(new _appError(err, _i18n.__('error.retrieving_notebook')));
       }
       // Create a property under the notebook object,
       // and assign all notes and return object.
@@ -81,14 +84,14 @@ var Notebooks = function() {
       }]
     }, function(err, docs) {
       if (err) {
-        return cbMain(new _appError(err, _i18n.__('errors.checking_default_notebook')));
+        return cbMain(new _appError(err, _i18n.__('error.checking_default_notebook')));
       }
       if (docs.length === 0) {
         // It doesn't so let's create the notebook.
         var notebook = _appConfig.defaultNotebook;
         return createNotebook(notebook, function(err) {
           if (err) {
-            return cbMain(new _appError(err, _i18n.__('errors.creating_default_notebook'), false, true));
+            return cbMain(new _appError(err, _i18n.__('error.creating_default_notebook'), false, true));
           }
           return cbMain();
         });
@@ -103,14 +106,14 @@ var Notebooks = function() {
     delete notebook._id;
     if (!validate(notebook)) {
       return cbMain(new _appError(new Error('No name provided for notebook.'),
-        _i18n.__('errors.no_notebook_name')));
+        _i18n.__('error.no_notebook_name')));
     }
     notebook.createdOn = new Date();
     notebook.modifiedOn = notebook.createdOn;
     var notebookDb = _app.getNotebooksDb();
     notebookDb.insert(notebook, function(err, newNotebook) {
       if (err) {
-        return cbMain(new _appError(err, _i18n.__('errors.notebook_creation')));
+        return cbMain(new _appError(err, _i18n.__('error.notebook_creation')));
       }
       return cbMain(null, newNotebook);
     });
@@ -124,11 +127,40 @@ var Notebooks = function() {
     return true;
   }
 
+  function _getLastOpenedNotebooks() {
+    var lastOpenedNotebook = localStorage.getItem(OPEN_NOTEBOOKS);
+    if(!lastOpenedNotebook) {
+      return false;
+    }
+    try {
+      lastOpenedNotebook = JSON.parse(lastOpenedNotebook);
+      return lastOpenedNotebook;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  function _updateOpenNotebooks(openNotebooks) {
+    localStorage.setItem(OPEN_NOTEBOOKS, JSON.stringify(openNotebooks));
+  }
+
+  function _setCurrentNotebook(notebookID) {
+    localStorage.setItem(CURRENT_OPEN_NOTEBOOK, notebookID);
+  }
+
+  function _getLastActiveNotebook() {
+    return localStorage.getItem(CURRENT_OPEN_NOTEBOOK);
+  }
+
   return {
     getAllNotebooks: getAll,
     getFullDetailByID: getFullDetailByID,
     initializeDefaults: initializeDefaults,
-    createNotebook: createNotebook
+    createNotebook: createNotebook,
+    getLastOpenedNotebooks : _getLastOpenedNotebooks,
+    updateOpenNotebooks : _updateOpenNotebooks,
+    setCurrentNotebook : _setCurrentNotebook,
+    getLastActiveNotebook : _getLastActiveNotebook
   };
 };
 

@@ -35,7 +35,6 @@ var MarkdownNotes = function() {
     _app.on('will-quit', appWillQuit);
   }
 
-
   function appWillQuit(event) {
     if (settingsToBeApplied) {
       // Settings have been updated, apply the settings

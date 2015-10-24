@@ -74,7 +74,9 @@
 		"notebook_creation": "There was an error while creating the notebook.",
 		"note_dlg_change_open": "There was an error while displaying the dialog.",
 		"invalid_note_id": "Invalid note was sent. Please ensure that the note has been saved first!",
-		"notes_complete": "There was an error while marking the note as complete."
+		"notes_complete": "There was an error while marking the note as complete.",
+		"notebook_init_display" : "There was an error while inititalizing the notebooks!",
+		"no_notebook_name" : "No notebook name provided."
 	},
 	"settings": {
 		"name": "Settings",
@@ -97,8 +99,5 @@
 	"about": {
 		"reporting": "Found an issue or want a feature? Report ",
 		"here": "here"
-	},
-	"errors": {
-		"no_notebook_name": "errors.no_notebook_name"
 	}
 }

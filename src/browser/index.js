@@ -13,7 +13,6 @@ var _settingsClient = require(_appConfig.browserSrcPath + 'settings/setting-clie
 var _appError = require(_appConfig.commonsPath + 'app-error');
 
 function onDOMReady() {
-
   function initializeApp(cbMain) {
     _async.waterfall([_appClient.init, _notebooksClient.init, function(cb) {
       _notesClient.init();
@@ -26,16 +25,15 @@ function onDOMReady() {
 
   // 1. Initialize the app
   // 2. Get and bind the list of notebooks
-  // 3. Select the first notebook
   _async.waterfall([initializeApp, _notebooksClient.getAndBindNotebooks], function(err) {
     if (err) {
       err.display();
       return;
     }
     try {
-      _notebooksClient.selectFirstNotebook();
+      _notebooksClient.initDisplay();
     } catch (err) {
-      var errObj = new _appError(err, _i18n.__('errors.app_init'));
+      var errObj = new _appError(err, _i18n.__('error.app_init'));
       errObj.display();
     }
   });
