@@ -1,7 +1,7 @@
 {
   "name"    : "markdown-notes",
   "title" : "Markdown Notes",
-  "version" : "0.3.3",
+  "version" : "0.3.7",
   "main"    : "src/renderer/markdown-notes.js",
   "contributors" : [
     "Abijeet Patro"
@@ -17,11 +17,11 @@
   },
   "description": "A markdown based notebook, stores notes locally, intended to be keyboard friendly.",
   "dependencies" : {
-    "nedb" : "1.1.2",
-    "async" : "0.9.0",
-    "i18n" : "0.5.0",
-    "ejs" : "2.3.1",
-    "marked" : "0.3.3",
+    "nedb" : "1.2.1",
+    "async" : "1.4.2",
+    "i18n" : "0.6.0",
+    "ejs" : "2.3.4",
+    "marked" : "0.3.5",
     "jquery" : "2.1.4"
   },
   "devDependencies": {

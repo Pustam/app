@@ -10,6 +10,7 @@ var _settings = require(_appConfig.commonsPath + 'settings.js');
 
 var MainWindow = function() {
   var mainWindow = null;
+  var isMaximized = false;
 
   function init() {
     var settings = _settings.getAppSettings();
@@ -46,10 +47,13 @@ var MainWindow = function() {
   function bindShortcutKey(shortcutKey) {
     var ret = _globalShortcut.register('Super+Shift+' + shortcutKey, function() {
       if (mainWindow.isFocused()) {
+        isMaximized = mainWindow.isMaximized();
         mainWindow.hide();
       } else {
-        // TODO : highlight first note.
         mainWindow.show();
+        if(isMaximized) {
+          mainWindow.maximize();
+        }
       }
     });
 

@@ -5,6 +5,7 @@
  ****************************************************************/
 
 'use strict';
+var _shell = require('shell');
 
 var _appConfig = require(__dirname + '/../../../config');
 var _noteKeyBindings = require(__dirname + '/note-keybindings');
@@ -26,11 +27,14 @@ var NoteEvents = function() {
 
   function _addEvents(note) {
     note.addEventListener('keypress', evtNoteKeyPress, false);
+    note.addEventListener('click', evtNoteClick, false);
   }
 
   function _removeEvents(note) {
     note.removeEventListener('blur', evtNoteBlur);
     note.removeEventListener('keypress', evtNoteKeyPress);
+    note.removeEventListener('keydown', evtNoteKeyDown);
+    note.removeEventListener('click', evtNoteClick, false);
     note = null;
   }
 
@@ -65,6 +69,13 @@ var NoteEvents = function() {
       return;
     }
     _handleKeyNoteEvents(event, 'keydown');
+  }
+
+  function evtNoteClick(event) {
+    if(event.target.href) {
+      _shell.openExternal(event.target.href);
+      event.preventDefault();
+    }
   }
 
   /**
