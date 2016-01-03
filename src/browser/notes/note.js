@@ -324,6 +324,16 @@ var Notes = function() {
     });
   }
 
+  function _deleteByNotebookID(notebookID, cbMain) {
+    var notesDb = _app.getNotesDb();
+    notesDb.remove({ notebookID : notebookID }, { multi : true}, function(err, numRemoved) {
+      if(err) {
+        return cbMain(new _appError(err, _i18n.__('error.notes_delete_err')));
+      }
+      return cbMain(null, numRemoved);
+    });
+  }
+
   return {
     getNoteByID: getNoteByID,
     modifyNote: _modifyNote,
@@ -332,7 +342,8 @@ var Notes = function() {
     getCompletedNotesForDate: getCompletedNotesForDate,
     getFutureNotesByDate: getFutureNotesByDate,
     changeDate: changeNoteDate,
-    updateCompletion : _updateCompletion
+    updateCompletion : _updateCompletion,
+    deleteByNotebookID : _deleteByNotebookID
   };
 };
 

@@ -12,7 +12,7 @@ var AppConfig = {
 	srcPath : __dirname + '/src/',
 	dialogsPath : __dirname + '',
 	partialsPath : __dirname + '',
-	isDevelopment: false,
+	isDevelopment: true,
 	database: {
 		path: __dirname + '/db/',
 		notes: 'notes.db',

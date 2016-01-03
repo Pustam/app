@@ -42,6 +42,12 @@ var NotebookEvents = function() {
     var $datePicker = $(notebookContents.querySelector('.notebook-date'));
     $datePicker.on('changeDate', evtNotebookDateChanged);
     $datePicker = null;
+
+    // Adding the delete notebook event.
+    var btnDeleteNotebook = notebookContents.querySelector('#btnDeleteNotebook_16');
+    btnDeleteNotebook.addEventListener('click', evtDeleteNotebook);
+    btnDeleteNotebook.dataset.notebookid = notebookID;
+    btnDeleteNotebook = null;
   }
 
   function _removeEvents(notebookContents) {
@@ -49,6 +55,11 @@ var NotebookEvents = function() {
     var btnAddNote = notebookContents.querySelector('.add-note');
     btnAddNote.removeEventListener('click', evtAddNote);
     btnAddNote = null;
+
+    // Remove the delete button
+    var btnDeleteNotebook = notebookContents.querySelector('#btnDeleteNotebook_16');
+    btnDeleteNotebook.removeEventListener('click', evtDeleteNotebook);
+    btnDeleteNotebook = null;
 
     // Removing the datepicker
     jQuery(notebookContents.querySelector('.notebook-date')).datepicker('remove');
@@ -134,12 +145,15 @@ var NotebookEvents = function() {
   }
 
   function evtNotebookSave(event) {
-    var dlgForm = document.getElementById('frmNewNotebook');
+    event.preventDefault();
+    var dlgForm = document.getElementById('frmNewNotebook_92');
     if (!dlgForm) {
       return false;
     }
     var notebookData = _appUtil.readFormData(dlgForm.elements);
-    client.saveNotebook(notebookData);
+    client.saveNotebook(notebookData, function() {
+      $('#dlgNewNotebook').modal('toggle');
+    });
   }
 
   function evtAddNotebook(event) {
@@ -165,10 +179,23 @@ var NotebookEvents = function() {
     }
     _notebook.setCurrentNotebook(currNotebookID);
   }
+
+  function evtDeleteNotebook(event) {
+     var isUserSure = window.confirm(_i18n.__('notebook.deletion_confirmation'));
+     if(!isUserSure) {
+       return;
+     }
+     // Call client method to delete.
+     var notebookID = event.target.dataset.notebookid || event.target.parentNode.dataset.notebookid;
+     if(!notebookID) {
+       return;
+     }
+     client.deleteNotebook(notebookID);
+  }
+
   /**
    * End of events
    */
-
   return {
     addNotebookSelectedEvent: _addNotebookSelectedEvent,
     addEvents: _addEvents,

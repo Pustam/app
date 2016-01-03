@@ -69,6 +69,16 @@ var Notebooks = function() {
     });
   };
 
+  var _deleteByID = function(notebookID, cbMain) {
+    var notebooksDb = _app.getNotebooksDb();
+    notebooksDb.remove({ _id : notebookID }, function(err, numRemoved) {
+        if(err) {
+          return cbMain(new _appError(err, _i18n.__('error.notebook_delete_error')));
+        }
+        return cbMain(null, numRemoved);
+    });
+  };
+
   /**
    * Checks if the default data is present. The default data at this moment
    * consists of the "Daily" notebook
@@ -110,6 +120,7 @@ var Notebooks = function() {
     }
     notebook.createdOn = new Date();
     notebook.modifiedOn = notebook.createdOn;
+    notebook._id = 'ntb' + new Date().getTime();
     var notebookDb = _app.getNotebooksDb();
     notebookDb.insert(notebook, function(err, newNotebook) {
       if (err) {
@@ -160,7 +171,8 @@ var Notebooks = function() {
     getLastOpenedNotebooks : _getLastOpenedNotebooks,
     updateOpenNotebooks : _updateOpenNotebooks,
     setCurrentNotebook : _setCurrentNotebook,
-    getLastActiveNotebook : _getLastActiveNotebook
+    getLastActiveNotebook : _getLastActiveNotebook,
+    deleteByID : _deleteByID
   };
 };
 

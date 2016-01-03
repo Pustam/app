@@ -7,7 +7,7 @@
         </button>
         <h4 class="modal-title text-cent"><%= i18n.__('notebook.new_notebook');%></h4>
       </div>
-      <form class="modal-body container-fluid" id="frmNewNotebook">
+      <form class="modal-body container-fluid" id="frmNewNotebook_92">
         <p id="pNewNotebookInfo_7" class="hidden"></p>
         <div class="form-group col-md-12">
           <label for="txtNotebookName_9" class="control-label">
@@ -31,7 +31,7 @@
         </div>
       </form>
       <div class="modal-footer">
-        <button type="button" id="btnNewNotebook" class="btn btn-primary">
+        <button type="submit" id="btnNewNotebook" class="btn btn-primary" form="frmNewNotebook_92">
           <%= i18n.__('notebook.save_changes');%>
         </button>
         <button type="button" class="btn btn-default" data-dismiss="modal">

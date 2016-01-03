@@ -14,7 +14,9 @@
 		"notebook_name": "Name",
 		"is_task_based": "Will the notebook contain tasks?",
 		"save_changes": "Save changes",
-		"close": "Close"
+		"close": "Close",
+		"deletion_confirmation" : "This will delete the notebook and the notes in the notebook. Are you sure you want to continue?",
+		"delete_notebook" : "Delete this notebook"
 	},
 	"note": {
 		"deletion_confirmation_text": "Are you sure you want to delete the note?",
@@ -76,7 +78,9 @@
 		"invalid_note_id": "Invalid note was sent. Please ensure that the note has been saved first!",
 		"notes_complete": "There was an error while marking the note as complete.",
 		"notebook_init_display" : "There was an error while inititalizing the notebooks!",
-		"no_notebook_name" : "No notebook name provided."
+		"no_notebook_name" : "No notebook name provided.",
+		"notes_delete_err" : "There was an error while deleting the notes in the notebook.",
+		"notebook_delete_error" : "There was an error while deleting the notebook."
 	},
 	"settings": {
 		"name": "Settings",

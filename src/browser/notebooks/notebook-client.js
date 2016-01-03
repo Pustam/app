@@ -265,18 +265,22 @@ var NotebooksClient = function() {
     firstChkBox = null;
   }
 
-  function saveNotebook(notebookData) {
-    _notebooks.createNotebook(notebookData, cbHandleNotebookSave);
-  }
-
-  function cbHandleNotebookSave(err, newNotebook) {
-    if (err) {
-      // TODO : Show error!
-      return;
-    }
-    var notebookLi = getNotebookItem(newNotebook, true);
-    notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
-    showTab(newNotebook._id);
+  function saveNotebook(notebookData, cbMain) {
+    _notebooks.createNotebook(notebookData, function(err, newNotebook) {
+      if(err) {
+        err.display();
+        if(cbMain) {
+          cbMain(err);
+        }
+        return;
+      }
+      var notebookLi = getNotebookItem(newNotebook, true);
+      notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
+      showTab(newNotebook._id);
+      if(cbMain) {
+        cbMain(err, newNotebook);
+      }
+    });
   }
 
   function removeActiveTab(notebooksTabHeading, notebooksTabContainer) {
@@ -312,6 +316,31 @@ var NotebooksClient = function() {
   function updateOpenNotebookCache() {
     var openNotebooks = getOpenNotebooks();
     _notebooks.updateOpenNotebooks(openNotebooks);
+  }
+
+  function deleteNotebook(notebookID) {
+    var notesDeleted = 0;
+    _async.waterfall([
+      function(next) {
+        // Delete the notes first.
+        _notes.deleteByNotebookID(notebookID, next);
+      }, function (data, next) {
+        // Delete the notebook next.
+        notesDeleted = data;
+        _notebooks.deleteByID(notebookID, next);
+      }
+    ], function(err, data) {
+      if(err) {
+        err.display();
+        return;
+      }
+
+      // Remove the checkbox first, this order is important.
+      removeNotebookCheckbox(notebookID);
+
+      // Then remove the notebook from the DOM
+      hideTab(notebookID);
+    });
   }
 
   function _initDisplay() {
@@ -357,6 +386,14 @@ var NotebooksClient = function() {
     return;
   }
 
+  function removeNotebookCheckbox(notebookID) {
+    var chkNotebook = document.getElementById(notebookID);
+    if(!chkNotebook) {
+      return;
+    }
+    chkNotebook.parentNode.remove();
+  }
+
   var eventsApi = {
     showTab: showTab,
     hideTab: hideTab,
@@ -364,7 +401,8 @@ var NotebooksClient = function() {
     showFutureNotes: showFutureNotes,
     showActiveNotes: showActiveNotes,
     clearEmptyNotebook: clearEmptyNotebook,
-    saveNotebook: saveNotebook
+    saveNotebook: saveNotebook,
+    deleteNotebook: deleteNotebook
   };
 
   return {
