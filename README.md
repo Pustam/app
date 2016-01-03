@@ -8,6 +8,6 @@ The project is currently **under development** and targeted at Linux x64 archite
 
 ## Installation
 
-1. Download the release.
+1. Download the binaries from the releases page - https://github.com/markdown-note/markdown-notes/releases.
 2. If upgrading, put the downloaded file in the same location as your existing installation.
 3. Extract the file while choosing to override the existing files.
