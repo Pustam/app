@@ -73,7 +73,7 @@ var NotebookEvents = function() {
    */
   function evtAddNote(event) {
     try {
-      var notebookID = event.target.dataset.notebookid;
+      var notebookID = event.target.dataset.notebookid || event.target.parentNode.dataset.notebookid;
       if (notebookID) {
         client.clearEmptyNotebook(notebookID);
         _notesClient.addNewNote(notebookID);
