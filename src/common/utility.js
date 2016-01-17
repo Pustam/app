@@ -111,13 +111,33 @@ var Utility = function() {
     return formData;
   }
 
+  function checkDates(dtFirst, dtSecond) {
+    var dtFirstString = '' + dtFirst.getFullYear() + dtFirst.getMonth() + dtFirst.getDate();
+    var dtSecondString = '' + dtSecond.getFullYear() + dtSecond.getMonth() + dtSecond.getDate();
+
+    if(dtFirstString < dtSecondString) {
+      return -1;
+    }
+
+    if(dtFirstString === dtSecondString) {
+      return 0;
+    }
+
+    if(dtFirstString > dtSecondString) {
+      return 1;
+    }
+
+    return false;
+  }
+
   return {
     loadPartial: loadPartial,
     loadDialog: loadDialog,
     mvFile: mvFile,
     checkAndInsertDialog: checkAndInsertDialog,
     addCloseEvent: addCloseEvent,
-    readFormData: readFormData
+    readFormData: readFormData,
+    checkDates : checkDates
   };
 };
 
