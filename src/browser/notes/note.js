@@ -9,6 +9,8 @@
 var _appConfig = require(__dirname + '/../../../config.js');
 var _app = require(_appConfig.browserSrcPath + 'app/app.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
+var _appUtil = require(_appConfig.commonsPath + 'utility');
+
 var _i18n = require('i18n');
 
 var Notes = function() {
@@ -155,8 +157,7 @@ var Notes = function() {
    */
   function getAllActiveNotes(notebookID, cbMain) {
     var notesDb = _app.getNotesDb();
-    var dtNow = new Date().getTime();
-    var dtNowString = new Date().toDateString();
+    var dtNow = new Date();
     notesDb.find({
       $where: function() {
         // Check if belongs to current notebook.
@@ -164,14 +165,15 @@ var Notes = function() {
           return false;
         }
 
-        // Check if date is current date
-        if (this.targetDate.toDateString() === dtNowString) {
-          return true;
+        // If completed today, show note.
+        if(this.isComplete) {
+          if(this.completedOn && _appUtil.checkDates(this.completedOn, dtNow) === 0) {
+            return true;
+          }
         }
 
-        // Check if date is less than current date, and note
-        // is not complete.
-        if (this.targetDate.getTime() < dtNow && this.isComplete === false) {
+        // Check if date is less than current date, and note is not complete.
+        if (_appUtil.checkDates(this.targetDate, dtNow) <= 0 && this.isComplete === false) {
           return true;
         }
 
@@ -196,7 +198,7 @@ var Notes = function() {
    */
   function getCompletedNotesForDate(notebookID, date, cbMain) {
     var notesDb = _app.getNotesDb();
-    var dtSelectedString = date.toDateString();
+    var dtSelectedDate = date;
     notesDb.find({
       $where: function() {
         // Check if belongs to current notebook.
@@ -204,11 +206,20 @@ var Notes = function() {
           return false;
         }
 
-        // Check if date is current date and its completed.
-        if (this.targetDate.toDateString() === dtSelectedString && this.isComplete === true) {
-          return true;
+        // Check if note its completed.
+        if(this.isComplete === true) {
+          // Check if completed on date is set.
+          if(this.completedOn) {
+            if(_appUtil.checkDates(this.completedOn, dtSelectedDate) === 0) {
+              return true;
+            }
+          } else if(this.modifiedOn && _appUtil.checkDates(this.modifiedOn, dtSelectedDate) === 0) {
+            // Although note is complete, completed on date is not set, check the
+            // modified on date. This is because of #41 where the completedOn
+            // was not being updated when notes were completed.
+            return true;
+          }
         }
-
         return false;
       }
     }).sort({
@@ -310,9 +321,14 @@ var Notes = function() {
 
   function _updateCompletion(noteID, isComplete, cbMain) {
     var notesDb = _app.getNotesDb();
+    var currDate = new Date();
+    var completedOn = null;
+    if(isComplete) {
+      completedOn = currDate;
+    }
     notesDb.update({
       _id : noteID
-    }, { $set : { isComplete :isComplete, modifiedOn :new Date() }}, {}, function(err, numReplaced) {
+    }, { $set : { isComplete :isComplete, modifiedOn: currDate, completedOn: completedOn }}, {}, function(err, numReplaced) {
       if(err) {
         return cbMain(new _appError(err, _i18n.__('error.notes_complete')));
       }
