@@ -71,11 +71,13 @@ var Notebooks = function() {
 
   var _deleteByID = function(notebookID, cbMain) {
     var notebooksDb = _app.getNotebooksDb();
-    notebooksDb.remove({ _id : notebookID }, function(err, numRemoved) {
-        if(err) {
-          return cbMain(new _appError(err, _i18n.__('error.notebook_delete_error')));
-        }
-        return cbMain(null, numRemoved);
+    notebooksDb.remove({
+      _id: notebookID
+    }, function(err, numRemoved) {
+      if (err) {
+        return cbMain(new _appError(err, _i18n.__('error.notebook_delete_error')));
+      }
+      return cbMain(null, numRemoved);
     });
   };
 
@@ -140,13 +142,13 @@ var Notebooks = function() {
 
   function _getLastOpenedNotebooks() {
     var lastOpenedNotebook = localStorage.getItem(OPEN_NOTEBOOKS);
-    if(!lastOpenedNotebook) {
+    if (!lastOpenedNotebook) {
       return false;
     }
     try {
       lastOpenedNotebook = JSON.parse(lastOpenedNotebook);
       return lastOpenedNotebook;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -168,11 +170,11 @@ var Notebooks = function() {
     getFullDetailByID: getFullDetailByID,
     initializeDefaults: initializeDefaults,
     createNotebook: createNotebook,
-    getLastOpenedNotebooks : _getLastOpenedNotebooks,
-    updateOpenNotebooks : _updateOpenNotebooks,
-    setCurrentNotebook : _setCurrentNotebook,
-    getLastActiveNotebook : _getLastActiveNotebook,
-    deleteByID : _deleteByID
+    getLastOpenedNotebooks: _getLastOpenedNotebooks,
+    updateOpenNotebooks: _updateOpenNotebooks,
+    setCurrentNotebook: _setCurrentNotebook,
+    getLastActiveNotebook: _getLastActiveNotebook,
+    deleteByID: _deleteByID
   };
 };
 

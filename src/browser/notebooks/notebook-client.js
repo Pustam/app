@@ -102,7 +102,7 @@ var NotebooksClient = function() {
           // Attach the events.
           _notebookEvents.addEvents(notebookContents, notebookID);
 
-          if(updateActiveNotebook !== false) {
+          if (updateActiveNotebook !== false) {
             updateOpenNotebookCache();
             _notebooks.setCurrentNotebook(notebookID);
           }
@@ -267,9 +267,9 @@ var NotebooksClient = function() {
 
   function saveNotebook(notebookData, cbMain) {
     _notebooks.createNotebook(notebookData, function(err, newNotebook) {
-      if(err) {
+      if (err) {
         err.display();
-        if(cbMain) {
+        if (cbMain) {
           cbMain(err);
         }
         return;
@@ -277,7 +277,7 @@ var NotebooksClient = function() {
       var notebookLi = getNotebookItem(newNotebook, true);
       notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
       showTab(newNotebook._id);
-      if(cbMain) {
+      if (cbMain) {
         cbMain(err, newNotebook);
       }
     });
@@ -307,7 +307,7 @@ var NotebooksClient = function() {
   function getOpenNotebooks() {
     var checkedBoxes = notebooksContainerUL.querySelectorAll(':checked');
     var selectedNotebookIds = [];
-    for(var i = 0; i !== checkedBoxes.length; ++i) {
+    for (var i = 0; i !== checkedBoxes.length; ++i) {
       selectedNotebookIds.push(checkedBoxes[i].id);
     }
     return selectedNotebookIds;
@@ -324,13 +324,14 @@ var NotebooksClient = function() {
       function(next) {
         // Delete the notes first.
         _notes.deleteByNotebookID(notebookID, next);
-      }, function (data, next) {
+      },
+      function(data, next) {
         // Delete the notebook next.
         notesDeleted = data;
         _notebooks.deleteByID(notebookID, next);
       }
     ], function(err, data) {
-      if(err) {
+      if (err) {
         err.display();
         return;
       }
@@ -345,11 +346,11 @@ var NotebooksClient = function() {
 
   function _initDisplay() {
     var openNotebooks = _notebooks.getLastOpenedNotebooks();
-    if(openNotebooks) {
+    if (openNotebooks) {
       // Show the last open notebooks.
       _async.each(openNotebooks, function(notebookID, cbMain) {
         showTab(notebookID, false, function(err) {
-          if(err) {
+          if (err) {
             // If there was an error showing the notebook,
             // stop and dont check the checkbox.
             return cbMain(err);
@@ -359,8 +360,8 @@ var NotebooksClient = function() {
           return cbMain(err);
         });
       }, function(err) {
-        if(err) {
-          if(!(err instanceof _appError)) {
+        if (err) {
+          if (!(err instanceof _appError)) {
             var parsedErr = new _appError(err, _i18n.__('error.notebook_init_display'));
             parsedErr.display();
           }
@@ -369,7 +370,7 @@ var NotebooksClient = function() {
         // Done, showing the last open notebooks, now show the last
         // active notebook.
         var lastActiveNotebookID = _notebooks.getLastActiveNotebook();
-        if(lastActiveNotebookID) {
+        if (lastActiveNotebookID) {
           changeActiveNotebook(lastActiveNotebookID);
         }
       });
@@ -380,7 +381,7 @@ var NotebooksClient = function() {
   }
 
   function checkAndReturn(callback, err, data) {
-    if(callback) {
+    if (callback) {
       return callback(err, data);
     }
     return;
@@ -388,7 +389,7 @@ var NotebooksClient = function() {
 
   function removeNotebookCheckbox(notebookID) {
     var chkNotebook = document.getElementById(notebookID);
-    if(!chkNotebook) {
+    if (!chkNotebook) {
       return;
     }
     chkNotebook.parentNode.remove();
@@ -408,7 +409,7 @@ var NotebooksClient = function() {
   return {
     getAndBindNotebooks: _getAndBindNotebooks,
     init: _init,
-    initDisplay : _initDisplay
+    initDisplay: _initDisplay
   };
 };
 

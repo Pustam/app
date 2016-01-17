@@ -170,27 +170,27 @@ var NotebookEvents = function() {
   }
 
   function evtTabChanged(event) {
-    if(!event.target.href) {
+    if (!event.target.href) {
       return;
     }
     var currNotebookID = event.target.getAttribute('aria-controls');
-    if(!currNotebookID) {
+    if (!currNotebookID) {
       return;
     }
     _notebook.setCurrentNotebook(currNotebookID);
   }
 
   function evtDeleteNotebook(event) {
-     var isUserSure = window.confirm(_i18n.__('notebook.deletion_confirmation'));
-     if(!isUserSure) {
-       return;
-     }
-     // Call client method to delete.
-     var notebookID = event.target.dataset.notebookid || event.target.parentNode.dataset.notebookid;
-     if(!notebookID) {
-       return;
-     }
-     client.deleteNotebook(notebookID);
+    var isUserSure = window.confirm(_i18n.__('notebook.deletion_confirmation'));
+    if (!isUserSure) {
+      return;
+    }
+    // Call client method to delete.
+    var notebookID = event.target.dataset.notebookid || event.target.parentNode.dataset.notebookid;
+    if (!notebookID) {
+      return;
+    }
+    client.deleteNotebook(notebookID);
   }
 
   /**

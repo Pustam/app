@@ -72,7 +72,7 @@ var NoteEvents = function() {
   }
 
   function evtNoteClick(event) {
-    if(event.target.href) {
+    if (event.target.href) {
       _shell.openExternal(event.target.href);
       event.preventDefault();
     }

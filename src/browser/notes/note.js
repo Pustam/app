@@ -166,8 +166,8 @@ var Notes = function() {
         }
 
         // If completed today, show note.
-        if(this.isComplete) {
-          if(this.completedOn && _appUtil.checkDates(this.completedOn, dtNow) === 0) {
+        if (this.isComplete) {
+          if (this.completedOn && _appUtil.checkDates(this.completedOn, dtNow) === 0) {
             return true;
           }
         }
@@ -207,13 +207,13 @@ var Notes = function() {
         }
 
         // Check if note its completed.
-        if(this.isComplete === true) {
+        if (this.isComplete === true) {
           // Check if completed on date is set.
-          if(this.completedOn) {
-            if(_appUtil.checkDates(this.completedOn, dtSelectedDate) === 0) {
+          if (this.completedOn) {
+            if (_appUtil.checkDates(this.completedOn, dtSelectedDate) === 0) {
               return true;
             }
-          } else if(this.modifiedOn && _appUtil.checkDates(this.modifiedOn, dtSelectedDate) === 0) {
+          } else if (this.modifiedOn && _appUtil.checkDates(this.modifiedOn, dtSelectedDate) === 0) {
             // Although note is complete, completed on date is not set, check the
             // modified on date. This is because of #41 where the completedOn
             // was not being updated when notes were completed.
@@ -323,16 +323,22 @@ var Notes = function() {
     var notesDb = _app.getNotesDb();
     var currDate = new Date();
     var completedOn = null;
-    if(isComplete) {
+    if (isComplete) {
       completedOn = currDate;
     }
     notesDb.update({
-      _id : noteID
-    }, { $set : { isComplete :isComplete, modifiedOn: currDate, completedOn: completedOn }}, {}, function(err, numReplaced) {
-      if(err) {
+      _id: noteID
+    }, {
+      $set: {
+        isComplete: isComplete,
+        modifiedOn: currDate,
+        completedOn: completedOn
+      }
+    }, {}, function(err, numReplaced) {
+      if (err) {
         return cbMain(new _appError(err, _i18n.__('error.notes_complete')));
       }
-      if(numReplaced === 1) {
+      if (numReplaced === 1) {
         return cbMain(null);
       }
       return cbMain(new Error(_i18n.__('error.notes_complete'),
@@ -342,8 +348,12 @@ var Notes = function() {
 
   function _deleteByNotebookID(notebookID, cbMain) {
     var notesDb = _app.getNotesDb();
-    notesDb.remove({ notebookID : notebookID }, { multi : true}, function(err, numRemoved) {
-      if(err) {
+    notesDb.remove({
+      notebookID: notebookID
+    }, {
+      multi: true
+    }, function(err, numRemoved) {
+      if (err) {
         return cbMain(new _appError(err, _i18n.__('error.notes_delete_err')));
       }
       return cbMain(null, numRemoved);
@@ -358,8 +368,8 @@ var Notes = function() {
     getCompletedNotesForDate: getCompletedNotesForDate,
     getFutureNotesByDate: getFutureNotesByDate,
     changeDate: changeNoteDate,
-    updateCompletion : _updateCompletion,
-    deleteByNotebookID : _deleteByNotebookID
+    updateCompletion: _updateCompletion,
+    deleteByNotebookID: _deleteByNotebookID
   };
 };
 

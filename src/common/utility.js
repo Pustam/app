@@ -115,15 +115,15 @@ var Utility = function() {
     var dtFirstString = '' + dtFirst.getFullYear() + dtFirst.getMonth() + dtFirst.getDate();
     var dtSecondString = '' + dtSecond.getFullYear() + dtSecond.getMonth() + dtSecond.getDate();
 
-    if(dtFirstString < dtSecondString) {
+    if (dtFirstString < dtSecondString) {
       return -1;
     }
 
-    if(dtFirstString === dtSecondString) {
+    if (dtFirstString === dtSecondString) {
       return 0;
     }
 
-    if(dtFirstString > dtSecondString) {
+    if (dtFirstString > dtSecondString) {
       return 1;
     }
 
@@ -137,7 +137,7 @@ var Utility = function() {
     checkAndInsertDialog: checkAndInsertDialog,
     addCloseEvent: addCloseEvent,
     readFormData: readFormData,
-    checkDates : checkDates
+    checkDates: checkDates
   };
 };
 
