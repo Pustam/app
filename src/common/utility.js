@@ -112,8 +112,8 @@ var Utility = function() {
   }
 
   function checkDates(dtFirst, dtSecond) {
-    var dtFirstString = '' + dtFirst.getFullYear() + dtFirst.getMonth() + dtFirst.getDate();
-    var dtSecondString = '' + dtSecond.getFullYear() + dtSecond.getMonth() + dtSecond.getDate();
+    var dtFirstString = getDateString(dtFirst);
+    var dtSecondString = getDateString(dtSecond);
 
     if (dtFirstString < dtSecondString) {
       return -1;
@@ -128,6 +128,18 @@ var Utility = function() {
     }
 
     return false;
+  }
+
+  function getDateString(dt) {
+    var month = dt.getMonth() + 1;
+    month = month < 10 ?  '0' + month : month;
+
+    var date = dt.getDate();
+    date = date < 10 ? '0' + date : date;
+
+    var year = dt.getFullYear();
+
+    return '' + year + date + month;
   }
 
   return {
