@@ -36,7 +36,7 @@ var NotebooksClient = function() {
         return cbMain(err);
       }
       try {
-        var notebooksHTML = '';
+        let notebooksHTML = '';
         for (var i = 0, len = notebooks.length; i !== len; ++i) {
           notebooksHTML += _notebookUtil.getNotebookItem(notebooks[i]);
         }
@@ -65,12 +65,12 @@ var NotebooksClient = function() {
 
       _appUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
         if (err) {
-          var errParse = new _appError(err, _i18n.__('error.app_init'), false, true);
+          let errParse = new _appError(err, _i18n.__('error.app_init'), false, true);
           errParse.display();
           return _notebookUtil.checkAndReturn(cbMain, errParse);
         }
         try {
-          var notebookContentID = _appConfig.getNotebookContentID(notebookID);
+          let notebookContentID = _appConfig.getNotebookContentID(notebookID);
 
           // Remove current active tabs and heading.
           _notebookUtil.removeActiveTab(notebooksTabHeading, notebooksTabContainer);
@@ -82,7 +82,7 @@ var NotebooksClient = function() {
           // Add the default content of the notebook.
           notebooksTabContainer.insertAdjacentHTML('beforeend', _notebookUtil.getContainerHTML(notebookContentID, notesPageHeaderHtml));          
 
-          var notebookContents = document.getElementById(notebookContentID);
+          let notebookContents = document.getElementById(notebookContentID);
 
           // Generate the datepicker!
           var datePicker = jQuery(notebookContents.querySelector('.notebook-date')).datepicker(_appConfig.getDatepickerConfig());
@@ -212,10 +212,10 @@ var NotebooksClient = function() {
   }
 
   function clearEmptyNotebook(notebookInfo) {
-    var notebookContainer = null;
+    var notebookContainer;
     if (typeof notebookInfo === 'string') {
       // Its the ID
-      var notebookID = _appConfig.getNotebookContentID(notebookInfo);
+      let notebookID = _appConfig.getNotebookContentID(notebookInfo);
       notebookContainer = notebooksTabContainer.querySelector('#' + notebookID);
     } else {
       // It is the element.
@@ -223,7 +223,7 @@ var NotebooksClient = function() {
     }
 
     if (notebookContainer) {
-      var elemEmptyNotebook = notebookContainer.querySelector('.' + EMPTY_NOTES_CLASS);
+      let elemEmptyNotebook = notebookContainer.querySelector('.' + EMPTY_NOTES_CLASS);
       if (elemEmptyNotebook) {
         elemEmptyNotebook.remove();
       }
@@ -251,7 +251,7 @@ var NotebooksClient = function() {
         err.display();
         return _notebookUtil.checkAndReturn(cbMain, err);
       }
-      var notebookLi = _notebookUtil.getNotebookItem(newNotebook, true);
+      let notebookLi = _notebookUtil.getNotebookItem(newNotebook, true);
       notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
       showTab(newNotebook._id);
       return _notebookUtil.checkAndReturn(cbMain, null, newNotebook);
@@ -264,7 +264,6 @@ var NotebooksClient = function() {
   }
 
   function deleteNotebook(notebookID) {
-    var notesDeleted = 0;
     _async.waterfall([
       function(next) {
         // Delete the notes first.
@@ -272,7 +271,6 @@ var NotebooksClient = function() {
       },
       function(data, next) {
         // Delete the notebook next.
-        notesDeleted = data;
         _notebooks.deleteByID(notebookID, next);
       }
     ], function(err, data) {
@@ -299,14 +297,14 @@ var NotebooksClient = function() {
             // stop and dont check the checkbox.
             return cbMain(err);
           }
-          var notebookChk = notebooksContainerUL.querySelector('#' + notebookID);
+          let notebookChk = notebooksContainerUL.querySelector('#' + notebookID);
           notebookChk.checked = true;
           return cbMain();
         });
       }, function(err) {
         if (err) {
           if (!(err instanceof _appError)) {
-            var parsedErr = new _appError(err, _i18n.__('error.notebook_init_display'));
+            let parsedErr = new _appError(err, _i18n.__('error.notebook_init_display'));
             parsedErr.display();
           }
           return;
