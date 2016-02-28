@@ -3,21 +3,22 @@
 
 var _i18n = require('i18n');
 var _async = require('async');
+var _path = require('path');
 
 // Custom
-var _appConfig = require(__dirname + '/../../../config.js');
-var _notebooks = require(_appConfig.browserSrcPath + '/notebooks/notebook.js');
-var _notebookEvents = require(_appConfig.browserSrcPath + '/notebooks/notebook-events.js');
-var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
-var _notes = require(_appConfig.browserSrcPath + '/notes/note.js');
-var _appUtil = require(_appConfig.commonsPath + 'utility.js');
-var _appError = require(_appConfig.commonsPath + 'app-error.js');
-var _notebookUtil = require(__dirname + '/notebook-utils');
+var _appConfig = require(_path.join(__dirname, '..', '..', '..', 'config'));
+var _notebooks = require(_path.join(_appConfig.browserSrcPath, 'notebooks', 'notebook'));
+var _notebookEvents = require(_path.join(_appConfig.browserSrcPath, 'notebooks' , 'notebook-events'));
+var _notesClient = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note-client'));
+var _notes = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note'));
+var _appUtil = require(_path.join(_appConfig.commonsPath, 'utility'));
+var _appError = require(_path.join(_appConfig.commonsPath, 'app-error'));
+var _notebookUtil = require(_path.join(__dirname, 'notebook-utils'));
 
-var NotebooksClient = function() {
-  var notebooksContainerUL, notebooksTabHeading, notebooksTabContainer;  
+var NotebooksClient = function () {
+  var notebooksContainerUL, notebooksTabHeading, notebooksTabContainer;
   const EMPTY_NOTES_CLASS = 'empty-notebook';
-  
+
   function _init(cbMain) {
     notebooksContainerUL = document.getElementById('1_lstNotebooks');
     notebooksTabHeading = document.getElementById('1_openTab');
@@ -31,7 +32,7 @@ var NotebooksClient = function() {
   }
 
   function _getAndBindNotebooks(cbMain) {
-    _notebooks.getAllNotebooks(function(err, notebooks) {
+    _notebooks.getAllNotebooks(function (err, notebooks) {
       if (err) {
         return cbMain(err);
       }
@@ -57,13 +58,13 @@ var NotebooksClient = function() {
    */
   function showTab(notebookID, updateActiveNotebook, cbMain) {
     // Fetch the notebook details
-    _notebooks.getFullDetailByID(notebookID, function(err, notebookData) {
+    _notebooks.getFullDetailByID(notebookID, function (err, notebookData) {
       if (err) {
         err.display();
         return _notebookUtil.checkAndReturn(cbMain, err);
       }
 
-      _appUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
+      _appUtil.loadPartial('notes.html', {}, function (err, notesPageHeaderHtml) {
         if (err) {
           let errParse = new _appError(err, _i18n.__('error.app_init'), false, true);
           errParse.display();
@@ -77,10 +78,10 @@ var NotebooksClient = function() {
 
           // Add <li> to tab header
           notebooksTabHeading.insertAdjacentHTML('beforeend', _notebookUtil.getHeaderHTML(_appConfig.getNotebookHeaderID(
-              notebookID), notebookContentID, notebookID, notebookData.name));                    
+            notebookID), notebookContentID, notebookID, notebookData.name));                    
 
           // Add the default content of the notebook.
-          notebooksTabContainer.insertAdjacentHTML('beforeend', _notebookUtil.getContainerHTML(notebookContentID, notesPageHeaderHtml));          
+          notebooksTabContainer.insertAdjacentHTML('beforeend', _notebookUtil.getContainerHTML(notebookContentID, notesPageHeaderHtml));
 
           let notebookContents = document.getElementById(notebookContentID);
 
@@ -167,48 +168,34 @@ var NotebooksClient = function() {
   }
 
   function showNotesForPastDate(notebookDbID, selectedDate) {
-    _notes.getCompletedNotesForDate(notebookDbID, selectedDate, function(err, notes) {
-      if (err) {
-        err.display();
-        return;
-      }
-      try {
-        _displayNotes(notes, notebookDbID, false);
-      } catch (e) {
-        var errObj = new _appError(e, _i18n.__('error.notes_display_error'));
-        errObj.display();
-      }
+    _notes.getCompletedNotesForDate(notebookDbID, selectedDate, function (err, notes) {
+      handleNotebookDisplay(err, notebookDbID, notes, false);
     });
   }
 
   function showFutureNotes(notebookDbID, selectedDate) {
-    _notes.getFutureNotesByDate(notebookDbID, selectedDate, function(err, notes) {
-      if (err) {
-        err.display();
-        return;
-      }
-      try {
-        _displayNotes(notes, notebookDbID, true);
-      } catch (e) {
-        var errObj = new _appError(e, _i18n.__('error.notes_display_error'));
-        errObj.display();
-      }
+    _notes.getFutureNotesByDate(notebookDbID, selectedDate, function (err, notes) {
+      handleNotebookDisplay(err, notebookDbID, notes, true);
     });
   }
 
   function showActiveNotes(notebookDbID) {
-    _notes.getAllActiveNotes(notebookDbID, function(err, notes) {
-      if (err) {
-        err.display();
-        return;
-      }
-      try {
-        _displayNotes(notes, notebookDbID, true);
-      } catch (e) {
-        var errObj = new _appError(e, _i18n.__('error.notes_display_error'));
-        errObj.display();
-      }
+    _notes.getAllActiveNotes(notebookDbID, function (err, notes) {
+      handleNotebookDisplay(err, notebookDbID, notes, true);
     });
+  }
+
+  function handleNotebookDisplay(err, notebookDbID, notes, isEditable) {
+    if (err) {
+      err.display();
+      return;
+    }
+    try {
+      _displayNotes(notes, notebookDbID, isEditable);
+    } catch (e) {
+      var errObj = new _appError(e, _i18n.__('error.notes_display_error'));
+      errObj.display();
+    }
   }
 
   function clearEmptyNotebook(notebookInfo) {
@@ -228,7 +215,7 @@ var NotebooksClient = function() {
         elemEmptyNotebook.remove();
       }
     }
-  }  
+  }
 
   function handleEmptyNotebook(notebookDbID) {
     var notebookID = _appConfig.getNotebookContentID(notebookDbID);
@@ -243,10 +230,10 @@ var NotebooksClient = function() {
       // Build the notes html and attach the event handlers.
       _notesClient.buildNotes(notes, notebookDbID, null, isEditable);
     }
-  }  
+  }
 
   function saveNotebook(notebookData, cbMain) {
-    _notebooks.createNotebook(notebookData, function(err, newNotebook) {
+    _notebooks.createNotebook(notebookData, function (err, newNotebook) {
       if (err) {
         err.display();
         return _notebookUtil.checkAndReturn(cbMain, err);
@@ -256,7 +243,7 @@ var NotebooksClient = function() {
       showTab(newNotebook._id);
       return _notebookUtil.checkAndReturn(cbMain, null, newNotebook);
     });
-  }    
+  }
 
   function updateOpenNotebookCache() {
     var openNotebooks = _notebookUtil.getOpenNotebooks(notebooksContainerUL);
@@ -265,17 +252,17 @@ var NotebooksClient = function() {
 
   function deleteNotebook(notebookID) {
     _async.waterfall([
-      function(next) {
+      function (next) {
         // Delete the notes first.
         _notes.deleteByNotebookID(notebookID, next);
       },
-      function(data, next) {
+      function (data, next) {
         // Delete the notebook next.
         _notebooks.deleteByID(notebookID, next);
       }
-    ], function(err, data) {
+    ], function (err, data) {
       if (err) {
-        return err.display();        
+        return err.display();
       }
 
       // Remove the checkbox first, this order is important.
@@ -290,8 +277,8 @@ var NotebooksClient = function() {
     var openNotebooks = _notebooks.getLastOpenedNotebooks();
     if (openNotebooks) {
       // Show the last open notebooks.
-      _async.each(openNotebooks, function(notebookID, cbMain) {
-        showTab(notebookID, false, function(err) {
+      _async.each(openNotebooks, function (notebookID, cbMain) {
+        showTab(notebookID, false, function (err) {
           if (err) {
             // If there was an error showing the notebook,
             // stop and dont check the checkbox.
@@ -301,7 +288,7 @@ var NotebooksClient = function() {
           notebookChk.checked = true;
           return cbMain();
         });
-      }, function(err) {
+      }, function (err) {
         if (err) {
           if (!(err instanceof _appError)) {
             let parsedErr = new _appError(err, _i18n.__('error.notebook_init_display'));
@@ -320,9 +307,9 @@ var NotebooksClient = function() {
       // No active notebooks found, select the first notebook.
       _notebookUtil.selectFirst(notebooksContainerUL);
     }
-  }  
+  }
 
-  
+
 
   var eventsApi = {
     showTab: showTab,
