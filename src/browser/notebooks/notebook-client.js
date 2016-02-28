@@ -12,13 +12,12 @@ var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
 var _notes = require(_appConfig.browserSrcPath + '/notes/note.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
+var _notebookUtil = require(__dirname + '/notebook-utils');
 
 var NotebooksClient = function() {
-  var notebooksContainerUL = null;
-  var notebooksTabHeading = null;
-  var notebooksTabContainer = null;
+  var notebooksContainerUL, notebooksTabHeading, notebooksTabContainer;  
   const EMPTY_NOTES_CLASS = 'empty-notebook';
-
+  
   function _init(cbMain) {
     notebooksContainerUL = document.getElementById('1_lstNotebooks');
     notebooksTabHeading = document.getElementById('1_openTab');
@@ -39,7 +38,7 @@ var NotebooksClient = function() {
       try {
         var notebooksHTML = '';
         for (var i = 0, len = notebooks.length; i !== len; ++i) {
-          notebooksHTML += getNotebookItem(notebooks[i]);
+          notebooksHTML += _notebookUtil.getNotebookItem(notebooks[i]);
         }
         notebooksContainerUL.innerHTML = notebooksHTML;
         _notebookEvents.addNotebookSelectedEvent();
@@ -61,29 +60,27 @@ var NotebooksClient = function() {
     _notebooks.getFullDetailByID(notebookID, function(err, notebookData) {
       if (err) {
         err.display();
-        return checkAndReturn(cbMain, err);
+        return _notebookUtil.checkAndReturn(cbMain, err);
       }
 
       _appUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
         if (err) {
           var errParse = new _appError(err, _i18n.__('error.app_init'), false, true);
           errParse.display();
-          return checkAndReturn(cbMain, errParse);
+          return _notebookUtil.checkAndReturn(cbMain, errParse);
         }
         try {
           var notebookContentID = _appConfig.getNotebookContentID(notebookID);
 
           // Remove current active tabs and heading.
-          removeActiveTab(notebooksTabHeading, notebooksTabContainer);
+          _notebookUtil.removeActiveTab(notebooksTabHeading, notebooksTabContainer);
 
           // Add <li> to tab header
-          notebooksTabHeading.insertAdjacentHTML('beforeend', '<li role="presentation" id="' + _appConfig.getNotebookHeaderID(
-              notebookID) + '" class="active"><a href="#' + notebookContentID + '" aria-controls="' +
-            notebookID + '" role="tab" data-toggle="tab">' + notebookData.name + '</a></li>');
+          notebooksTabHeading.insertAdjacentHTML('beforeend', _notebookUtil.getHeaderHTML(_appConfig.getNotebookHeaderID(
+              notebookID), notebookContentID, notebookID, notebookData.name));                    
 
           // Add the default content of the notebook.
-          notebooksTabContainer.insertAdjacentHTML('beforeend', '<div role="tabpanel" class="tab-pane active" id="' +
-            notebookContentID + '">' + notesPageHeaderHtml + '</div>');
+          notebooksTabContainer.insertAdjacentHTML('beforeend', _notebookUtil.getContainerHTML(notebookContentID, notesPageHeaderHtml));          
 
           var notebookContents = document.getElementById(notebookContentID);
 
@@ -96,7 +93,7 @@ var NotebooksClient = function() {
             _notesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
           } else {
             // Add empty notebok HTML
-            notebookContents.insertAdjacentHTML('beforeend', getEmptyNotebookHTML());
+            notebookContents.insertAdjacentHTML('beforeend', _notebookUtil.getEmptyHTML(EMPTY_NOTES_CLASS));
           }
 
           // Attach the events.
@@ -106,11 +103,11 @@ var NotebooksClient = function() {
             updateOpenNotebookCache();
             _notebooks.setCurrentNotebook(notebookID);
           }
-          return checkAndReturn(cbMain);
+          return _notebookUtil.checkAndReturn(cbMain);
         } catch (errDisplay) {
           var appError = new _appError(errDisplay, _i18n.__('error.notebook_display_error') + ' ' + _i18n.__('error.app_unstable'));
           appError.display();
-          return checkAndReturn(cbMain, appError);
+          return _notebookUtil.checkAndReturn(cbMain, appError);
         }
       });
     });
@@ -122,8 +119,7 @@ var NotebooksClient = function() {
    * @return {undefined}            No description.
    */
   function hideTab(notebookID) {
-    var notebookHeader = null;
-    var notebookContents = null;
+    var notebookHeader, notebookContents;
     try {
       notebookHeader = notebooksTabHeading.querySelector('#' + _appConfig.getNotebookHeaderID(notebookID));
       if (notebookHeader) {
@@ -141,8 +137,6 @@ var NotebooksClient = function() {
       var errObj = new _appError(e, _i18n.__('error.notebook_hide_error') + ' ' + _i18n.__('error.app_unstable'));
       errObj.display();
     }
-    notebookContents = null;
-    notebookHeader = null;
   }
 
   function showNextNotebook() {
@@ -154,15 +148,18 @@ var NotebooksClient = function() {
       _notebooks.setCurrentNotebook('');
       return;
     }
-    var lastCheckboxSelected = checkedBoxes[chkLength - 1];
-    var notebookDbID = lastCheckboxSelected.id;
-    changeActiveNotebook(notebookDbID);
+    changeActiveNotebook(checkedBoxes[chkLength - 1].id);
   }
 
   function changeActiveNotebook(notebookDbId) {
+    // Get the content ID and header ID, based on database ID
     var notebookContentID = _appConfig.getNotebookContentID(notebookDbId);
     var notebookHeaderID = _appConfig.getNotebookHeaderID(notebookDbId);
-    removeActiveTab(notebooksTabHeading, notebooksTabContainer);
+    
+    // Remove the currently active notebook.
+    _notebookUtil.removeActiveTab(notebooksTabHeading, notebooksTabContainer);
+    
+    // Chang the current active notebook.
     notebooksTabHeading.querySelector('#' + notebookHeaderID).classList.add('active');
     notebooksTabContainer.querySelector('#' + notebookContentID).classList.add('active');
     updateOpenNotebookCache();
@@ -231,16 +228,12 @@ var NotebooksClient = function() {
         elemEmptyNotebook.remove();
       }
     }
-  }
-
-  function getEmptyNotebookHTML() {
-    return '<div class="' + EMPTY_NOTES_CLASS + '">' + _i18n.__('notebook.empty_notebook') + '</div>';
-  }
+  }  
 
   function handleEmptyNotebook(notebookDbID) {
     var notebookID = _appConfig.getNotebookContentID(notebookDbID);
     var notebookContainer = notebooksTabContainer.querySelector('#' + notebookID);
-    notebookContainer.insertAdjacentHTML('beforeend', getEmptyNotebookHTML());
+    notebookContainer.insertAdjacentHTML('beforeend', _notebookUtil.getEmptyHTML(EMPTY_NOTES_CLASS));
   }
 
   function _displayNotes(notes, notebookDbID, isEditable) {
@@ -250,71 +243,23 @@ var NotebooksClient = function() {
       // Build the notes html and attach the event handlers.
       _notesClient.buildNotes(notes, notebookDbID, null, isEditable);
     }
-  }
-
-  function selectFirstNotebook() {
-    // Check the first checkbox.
-    var firstChkBox = notebooksContainerUL.querySelector('input[type="checkbox"]');
-    firstChkBox.checked = true;
-
-    // Then simulate the change event.
-    var changeEvent = new Event('HTMLEvents');
-    changeEvent.initEvent("change", false, true);
-    firstChkBox.dispatchEvent(changeEvent);
-    changeEvent = null;
-    firstChkBox = null;
-  }
+  }  
 
   function saveNotebook(notebookData, cbMain) {
     _notebooks.createNotebook(notebookData, function(err, newNotebook) {
       if (err) {
         err.display();
-        if (cbMain) {
-          cbMain(err);
-        }
-        return;
+        return _notebookUtil.checkAndReturn(cbMain, err);
       }
-      var notebookLi = getNotebookItem(newNotebook, true);
+      var notebookLi = _notebookUtil.getNotebookItem(newNotebook, true);
       notebooksContainerUL.insertAdjacentHTML('beforeend', notebookLi);
       showTab(newNotebook._id);
-      if (cbMain) {
-        cbMain(err, newNotebook);
-      }
+      return _notebookUtil.checkAndReturn(cbMain, null, newNotebook);
     });
-  }
-
-  function removeActiveTab(notebooksTabHeading, notebooksTabContainer) {
-    var activeTab = notebooksTabHeading.querySelector('.active');
-    if (activeTab) {
-      activeTab.classList.remove('active');
-    }
-
-    var activeTabContainer = notebooksTabContainer.querySelector('.active');
-    if (activeTabContainer) {
-      activeTabContainer.classList.remove('active');
-    }
-  }
-
-  function getNotebookItem(notebook, isChecked) {
-    var checkedHTML = '';
-    if (isChecked) {
-      checkedHTML = 'checked';
-    }
-    return '<li class="checkbox"><input type="checkbox" ' + checkedHTML + ' id="' + notebook._id + '">' +
-      '<label for="' + notebook._id + '">' + notebook.name + '</label></li>';
-  }
-
-  function getOpenNotebooks() {
-    var checkedBoxes = notebooksContainerUL.querySelectorAll(':checked');
-    var selectedNotebookIds = [];
-    for (var i = 0; i !== checkedBoxes.length; ++i) {
-      selectedNotebookIds.push(checkedBoxes[i].id);
-    }
-    return selectedNotebookIds;
-  }
+  }    
 
   function updateOpenNotebookCache() {
-    var openNotebooks = getOpenNotebooks();
+    var openNotebooks = _notebookUtil.getOpenNotebooks(notebooksContainerUL);
     _notebooks.updateOpenNotebooks(openNotebooks);
   }
 
@@ -332,12 +277,11 @@ var NotebooksClient = function() {
       }
     ], function(err, data) {
       if (err) {
-        err.display();
-        return;
+        return err.display();        
       }
 
       // Remove the checkbox first, this order is important.
-      removeNotebookCheckbox(notebookID);
+      _notebookUtil.removeCheckbox(notebookID);
 
       // Then remove the notebook from the DOM
       hideTab(notebookID);
@@ -357,7 +301,7 @@ var NotebooksClient = function() {
           }
           var notebookChk = notebooksContainerUL.querySelector('#' + notebookID);
           notebookChk.checked = true;
-          return cbMain(err);
+          return cbMain();
         });
       }, function(err) {
         if (err) {
@@ -376,24 +320,11 @@ var NotebooksClient = function() {
       });
     } else {
       // No active notebooks found, select the first notebook.
-      selectFirstNotebook();
+      _notebookUtil.selectFirst(notebooksContainerUL);
     }
-  }
+  }  
 
-  function checkAndReturn(callback, err, data) {
-    if (callback) {
-      return callback(err, data);
-    }
-    return;
-  }
-
-  function removeNotebookCheckbox(notebookID) {
-    var chkNotebook = document.getElementById(notebookID);
-    if (!chkNotebook) {
-      return;
-    }
-    chkNotebook.parentNode.remove();
-  }
+  
 
   var eventsApi = {
     showTab: showTab,
@@ -413,4 +344,4 @@ var NotebooksClient = function() {
   };
 };
 
-module.exports = new NotebooksClient();
+module.exports = NotebooksClient();

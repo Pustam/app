@@ -1,11 +1,12 @@
+/* global jQuery */
 'use strict';
 var _i18n = require('i18n');
 
-var _appConfig = require(__dirname + '/../../../config.js');
-var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client.js');
-var _appError = require(_appConfig.commonsPath + 'app-error.js');
-var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events.js');
-var _appUtil = require(_appConfig.commonsPath + 'utility.js');
+var _appConfig = require(__dirname + '/../../../config');
+var _notesClient = require(_appConfig.browserSrcPath + '/notes/note-client');
+var _appError = require(_appConfig.commonsPath + 'app-error');
+var _noteEvents = require(_appConfig.browserSrcPath + '/notes/note-events');
+var _appUtil = require(_appConfig.commonsPath + 'utility');
 var _notebook = require(__dirname + '/notebook');
 
 var NotebookEvents = function() {
@@ -204,4 +205,4 @@ var NotebookEvents = function() {
   };
 };
 
-module.exports = new NotebookEvents();
+module.exports = NotebookEvents();

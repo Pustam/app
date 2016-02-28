@@ -178,4 +178,4 @@ var Notebooks = function() {
   };
 };
 
-module.exports = new Notebooks();
+module.exports = Notebooks();
