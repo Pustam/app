@@ -293,20 +293,22 @@ var Notes = function() {
   function changeNoteDate(noteID, updatedDate, cbMain) {
     var notesDb = _app.getNotesDb();
     var err = null;
-    if (updatedDate.getTime() < new Date().getTime()) {
-      err = new _appError(new Error('Tried to set target date in the past.'),
-        _i18n.__('error.target_date_in_past'));
-      return cbMain(err);
-    }
-
     if (!noteID) {
       err = new _appError(new Error('Please provide the note ID.'),
         _i18n.__('error.invalid_note_id'));
       return cbMain(err);
     }
+
     var noteObj = {
       targetDate: updatedDate
     };
+    if (updatedDate.getTime() < new Date().getTime()) {
+      // Note being moved to the past, set the completed on date in the past,
+      // and set the note as isComplete
+      noteObj.completedOn = updatedDate;
+      noteObj.isComplete = true;
+    }
+
     notesDb.update({
       _id: noteID
     }, {

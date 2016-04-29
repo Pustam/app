@@ -242,6 +242,9 @@ var NoteClient = function() {
     // Fetch the content of the note.
     _notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
       function(err, noteObj) {
+        if(err) {
+          return;
+        }
         if (currentlyFocusedNote.dataset.noteid === noteObj._id) {
           // the note is still selected.
           currentlyFocusedNote.innerHTML = "";
@@ -377,8 +380,11 @@ var NoteClient = function() {
       }
       $dlg.find('#hdnNoteID_88').val(noteID);
 
-      _noteEvents.evtNoteDateChangeOpen($dlg[0]);
+      let isComplete = _noteEditor.isComplete(note);
+      _noteEvents.evtNoteDateChangeOpen($dlg[0], isComplete);
+
       $dlg.on('shown.bs.modal', function() {
+        // Focus the textbox on dialog open
         this.querySelector('#txtTargetDate_88').focus();
       });
 

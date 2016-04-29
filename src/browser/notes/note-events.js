@@ -149,13 +149,19 @@ var NoteEvents = function() {
     event.preventDefault();
   }
 
-  function evtNoteDateChangeOpen(dlg) {
-    // 1. Generate the date picker
+  function evtNoteDateChangeOpen(dlg, isComplete) {
+    // Generate the date picker
     var datePicker = dlg.querySelector('#txtTargetDate_88');
 
-    // Config for datepicker, don't allow past dates.
+    // Config for datepicker, don't allow past dates if the note is not complete.
     var datePickerConfig = _appConfig.getDatepickerConfig();
-    datePickerConfig.startDate = new Date();
+    if(isComplete) {
+      var currDate = new Date();
+      currDate.setDate(currDate.getDate() - 30);
+      datePickerConfig.startDate = currDate;
+    } else {
+      datePickerConfig.startDate = new Date();
+    }
     $(datePicker).datepicker(datePickerConfig);
 
     // 2. Add the event
@@ -190,6 +196,7 @@ var NoteEvents = function() {
     var formElements = $dlg.find('form')[0].elements;
     var formData = _appUtil.readFormData(formElements);
     var selectedDate = $dlg.find('#txtTargetDate_88').datepicker('getDate');
+
     if (selectedDate) {
       formData.targetDate = selectedDate;
       _noteHandler.modifyNoteDate(formData.noteID, formData.targetDate, $dlg);
