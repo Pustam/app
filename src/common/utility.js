@@ -139,7 +139,7 @@ var Utility = function() {
 
     var year = dt.getFullYear();
 
-    return '' + year + date + month;
+    return '' + year + month + date;
   }
 
   return {
