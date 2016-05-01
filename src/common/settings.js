@@ -3,7 +3,7 @@
 var _fs = require('fs');
 var _path = require('path');
 var _async = require('async');
-var _ipc = require('ipc');
+const _ipcRenderer = require('electron').ipcRenderer;
 var _i18n = require('i18n');
 
 // Custom
@@ -142,7 +142,7 @@ var Settings = function() {
         old: oldSettings.globalShortcut,
         new: newSettings.globalShortcut
       };
-      if (!_ipc.sendSync('update-shortcut', arg)) {
+      if (!_ipcRenderer.sendSync('update-shortcut', arg)) {
         // TODO Show error message about shortcut register error.
         // Reset the value since there was an error.
         newSettings.globalShortcut = oldSettings.globalShortcut;
@@ -164,7 +164,7 @@ var Settings = function() {
         var arg = {
           newSettings: newSettingsToApply
         };
-        _ipc.send('settings-updated', arg);
+        _ipcRenderer.send('settings-updated', arg);
       }
       newSettingsToApply = null;
       cbMain(null, requiresRestart);
@@ -195,13 +195,13 @@ var Settings = function() {
       _appConfig.settingsPath + '_' + Date.now(),
       function(err) {
         if (err) {
-          _ipc.sendSync('fatal-error', generateSettingsFatalError(err));
+          _ipcRenderer.sendSync('fatal-error', generateSettingsFatalError(err));
           return;
         }
         // 2. Write the defaults to settings.json
         saveAppSettings(appSettings, function(err) {
           if (err) {
-            _ipc.sendSync('fatal-error', generateSettingsFatalError(err));
+            _ipcRenderer.sendSync('fatal-error', generateSettingsFatalError(err));
           }
         });
       });

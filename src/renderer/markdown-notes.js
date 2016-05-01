@@ -1,7 +1,7 @@
 'use strict';
 
 var _app = require('app');
-var _ipc = require('ipc');
+const _ipcMain = require('electron').ipcMain;
 var _globalShortcut = require('global-shortcut');
 var _dialog = require('dialog');
 var _i18n = require('i18n');
@@ -61,22 +61,22 @@ var MarkdownNotes = function() {
 
   function attachIPCEvents() {
     // Start of IPC messages.
-    _ipc.on('exit-app', function(event) {
+    _ipcMain.on('exit-app', function(event) {
       _app.quit();
     });
 
-    _ipc.on('update-shortcut', function(event, arg) {
+    _ipcMain.on('update-shortcut', function(event, arg) {
       var oldKey = arg.old;
       var newKey = arg.new;
       _globalShortcut.unregister('Super+Shift+' + oldKey);
       event.returnValue = _mainWindow.bindShortcutKey(newKey);
     });
 
-    _ipc.on('settings-updated', function(event, arg) {
+    _ipcMain.on('settings-updated', function(event, arg) {
       settingsToBeApplied = arg.newSettings;
     });
 
-    _ipc.on('fatal-error', function(event, arg) {
+    _ipcMain.on('fatal-error', function(event, arg) {
       _dialog.showErrorBox(_i18n.__('app.fatal_error'), arg.message);
       settingsToBeApplied = null;
       _app.quit();

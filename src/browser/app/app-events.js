@@ -1,7 +1,7 @@
 'use strict';
 
 var _i18n = require('i18n');
-var _ipc = require('ipc');
+const _ipcRenderer = require('electron').ipcRenderer;
 var _shell = require('shell');
 
 var _appConfig = require(__dirname + '/../../../config.js');
@@ -60,11 +60,11 @@ var AppEvents = function() {
   }
 
   function exitApp() {
-    _ipc.send('exit-app');
+    _ipcRenderer.send('exit-app');
   }
 
   return {
-    init: init,
+    init: init
   };
 
 };
