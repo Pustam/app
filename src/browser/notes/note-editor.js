@@ -11,7 +11,7 @@
 var _appConfig = require(__dirname + '/../../../config.js');
 var _marked = require('marked');
 
-var NoteEditor = function() {
+var NoteEditor = function () {
   const NOTE_COMPLETE_CLASS = 'complete';
   const DEFAULT_NOTE_CLASS = 'note';
   const NOTE_NOT_EDITABLE_CLASS = 'readonly';
@@ -226,6 +226,8 @@ var NoteEditor = function() {
 
   function _markAsComplete(note) {
     if (_isEditable(note)) {
+      // Currently returns false, and we don't allow marking editable notes
+      // as complete.
       return false;
     }
     if (!note.innerText) {
@@ -248,29 +250,31 @@ var NoteEditor = function() {
    * @param  {note element} note Note element to be removed
    * @return {undefined}
    */
-  function _removeNote(note) {
-    if (note.parentNode) {
-      // Find a note to focus
-      var parentNodeOfNote = null;
-      if (note.parentNode.nextElementSibling) {
-        // Does it have a next sibling??
-        parentNodeOfNote = note.parentNode.nextElementSibling;
-      } else if (note.parentNode.previousElementSibling) {
-        // Does not have a next sibling, does it have
-        // a previous sibling??
-        parentNodeOfNote = note.parentNode.previousElementSibling;
-      }
+  function _removeNote(note, autoFocus) {
+    if (autoFocus) {
+      setAutoFocus(note);
+    }
+    note.parentNode.remove();
+  }
 
-      if (parentNodeOfNote) {
-        // Now focus that note.
-        var noteToFocus = parentNodeOfNote.querySelector('.note');
-        if (noteToFocus) {
-          noteToFocus.focus();
-        }
+  function setAutoFocus(note) {
+    // Find a note to focus
+    var parentNodeOfNote = null;
+    if (note.parentNode.nextElementSibling) {
+      // Does it have a next sibling??
+      parentNodeOfNote = note.parentNode.nextElementSibling;
+    } else if (note.parentNode.previousElementSibling) {
+      // Does not have a next sibling, does it have
+      // a previous sibling??
+      parentNodeOfNote = note.parentNode.previousElementSibling;
+    }
+
+    if (parentNodeOfNote) {
+      // Now focus that note.
+      var noteToFocus = parentNodeOfNote.querySelector('.note');
+      if (noteToFocus) {
+        noteToFocus.focus();
       }
-      note.parentNode.remove();
-    } else {
-      note.remove();
     }
   }
 
@@ -284,6 +288,32 @@ var NoteEditor = function() {
     return note;
   }
 
+  function getNotesContainer(note) {
+    let notebookID;
+    if (typeof note === 'string') {
+      notebookID = note;
+    } else {
+      let notebookDbID = note.dataset['notebookid'];
+      notebookID = _appConfig.getNotebookContentID(notebookDbID);
+    }
+    let notebookContainer = document.getElementById(notebookID);
+    return notebookContainer.querySelector('.notes-container');
+  }
+
+  function _moveNoteToBottom(note) {
+    let notesContainer = getNotesContainer(note);
+    let noteParent = note.parentNode;
+    _removeNote(note, false);
+    notesContainer.appendChild(noteParent);
+  }
+
+  function _moveNoteToTop(note) {
+    let notesContainer = getNotesContainer(note);
+    let noteParent = note.parentNode;
+    _removeNote(note, false);
+    notesContainer.insertBefore(noteParent, notesContainer.firstChild);
+  }
+
   return {
     isEditable: _isEditable,
     turnOnEditing: _turnOnEditing,
@@ -295,7 +325,9 @@ var NoteEditor = function() {
     getCurrState: _getCurrentStateOfNote,
     removeNote: _removeNote,
     TEXT_MODIFIERS: TEXT_MODIFIERS,
-    getNoteByID: _getNoteByID
+    getNoteByID: _getNoteByID,
+    moveToBottom: _moveNoteToBottom,
+    moveToTop: _moveNoteToTop
   };
 };
 

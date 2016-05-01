@@ -180,7 +180,8 @@ var Notes = function() {
         return false;
       }
     }).sort({
-      createdOn: -1
+      isComplete: -1,
+      createdOn: 1
     }).exec(function(err, notes) {
       if (err) {
         return cbMain(new _appError(err, _i18n.__('error.notes_fetch_error')));
