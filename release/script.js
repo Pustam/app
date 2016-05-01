@@ -6,7 +6,7 @@ var options = {
   "dir" : ".",
   "name" : "markdown-notes",
   "platform" : ["linux","win32"],
-  "version" : "0.33.3",
+  "version" : "0.37.6",
   "out" : "/home/abijeet/Projects/markdown-notes/releases/",
   "icon" : "/home/abijeet/Pictures/markdown-notes-ico.png",
   "app-version" : "0.3.0",
@@ -23,6 +23,6 @@ packager(options, function done (err, appPath) {
     console.log('There was an error while packaging the app.');
     console.log('---------------------------------------\n\n');
   } else {
-    console.log('App packaged successfully!');    
+    console.log('App packaged successfully!');
   }
 });
