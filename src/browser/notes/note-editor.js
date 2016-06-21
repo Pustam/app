@@ -15,6 +15,8 @@ var NoteEditor = function () {
   const NOTE_COMPLETE_CLASS = 'complete';
   const DEFAULT_NOTE_CLASS = 'note';
   const NOTE_NOT_EDITABLE_CLASS = 'readonly';
+  const NOTE_TO_BE_MOVED = 'modified';
+
   var TEXT_MODIFIERS = {
     BOLD: 1,
     ITALICS: 2
@@ -257,6 +259,40 @@ var NoteEditor = function () {
     note.parentNode.remove();
   }
 
+  function _isNoteToBeMoved(note) {
+    if(note.classList.contains(NOTE_TO_BE_MOVED)) {
+      return true;
+    }
+    return false;
+  }
+
+  function _moveNote(note) {
+    if(_isComplete(note)) {
+      moveNoteToBottom(note);
+    } else {
+      moveNoteToTop(note);
+    }
+    markNoteAsMoved(note);
+  }
+
+  function _toggleNoteToBeMoved(note) {
+    if(_isNoteToBeMoved(note)) {
+      markNoteAsMoved(note);
+    } else {
+      markNoteAsToBeMoved(note);
+    }
+  }
+
+  function _getNoteByID(noteID, container) {
+    var note = null;
+    if (container) {
+      note = container.querySelector('.note[data-noteid="' + noteID + '"]');
+    } else {
+      note = document.querySelector('.note[data-noteid="' + noteID + '"]');
+    }
+    return note;
+  }
+
   function setAutoFocus(note) {
     // Find a note to focus
     var parentNodeOfNote = null;
@@ -278,16 +314,6 @@ var NoteEditor = function () {
     }
   }
 
-  function _getNoteByID(noteID, container) {
-    var note = null;
-    if (container) {
-      note = container.querySelector('.note[data-noteid="' + noteID + '"]');
-    } else {
-      note = document.querySelector('.note[data-noteid="' + noteID + '"]');
-    }
-    return note;
-  }
-
   function getNotesContainer(note) {
     let notebookID;
     if (typeof note === 'string') {
@@ -300,18 +326,26 @@ var NoteEditor = function () {
     return notebookContainer.querySelector('.notes-container');
   }
 
-  function _moveNoteToBottom(note) {
+  function moveNoteToBottom(note) {
     let notesContainer = getNotesContainer(note);
     let noteParent = note.parentNode;
     _removeNote(note, false);
     notesContainer.appendChild(noteParent);
   }
 
-  function _moveNoteToTop(note) {
+  function moveNoteToTop(note) {
     let notesContainer = getNotesContainer(note);
     let noteParent = note.parentNode;
     _removeNote(note, false);
     notesContainer.insertBefore(noteParent, notesContainer.firstChild);
+  }
+
+  function markNoteAsToBeMoved(note) {
+    note.classList.add(NOTE_TO_BE_MOVED);
+  }
+
+  function markNoteAsMoved(note) {
+    note.classList.remove(NOTE_TO_BE_MOVED);
   }
 
   return {
@@ -326,8 +360,9 @@ var NoteEditor = function () {
     removeNote: _removeNote,
     TEXT_MODIFIERS: TEXT_MODIFIERS,
     getNoteByID: _getNoteByID,
-    moveToBottom: _moveNoteToBottom,
-    moveToTop: _moveNoteToTop
+    isToBeMoved: _isNoteToBeMoved,
+    toggleMove: _toggleNoteToBeMoved,
+    move: _moveNote
   };
 };
 

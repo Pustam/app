@@ -21,12 +21,12 @@ var NoteEvents = function() {
 
   function _addEditableEvents(note) {
     note.addEventListener('keydown', evtNoteKeyDown, false);
-    note.addEventListener('blur', evtNoteBlur, false);
     _addEvents(note);
   }
 
   function _addEvents(note) {
     note.addEventListener('keypress', evtNoteKeyPress, false);
+    note.addEventListener('blur', evtNoteBlur, false);
     note.addEventListener('click', evtNoteClick, false);
   }
 
@@ -49,6 +49,10 @@ var NoteEvents = function() {
    * @return {undefined}    No return type.
    */
   function evtNoteBlur(event) {
+    var note = event.target;
+    if(_noteEditor.isToBeMoved(note)) {
+      _noteEditor.move(note);
+    }
     if (!_noteEditor.isEditable(event.target)) {
       return;
     }

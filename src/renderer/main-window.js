@@ -36,7 +36,7 @@ var MainWindow = function() {
     }
 
     // and load the index.html of the app.
-    mainWindow.loadUrl('file://' + _appConfig.htmlPath + 'index.html');
+    mainWindow.loadURL('file://' + _appConfig.htmlPath + 'index.html');
 
     mainWindow.on('closed', function() {
       // Delete the corresponding element.

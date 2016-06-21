@@ -215,14 +215,8 @@ var NoteClient = function () {
       if (err) {
         err.display();
       }
-      // Put the note at the bottom of the stack and focus it.
-      if (isComplete) {
-        // Was complete, now isn't complete.
-        _noteEditor.moveToTop(note);
-      } else {
-        // Now complete!
-        _noteEditor.moveToBottom(note);
-      }
+
+      _noteEditor.toggleMove(note);
     });
 
   }
