@@ -1,10 +1,12 @@
 'use strict';
+
+var path = require('path');
 /**
  * Contains functions that run at app startup. Also supplies references to the
  * databases used by the app.
  */
-var _app = require(__dirname + '/app');
-var _appEvents = require(__dirname + '/app-events');
+var _app = require(path.join(__dirname, 'app'));
+var _appEvents = require(path.join(__dirname, 'app-events'));
 
 var AppClient = function() {
   var dbObjs = {};

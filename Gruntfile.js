@@ -2,19 +2,19 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jsbeautifier: {
-      files: [__dirname + '/src/*.js',
-        __dirname + '/src/browser/*.js',
-        __dirname + '/src/common/*.js',
-        __dirname + '/src/browser/about/*.js',
-        __dirname + '/src/browser/help/*.js',
-        __dirname + '/src/browser/notes/*.js',
-        __dirname + '/src/browser/notebooks/*.js',
-        __dirname + '/src/browser/app/*.js',
+      files: [path.join(__dirname, 'src', '*.js'),
+        path.join(__dirname, 'src', 'browser', '*.js'),
+        path.join(__dirname, 'src', 'common', '*.js'),
+        path.join(__dirname, 'src', 'browser', 'about', '*.js'),
+        path.join(__dirname, 'src', 'browser', 'help', '*.js'),
+        path.join(__dirname, 'src', 'browser', 'notes', '*.js'),
+        path.join(__dirname, 'src', 'browser', 'notebooks', '*.js'),
+        path.join(__dirname, 'src', 'browser', 'app', '*.js')
       ],
       options: {
         js: {
           indentChar: ' ',
-          indentSize: 2,
+          indentSize: 2
         },
         html : {
           wrapLineLength: 90

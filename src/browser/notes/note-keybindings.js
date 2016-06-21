@@ -53,7 +53,7 @@ var keybindings = {
     }],
     5555: [{
 
-    }],
+    }]
   },
   'keydown': {
 

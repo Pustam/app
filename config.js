@@ -2,25 +2,26 @@
 
 var os = require('os');
 var _i18n = require('i18n');
+var path = require('path');
 
 var AppConfig = {
-	basePath: __dirname + '/',
-	htmlPath: __dirname + '/src/html/',
-	rendererPath: __dirname + '/src/renderer/',
-	browserSrcPath: __dirname + '/src/browser/',
-	commonsPath : __dirname + '/src/common/',
-	srcPath : __dirname + '/src/',
-	dialogsPath : __dirname + '',
-	partialsPath : __dirname + '',
+	basePath: path.join(__dirname, path.sep) + path.sep,
+	htmlPath: path.join(__dirname, 'src', 'html') + path.sep,
+	rendererPath: path.join(__dirname, 'src', 'renderer') + path.sep,
+	browserSrcPath: path.join(__dirname, 'src', 'browser') + path.sep,
+	commonsPath : path.join(__dirname, 'src', 'common') + path.sep,
+	srcPath : path.join(__dirname, 'src') + path.sep,
+	dialogsPath : __dirname,
+	partialsPath : __dirname,
 	isDevelopment: true,
 	database: {
-		path: __dirname + '/db/',
+		path: path.join(__dirname, 'db') + path.sep,
 		notes: 'notes.db',
 		notebooks: 'notebooks.db'
 	},
 	i18nConfiguration: {
 		locales: ['en'],
-		directory: __dirname + '/locales',
+		directory: path.join(__dirname, 'locales'),
 		defaultLocale: 'en',
 		objectNotation: true
 	},
@@ -46,13 +47,14 @@ var AppConfig = {
 			autoclose: true,
 			format: AppConfig.dateFormat
 		};
-	}
+	},
+	regexForTime: /\$\d{1,3}(\.\d{1,3})? \w{1,4}\$/
 };
 
-AppConfig.partialsPath = AppConfig.htmlPath + 'partials/';
-AppConfig.dialogsPath = AppConfig.htmlPath + 'dialogs/';
-AppConfig.logPath = AppConfig.basePath + 'logs/';
-AppConfig.settingsPath = AppConfig.basePath + 'settings.json';
+AppConfig.partialsPath = path.join(AppConfig.htmlPath, 'partials') + path.sep;
+AppConfig.dialogsPath = path.join(AppConfig.htmlPath, 'dialogs') + path.sep;
+AppConfig.logPath = path.join(AppConfig.basePath, 'logs') + path.sep;
+AppConfig.settingsPath = path.join(AppConfig.basePath, 'settings.json');
 
 AppConfig.EOL = os.EOL;
 
