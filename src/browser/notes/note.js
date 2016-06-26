@@ -218,6 +218,7 @@ var Notes = function() {
             // Although note is complete, completed on date is not set, check the
             // modified on date. This is because of #41 where the completedOn
             // was not being updated when notes were completed.
+            // This will only come into play when completedOn is not set properly.
             return true;
           }
         }
@@ -291,7 +292,7 @@ var Notes = function() {
     return noteObj;
   }
 
-  function changeNoteDate(noteID, updatedDate, cbMain) {
+  function changeNoteDate(noteID, updatedDate, isComplete, cbMain) {
     var notesDb = _app.getNotesDb();
     var err = null;
     if (!noteID) {
@@ -300,15 +301,27 @@ var Notes = function() {
       return cbMain(err);
     }
 
+    var currDateTime = new Date();
+    var currDate = new Date(currDateTime.getFullYear(), currDateTime.getMonth(), currDateTime.getDate());
     var noteObj = {
-      targetDate: updatedDate
+      targetDate: updatedDate,
+      modifiedOn: currDateTime
     };
-    var currDate = new Date();
-    if (updatedDate.getTime() < new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate()).getTime()) {
+    if (updatedDate.getTime() < currDate.getTime()) {
       // Note being moved to the past, set the completed on date in the past,
       // and set the note as isComplete
       noteObj.completedOn = updatedDate;
       noteObj.isComplete = true;
+    } else if(updatedDate.getTime() > currDateTime.getTime()) {
+      // note is moved to the future, remove completedOn and isComplete to false
+      noteObj.completedOn = null;
+      noteObj.isComplete = false;
+    } else {
+      // todays date, change the completedOn to todays date,
+      // otherwise the note will not move to today's date
+      if(isComplete) {
+        noteObj.completedOn = currDate;
+      }
     }
 
     notesDb.update({

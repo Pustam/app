@@ -14,6 +14,7 @@ var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 
 var NoteEvents = function() {
   var _noteHandler = {};
+  var _eventProperties = ['isEditable', 'isComplete', 'isReadOnly'];
 
   function init(noteCallbackMethods) {
     _noteHandler = noteCallbackMethods;
@@ -39,8 +40,8 @@ var NoteEvents = function() {
   }
 
   function _addNonEditableEvents(note) {
-    _removeEvents(note);
-    _addEvents(note);
+    note.addEventListener('keypress', evtNoteKeyPress, false);
+    note.addEventListener('click', evtNoteClick, false);
   }
 
   /**
@@ -96,15 +97,13 @@ var NoteEvents = function() {
     allNotes = null;
   };
 
-  function _checkIfCbIsValid(event, callback, noteState) {
-    if (callback.hasOwnProperty('isEditable') &&
-      callback.isEditable !== noteState.isEditable) {
-      return false;
-    }
 
-    if (callback.hasOwnProperty('isComplete') &&
-      callback.isComplete !== noteState.isComplete) {
-      return false;
+  function _checkIfCbIsValid(event, callback, noteState) {
+    for(let i = 0, len = _eventProperties.length; i !== len; ++i) {
+      let currProp = _eventProperties[i];
+      if(callback.hasOwnProperty(currProp) && callback[currProp] !== noteState[currProp]) {
+        return false;
+      }
     }
 
     if (callback.shiftModifier && event.shiftKey !== callback.shiftModifier) {
@@ -126,25 +125,9 @@ var NoteEvents = function() {
     }
 
     var currState = _noteEditor.getCurrState(event.target);
-    var cbToFire = false;
-    if (Array.isArray(callbacks)) {
-      for (var i = 0; i !== callbacks.length; i++) {
-        if (_checkIfCbIsValid(event, callbacks[i], currState)) {
-          cbToFire = callbacks[i];
-        }
-      }
-    } else {
-      if (_checkIfCbIsValid(event, callbacks, currState)) {
-        cbToFire = callbacks;
-      }
-    }
-
-    if (!cbToFire) {
+    var isTriggered = triggerCallback(event, currState, callbacks);
+    if(isTriggered === false) {
       return;
-    }
-
-    if (cbToFire && _noteHandler[cbToFire.cb]) {
-      _noteHandler[cbToFire.cb](event.target, event, currState);
     }
 
     if (cbToFire.allowDefault) {
@@ -159,13 +142,9 @@ var NoteEvents = function() {
 
     // Config for datepicker, don't allow past dates if the note is not complete.
     var datePickerConfig = _appConfig.getDatepickerConfig();
-    if(isComplete) {
-      var currDate = new Date();
-      currDate.setDate(currDate.getDate() - _appConfig.maxPastDate);
-      datePickerConfig.startDate = currDate;
-    } else {
-      datePickerConfig.startDate = new Date();
-    }
+    var currDate = new Date();
+    currDate.setDate(currDate.getDate() - _appConfig.maxPastDate);
+    datePickerConfig.startDate = currDate;
     $(datePicker).datepicker(datePickerConfig);
 
     // 2. Add the event
@@ -195,17 +174,57 @@ var NoteEvents = function() {
     $(dlg).data('modal', null).remove();
   }
 
+  function triggerCallback(event, currState, callbacks) {
+    var cbToFire = false;
+    if (Array.isArray(callbacks)) {
+      for (var i = 0; i !== callbacks.length; i++) {
+        if (_checkIfCbIsValid(event, callbacks[i], currState)) {
+          cbToFire = callbacks[i];
+        }
+      }
+    } else {
+      if (_checkIfCbIsValid(event, callbacks, currState)) {
+        cbToFire = callbacks;
+      }
+    }
+
+    if (cbToFire && _noteHandler[cbToFire.cb]) {
+      _noteHandler[cbToFire.cb](event.target, event, currState);
+    }
+
+    return false;
+  }
+
   function moveNoteToNewDate(event) {
     var $dlg = jQuery('#dlgMoveNote_88');
     var formElements = $dlg.find('form')[0].elements;
     var formData = _appUtil.readFormData(formElements);
-    var selectedDate = $dlg.find('#txtTargetDate_88').datepicker('getDate');
-
+    var $targetDate = $dlg.find('#txtTargetDate_88');
+    var selectedDate = $targetDate.datepicker('getDate');
+    let isComplete = _noteEditor.isComplete(_noteEditor.getNoteByID(formData.noteID))
     if (selectedDate) {
+      if(!confirmNotePast(selectedDate, isComplete)) {
+        event.preventDefault();
+        $targetDate.focus();
+        return false;
+      }
       formData.targetDate = selectedDate;
-      _noteHandler.modifyNoteDate(formData.noteID, formData.targetDate, $dlg);
+      _noteHandler.modifyNoteDate(formData.noteID, formData.targetDate, isComplete, $dlg);
     }
     event.preventDefault();
+  }
+
+  function confirmNotePast(selectedDate, isComplete) {
+    if(!isComplete) {
+      var currDate = new Date();
+      if(selectedDate.getTime() < new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate())) {
+        var isUserSure = window.confirm(_i18n.__('note.move_to_past_sure'));
+        if(!isUserSure) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   return {

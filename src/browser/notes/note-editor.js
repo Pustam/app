@@ -219,10 +219,18 @@ var NoteEditor = function () {
     return chunk;
   }
 
+  function _isReadOnly(currNote) {
+    if(currNote.classList.contains(NOTE_NOT_EDITABLE_CLASS)) {
+      return true;
+    }
+    return false;
+  }
+
   function _getCurrentStateOfNote(currNote) {
     var noteState = {};
     noteState.isComplete = _isComplete(currNote);
     noteState.isEditable = _isEditable(currNote);
+    noteState.isReadOnly = _isReadOnly(currNote);
     return noteState;
   }
 

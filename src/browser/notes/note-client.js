@@ -325,6 +325,7 @@ var NoteClient = function () {
       _noteEvents.addEvents(currNote);
     } else {
       // Not editable, but still allowed to move.
+      _noteEvents.addNonEditableEvents(currNote);
     }
 
     return currNote;
@@ -395,8 +396,8 @@ var NoteClient = function () {
     });
   }
 
-  function modifyNoteDate(noteID, newDate, $dlg) {
-    _notes.changeDate(noteID, newDate, function (err) {
+  function modifyNoteDate(noteID, newDate, isComplete, $dlg) {
+    _notes.changeDate(noteID, newDate, isComplete, function (err) {
       if (err) {
         var errObj = new _appError(err, _i18n.__('error.notes_modification_err'));
         errObj.display();

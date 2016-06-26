@@ -20,6 +20,7 @@ var keybindings = {
     3: [{
       comment: 'Mark a note as complete on Ctrl + Shift + C',
       isEditable: false,
+      isReadOnly: false,
       shiftModifier: true,
       cb: 'markNoteAsComplete'
     }],
@@ -27,12 +28,14 @@ var keybindings = {
       comment: 'Save a note on pressing Ctrl + S',
       isEditable: true,
       isComplete: false,
+      isReadOnly: false,
       shiftModifier: false,
       cb: 'saveNote'
     }],
     14: [{
       comment: 'Save and create a note Ctrl + N',
       shiftModifier: false,
+      isReadOnly: false,
       cb: 'saveAndCreateNote'
     }],
     4: [{
@@ -43,6 +46,7 @@ var keybindings = {
     5: [{
       comment: 'Makes a note editable Ctrl + E',
       isEditable: false,
+      isReadOnly: false,
       isComplete: false,
       shiftModifier: false,
       cb: 'makeNoteEditable'

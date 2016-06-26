@@ -15,14 +15,15 @@
 		"is_task_based": "Will the notebook contain tasks?",
 		"save_changes": "Save changes",
 		"close": "Close",
-		"deletion_confirmation" : "This will delete the notebook and the notes in the notebook. Are you sure you want to continue?",
+		"deletion_confirmation" : "This will delete the notebook and the notes in the notebook. Continue?",
 		"delete_notebook" : "Delete this notebook"
 	},
 	"note": {
 		"deletion_confirmation_text": "Are you sure you want to delete the note?",
 		"deletion_confirmation_title": "Deletion confirmation",
 		"": "",
-		"change_date": "Change the date..."
+		"change_date": "Change the date...",
+		"move_to_past_sure": "You are moving a non-completed note to the past. This will be marked as completed. Continue?"
 	},
 	"shortcut": {
 		"shortcut": "Shortcut",
