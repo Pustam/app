@@ -239,7 +239,7 @@ var Notes = function() {
     var notesDb = _app.getNotesDb();
     var dtFutureDate = new Date(futureDate.setHours(0, 0, 0, 0));
     notesDb.find({
-      targetDate: dtFutureDate
+      $and: [{targetDate: dtFutureDate}, {isComplete : false}]
     }).sort({
       createdOn: -1
     }).exec(function(err, notes) {
