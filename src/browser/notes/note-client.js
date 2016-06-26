@@ -17,7 +17,7 @@ var _noteEditor = require(_appConfig.browserSrcPath + 'notes/note-editor.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
 
-var NoteClient = function () {
+var NoteClient = function() {
   var currentlyFocusedNote = null;
 
   function _init() {
@@ -42,7 +42,7 @@ var NoteClient = function () {
    * @param  {Object} notebookContainer The notebook container HTML element
    * @return {undefined}                No return type.
    */
-  var buildNotes = function (notes, notebookDbID, notebookContainer, isEditable) {
+  var buildNotes = function(notes, notebookDbID, notebookContainer, isEditable) {
     if (!notebookContainer) {
       notebookContainer =
         document.getElementById(_appConfig.getNotebookContentID(notebookDbID));
@@ -72,7 +72,7 @@ var NoteClient = function () {
    * @param  {Object} notebookContainer HTML element containing the notes.
    * @return {undefined}                No return type.
    */
-  var addNewNote = function (notebookDbID, notebookContainer) {
+  var addNewNote = function(notebookDbID, notebookContainer) {
     if (!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
@@ -89,7 +89,7 @@ var NoteClient = function () {
     makeNoteEditable(currNote);
   };
 
-  var removeNotesFromNotebook = function (notebookDbID) {
+  var removeNotesFromNotebook = function(notebookDbID) {
     if (!notebookDbID) {
       throw new ReferenceError('Notebook ID not provided!');
     }
@@ -139,7 +139,7 @@ var NoteClient = function () {
           _notes.modifyNote(noteObj, false, cbModifiedNote);
         } else if (notebookID) {
           // Insert
-          _notes.modifyNote(noteObj, true, function (err, noteObj) {
+          _notes.modifyNote(noteObj, true, function(err, noteObj) {
             if (noteObj) {
               noteObj.noteElem.dataset.noteid = noteObj._id;
             }
@@ -176,7 +176,7 @@ var NoteClient = function () {
       }
       var noteID = note.dataset.noteid;
       if (noteID) {
-        _notes.deleteNote(noteID, function (err) {
+        _notes.deleteNote(noteID, function(err) {
           if (err) {
             var errObj = new _appError(err, _i18n.__('error.notes_deletion_err'));
             errObj.display();
@@ -211,7 +211,7 @@ var NoteClient = function () {
     }
     // It's not editable, we don't want to save the whole thing,
     // just update the isComplete flag.
-    _notes.updateCompletion(note.dataset.noteid, !isComplete, function (err) {
+    _notes.updateCompletion(note.dataset.noteid, !isComplete, function(err) {
       if (err) {
         err.display();
       }
@@ -238,7 +238,7 @@ var NoteClient = function () {
     }
     // Fetch the content of the note.
     _notes.getNoteByID(currentlyFocusedNote.dataset.noteid,
-      function (err, noteObj) {
+      function(err, noteObj) {
         if (err) {
           return;
         }
@@ -367,7 +367,7 @@ var NoteClient = function () {
     // Show the dialog box to handle the note update.
     _appUtil.loadDialog('change-note-date.html', {
       note: note
-    }, function (err, html) {
+    }, function(err, html) {
       if (!_appUtil.checkAndInsertDialog(err, html, _i18n.__('error.note_dlg_change_open'))) {
         return;
       }
@@ -383,13 +383,13 @@ var NoteClient = function () {
       let isComplete = _noteEditor.isComplete(note);
       _noteEvents.evtNoteDateChangeOpen($dlg[0], isComplete);
 
-      $dlg.on('shown.bs.modal', function () {
+      $dlg.on('shown.bs.modal', function() {
         // Focus the textbox on dialog open
         this.querySelector('#txtTargetDate_88').focus();
       });
 
       $dlg.modal('show');
-      _appUtil.addCloseEvent($dlg, function () {
+      _appUtil.addCloseEvent($dlg, function() {
         _noteEvents.evtNoteDateChangeClose($dlg[0]);
         $dlg = null;
       });
@@ -397,7 +397,7 @@ var NoteClient = function () {
   }
 
   function modifyNoteDate(noteID, newDate, isComplete, $dlg) {
-    _notes.changeDate(noteID, newDate, isComplete, function (err) {
+    _notes.changeDate(noteID, newDate, isComplete, function(err) {
       if (err) {
         var errObj = new _appError(err, _i18n.__('error.notes_modification_err'));
         errObj.display();

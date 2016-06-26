@@ -1,7 +1,7 @@
 'use strict';
 var _i18n = require('i18n');
 
-var NotebookUtils = function () {
+var NotebookUtils = function() {
   function getNotebookItem(notebook, isChecked) {
     var checkedHTML = '';
     if (isChecked) {
@@ -27,16 +27,16 @@ var NotebookUtils = function () {
     return '<li role="presentation" id="' + notebookHeaderID + '" class="active"><a href="#' + notebookContentID + '" aria-controls="' +
       notebookID + '" role="tab" data-toggle="tab">' + notebookName + '</a></li>'
   }
-  
+
   function getContainerHTML(notebookContentID, notesPageHeaderHtml) {
     return '<div role="tabpanel" class="tab-pane active" id="' +
-            notebookContentID + '">' + notesPageHeaderHtml + '</div>'
+      notebookContentID + '">' + notesPageHeaderHtml + '</div>'
   }
-  
+
   function getEmptyHTML(notebookClass) {
     return '<div class="' + notebookClass + '">' + _i18n.__('notebook.empty_notebook') + '</div>';
   }
-  
+
   function selectFirst(notebooksContainerUL) {
     // Check the first checkbox.
     var firstChkBox = notebooksContainerUL.querySelector('input[type="checkbox"]');
@@ -47,13 +47,13 @@ var NotebookUtils = function () {
     changeEvent.initEvent("change", false, true);
     firstChkBox.dispatchEvent(changeEvent);
   }
-  
+
   function checkAndReturn(callback, err, data) {
     if (callback) {
       return callback(err, data);
     }
   }
-  
+
   function getOpenNotebooks(containerUL) {
     var checkedBoxes = containerUL.querySelectorAll(':checked');
     var selectedNotebookIds = [];
@@ -62,7 +62,7 @@ var NotebookUtils = function () {
     }
     return selectedNotebookIds;
   }
-  
+
   function removeCheckbox(notebookID) {
     var chkNotebook = document.getElementById(notebookID);
     if (!chkNotebook) {
@@ -70,7 +70,7 @@ var NotebookUtils = function () {
     }
     chkNotebook.parentNode.remove();
   }
-    
+
   return {
     getNotebookItem: getNotebookItem,
     removeActiveTab: removeActiveTab,

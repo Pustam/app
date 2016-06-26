@@ -11,7 +11,7 @@
 var _appConfig = require(__dirname + '/../../../config.js');
 var _marked = require('marked');
 
-var NoteEditor = function () {
+var NoteEditor = function() {
   const NOTE_COMPLETE_CLASS = 'complete';
   const DEFAULT_NOTE_CLASS = 'note';
   const NOTE_NOT_EDITABLE_CLASS = 'readonly';
@@ -220,7 +220,7 @@ var NoteEditor = function () {
   }
 
   function _isReadOnly(currNote) {
-    if(currNote.classList.contains(NOTE_NOT_EDITABLE_CLASS)) {
+    if (currNote.classList.contains(NOTE_NOT_EDITABLE_CLASS)) {
       return true;
     }
     return false;
@@ -261,7 +261,7 @@ var NoteEditor = function () {
    * @return {undefined}
    */
   function _removeNote(note, autoFocus) {
-    if(typeof autoFocus === 'undefined') {
+    if (typeof autoFocus === 'undefined') {
       autoFocus = true;
     }
     if (autoFocus) {
@@ -271,14 +271,14 @@ var NoteEditor = function () {
   }
 
   function _isNoteToBeMoved(note) {
-    if(note.classList.contains(NOTE_TO_BE_MOVED)) {
+    if (note.classList.contains(NOTE_TO_BE_MOVED)) {
       return true;
     }
     return false;
   }
 
   function _moveNote(note) {
-    if(_isComplete(note)) {
+    if (_isComplete(note)) {
       moveNoteToBottom(note);
     } else {
       moveNoteToTop(note);
@@ -287,7 +287,7 @@ var NoteEditor = function () {
   }
 
   function _toggleNoteToBeMoved(note) {
-    if(_isNoteToBeMoved(note)) {
+    if (_isNoteToBeMoved(note)) {
       markNoteAsMoved(note);
     } else {
       markNoteAsToBeMoved(note);

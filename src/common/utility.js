@@ -132,7 +132,7 @@ var Utility = function() {
 
   function getDateString(dt) {
     var month = dt.getMonth() + 1;
-    month = month < 10 ?  '0' + month : month;
+    month = month < 10 ? '0' + month : month;
 
     var date = dt.getDate();
     date = date < 10 ? '0' + date : date;

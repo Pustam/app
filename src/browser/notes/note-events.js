@@ -51,7 +51,7 @@ var NoteEvents = function() {
    */
   function evtNoteBlur(event) {
     var note = event.target;
-    if(_noteEditor.isToBeMoved(note)) {
+    if (_noteEditor.isToBeMoved(note)) {
       _noteEditor.move(note);
     }
     if (!_noteEditor.isEditable(event.target)) {
@@ -99,9 +99,9 @@ var NoteEvents = function() {
 
 
   function _checkIfCbIsValid(event, callback, noteState) {
-    for(let i = 0, len = _eventProperties.length; i !== len; ++i) {
+    for (let i = 0, len = _eventProperties.length; i !== len; ++i) {
       let currProp = _eventProperties[i];
-      if(callback.hasOwnProperty(currProp) && callback[currProp] !== noteState[currProp]) {
+      if (callback.hasOwnProperty(currProp) && callback[currProp] !== noteState[currProp]) {
         return false;
       }
     }
@@ -126,7 +126,7 @@ var NoteEvents = function() {
 
     var currState = _noteEditor.getCurrState(event.target);
     var isTriggered = triggerCallback(event, currState, callbacks);
-    if(isTriggered === false) {
+    if (isTriggered === false) {
       return;
     }
 
@@ -203,7 +203,7 @@ var NoteEvents = function() {
     var selectedDate = $targetDate.datepicker('getDate');
     let isComplete = _noteEditor.isComplete(_noteEditor.getNoteByID(formData.noteID))
     if (selectedDate) {
-      if(!confirmNotePast(selectedDate, isComplete)) {
+      if (!confirmNotePast(selectedDate, isComplete)) {
         event.preventDefault();
         $targetDate.focus();
         return false;
@@ -215,11 +215,11 @@ var NoteEvents = function() {
   }
 
   function confirmNotePast(selectedDate, isComplete) {
-    if(!isComplete) {
+    if (!isComplete) {
       var currDate = new Date();
-      if(selectedDate.getTime() < new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate())) {
+      if (selectedDate.getTime() < new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate())) {
         var isUserSure = window.confirm(_i18n.__('note.move_to_past_sure'));
-        if(!isUserSure) {
+        if (!isUserSure) {
           return false;
         }
       }

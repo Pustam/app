@@ -13,7 +13,7 @@ var AppConfig = {
 	srcPath : path.join(__dirname, 'src') + path.sep,
 	dialogsPath : __dirname,
 	partialsPath : __dirname,
-	isDevelopment: true,
+	isDevelopment: false,
 	database: {
 		path: path.join(__dirname, 'db') + path.sep,
 		notes: 'notes.db',

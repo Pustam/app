@@ -19,7 +19,7 @@ var MainWindow = function() {
     mainWindow = new _browserWindow({
       width: 800,
       height: 600,
-      icon: _appConfig.srcPath + 'img/markdown-notes-ico.png',
+      icon: _appConfig.srcPath + 'img/markdown-notes-ico.png'
     });
 
     // Open the dev tools.

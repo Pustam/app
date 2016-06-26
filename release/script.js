@@ -5,14 +5,18 @@ var packager = require('electron-packager');
 var options = {
   "dir" : ".",
   "name" : "markdown-notes",
-  "platform" : ["linux"],
+  "platform" : ["linux", "win32"],
   "version" : "0.37.6",
   "out" : "/home/abijeet/Projects/markdown-notes/releases/",
   "icon" : "/home/abijeet/Pictures/markdown-notes-ico.png",
-  "app-version" : "0.3.0",
+  "app-version" : "0.4.0",
   "arch" : "x64",
   "ignore" : ["settings.json", "release", "Gruntfile.js", ".bowerrc",
-    "node_modules/grunt", "node_modules/grunt-jsbeautifier", ".jshintrc"]
+    "node_modules/grunt", "node_modules/grunt-jsbeautifier", ".jshintrc"],
+  "version-string": {
+    "CompanyName": "Markdown notes",
+    "ProductName": "Markdown notes"
+  }
 };
 
 console.log('Packaging app with following settings --\n\n');

@@ -239,7 +239,11 @@ var Notes = function() {
     var notesDb = _app.getNotesDb();
     var dtFutureDate = new Date(futureDate.setHours(0, 0, 0, 0));
     notesDb.find({
-      $and: [{targetDate: dtFutureDate}, {isComplete : false}]
+      $and: [{
+        targetDate: dtFutureDate
+      }, {
+        isComplete: false
+      }]
     }).sort({
       createdOn: -1
     }).exec(function(err, notes) {
@@ -312,14 +316,14 @@ var Notes = function() {
       // and set the note as isComplete
       noteObj.completedOn = updatedDate;
       noteObj.isComplete = true;
-    } else if(updatedDate.getTime() > currDateTime.getTime()) {
+    } else if (updatedDate.getTime() > currDateTime.getTime()) {
       // note is moved to the future, remove completedOn and isComplete to false
       noteObj.completedOn = null;
       noteObj.isComplete = false;
     } else {
       // todays date, change the completedOn to todays date,
       // otherwise the note will not move to today's date
-      if(isComplete) {
+      if (isComplete) {
         noteObj.completedOn = currDate;
       }
     }

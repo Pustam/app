@@ -8,14 +8,14 @@ var _path = require('path');
 // Custom
 var _appConfig = require(_path.join(__dirname, '..', '..', '..', 'config'));
 var _notebooks = require(_path.join(_appConfig.browserSrcPath, 'notebooks', 'notebook'));
-var _notebookEvents = require(_path.join(_appConfig.browserSrcPath, 'notebooks' , 'notebook-events'));
+var _notebookEvents = require(_path.join(_appConfig.browserSrcPath, 'notebooks', 'notebook-events'));
 var _notesClient = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note-client'));
 var _notes = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note'));
 var _appUtil = require(_path.join(_appConfig.commonsPath, 'utility'));
 var _appError = require(_path.join(_appConfig.commonsPath, 'app-error'));
 var _notebookUtil = require(_path.join(__dirname, 'notebook-utils'));
 
-var NotebooksClient = function () {
+var NotebooksClient = function() {
   var notebooksContainerUL, notebooksTabHeading, notebooksTabContainer;
   const EMPTY_NOTES_CLASS = 'empty-notebook';
 
@@ -32,7 +32,7 @@ var NotebooksClient = function () {
   }
 
   function _getAndBindNotebooks(cbMain) {
-    _notebooks.getAllNotebooks(function (err, notebooks) {
+    _notebooks.getAllNotebooks(function(err, notebooks) {
       if (err) {
         return cbMain(err);
       }
@@ -58,13 +58,13 @@ var NotebooksClient = function () {
    */
   function showTab(notebookID, updateActiveNotebook, cbMain) {
     // Fetch the notebook details
-    _notebooks.getFullDetailByID(notebookID, function (err, notebookData) {
+    _notebooks.getFullDetailByID(notebookID, function(err, notebookData) {
       if (err) {
         err.display();
         return _notebookUtil.checkAndReturn(cbMain, err);
       }
 
-      _appUtil.loadPartial('notes.html', {}, function (err, notesPageHeaderHtml) {
+      _appUtil.loadPartial('notes.html', {}, function(err, notesPageHeaderHtml) {
         if (err) {
           let errParse = new _appError(err, _i18n.__('error.app_init'), false, true);
           errParse.display();
@@ -78,7 +78,7 @@ var NotebooksClient = function () {
 
           // Add <li> to tab header
           notebooksTabHeading.insertAdjacentHTML('beforeend', _notebookUtil.getHeaderHTML(_appConfig.getNotebookHeaderID(
-            notebookID), notebookContentID, notebookID, notebookData.name));                    
+            notebookID), notebookContentID, notebookID, notebookData.name));
 
           // Add the default content of the notebook.
           notebooksTabContainer.insertAdjacentHTML('beforeend', _notebookUtil.getContainerHTML(notebookContentID, notesPageHeaderHtml));
@@ -156,10 +156,10 @@ var NotebooksClient = function () {
     // Get the content ID and header ID, based on database ID
     var notebookContentID = _appConfig.getNotebookContentID(notebookDbId);
     var notebookHeaderID = _appConfig.getNotebookHeaderID(notebookDbId);
-    
+
     // Remove the currently active notebook.
     _notebookUtil.removeActiveTab(notebooksTabHeading, notebooksTabContainer);
-    
+
     // Chang the current active notebook.
     notebooksTabHeading.querySelector('#' + notebookHeaderID).classList.add('active');
     notebooksTabContainer.querySelector('#' + notebookContentID).classList.add('active');
@@ -168,19 +168,19 @@ var NotebooksClient = function () {
   }
 
   function showNotesForPastDate(notebookDbID, selectedDate) {
-    _notes.getCompletedNotesForDate(notebookDbID, selectedDate, function (err, notes) {
+    _notes.getCompletedNotesForDate(notebookDbID, selectedDate, function(err, notes) {
       handleNotebookDisplay(err, notebookDbID, notes, false);
     });
   }
 
   function showFutureNotes(notebookDbID, selectedDate) {
-    _notes.getFutureNotesByDate(notebookDbID, selectedDate, function (err, notes) {
+    _notes.getFutureNotesByDate(notebookDbID, selectedDate, function(err, notes) {
       handleNotebookDisplay(err, notebookDbID, notes, true);
     });
   }
 
   function showActiveNotes(notebookDbID) {
-    _notes.getAllActiveNotes(notebookDbID, function (err, notes) {
+    _notes.getAllActiveNotes(notebookDbID, function(err, notes) {
       handleNotebookDisplay(err, notebookDbID, notes, true);
     });
   }
@@ -233,7 +233,7 @@ var NotebooksClient = function () {
   }
 
   function saveNotebook(notebookData, cbMain) {
-    _notebooks.createNotebook(notebookData, function (err, newNotebook) {
+    _notebooks.createNotebook(notebookData, function(err, newNotebook) {
       if (err) {
         err.display();
         return _notebookUtil.checkAndReturn(cbMain, err);
@@ -252,15 +252,15 @@ var NotebooksClient = function () {
 
   function deleteNotebook(notebookID) {
     _async.waterfall([
-      function (next) {
+      function(next) {
         // Delete the notes first.
         _notes.deleteByNotebookID(notebookID, next);
       },
-      function (data, next) {
+      function(data, next) {
         // Delete the notebook next.
         _notebooks.deleteByID(notebookID, next);
       }
-    ], function (err, data) {
+    ], function(err, data) {
       if (err) {
         return err.display();
       }
@@ -277,8 +277,8 @@ var NotebooksClient = function () {
     var openNotebooks = _notebooks.getLastOpenedNotebooks();
     if (openNotebooks) {
       // Show the last open notebooks.
-      _async.each(openNotebooks, function (notebookID, cbMain) {
-        showTab(notebookID, false, function (err) {
+      _async.each(openNotebooks, function(notebookID, cbMain) {
+        showTab(notebookID, false, function(err) {
           if (err) {
             // If there was an error showing the notebook,
             // stop and dont check the checkbox.
@@ -288,7 +288,7 @@ var NotebooksClient = function () {
           notebookChk.checked = true;
           return cbMain();
         });
-      }, function (err) {
+      }, function(err) {
         if (err) {
           if (!(err instanceof _appError)) {
             let parsedErr = new _appError(err, _i18n.__('error.notebook_init_display'));
