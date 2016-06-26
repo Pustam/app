@@ -303,7 +303,8 @@ var Notes = function() {
     var noteObj = {
       targetDate: updatedDate
     };
-    if (updatedDate.getTime() < new Date().getTime()) {
+    var currDate = new Date();
+    if (updatedDate.getTime() < new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate()).getTime()) {
       // Note being moved to the past, set the completed on date in the past,
       // and set the note as isComplete
       noteObj.completedOn = updatedDate;

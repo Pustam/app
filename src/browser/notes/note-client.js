@@ -410,7 +410,6 @@ var NoteClient = function () {
         $dlg.modal('hide');
         // Remove the note from DOM.
         _noteEditor.removeNote(note);
-        // focus the next note.
       }
     });
   }
