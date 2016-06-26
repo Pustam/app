@@ -27,6 +27,6 @@
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-jsbeautifier": "0.2.10",
-    "electron-packager" : "5.0.1"
+    "electron-packager" : "7.0.4"
   }
 }
