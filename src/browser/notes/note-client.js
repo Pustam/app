@@ -323,6 +323,8 @@ var NoteClient = function () {
     // key's pressed.
     if (isEditable) {
       _noteEvents.addEvents(currNote);
+    } else {
+      // Not editable, but still allowed to move.
     }
 
     return currNote;
@@ -408,6 +410,7 @@ var NoteClient = function () {
         $dlg.modal('hide');
         // Remove the note from DOM.
         _noteEditor.removeNote(note);
+        // focus the next note.
       }
     });
   }

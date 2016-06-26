@@ -253,6 +253,9 @@ var NoteEditor = function () {
    * @return {undefined}
    */
   function _removeNote(note, autoFocus) {
+    if(typeof autoFocus === 'undefined') {
+      autoFocus = true;
+    }
     if (autoFocus) {
       setAutoFocus(note);
     }

@@ -48,7 +48,8 @@ var AppConfig = {
 			format: AppConfig.dateFormat
 		};
 	},
-	regexForTime: /\$\d{1,3}(\.\d{1,3})? \w{1,4}\$/
+	regexForTime: /\$\d{1,3}(\.\d{1,3})? \w{1,4}\$/,
+	maxPastDate: 60
 };
 
 AppConfig.partialsPath = path.join(AppConfig.htmlPath, 'partials') + path.sep;

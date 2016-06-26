@@ -161,7 +161,7 @@ var NoteEvents = function() {
     var datePickerConfig = _appConfig.getDatepickerConfig();
     if(isComplete) {
       var currDate = new Date();
-      currDate.setDate(currDate.getDate() - 30);
+      currDate.setDate(currDate.getDate() - _appConfig.maxPastDate);
       datePickerConfig.startDate = currDate;
     } else {
       datePickerConfig.startDate = new Date();
