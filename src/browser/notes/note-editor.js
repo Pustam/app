@@ -9,7 +9,7 @@
 'use strict';
 
 var _appConfig = require(__dirname + '/../../../config.js');
-var _marked = require('marked');
+var _marked = require('mark-it-down');
 
 var NoteEditor = function() {
   const NOTE_COMPLETE_CLASS = 'complete';

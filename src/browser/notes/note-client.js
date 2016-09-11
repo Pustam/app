@@ -8,7 +8,7 @@
 
 'use strict';
 var _i18n = require('i18n');
-var _marked = require('marked');
+var _marked = require('mark-it-down');
 
 var _appConfig = require(__dirname + '/../../../config.js');
 var _notes = require(_appConfig.browserSrcPath + 'notes/note.js');
