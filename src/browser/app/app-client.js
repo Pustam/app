@@ -10,6 +10,8 @@ var _appEvents = require(path.join(__dirname, 'app-events'));
 
 var AppClient = function() {
   var dbObjs = {};
+  var timeSpent = null;
+  var notesCompleted = null;
 
   /**
    * Called when the application starts.
@@ -20,10 +22,19 @@ var AppClient = function() {
   var _init = function(cbMain) {
     _app.init(cbMain);
     _appEvents.init();
+    timeSpent = document.getElementById('timeSpend_1');
+    notesCompleted = document.getElementById('notesCompleted_1');
+  };
+
+  var _statusBar = {
+    setCompletedNotes: function(completedNotes, totalNotes) {
+      notesCompleted.innerHTML = completedNotes  + '/' + totalNotes + ' completed';
+    }
   };
 
   return {
-    init: _init
+    init: _init,
+    statusBar: _statusBar
   };
 };
 

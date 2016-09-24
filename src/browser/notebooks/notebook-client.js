@@ -7,13 +7,16 @@ var _path = require('path');
 
 // Custom
 var _appConfig = require(_path.join(__dirname, '..', '..', '..', 'config'));
+var _appClient = require(_path.join(_appConfig.browserSrcPath, 'app', 'app-client'));
 var _notebooks = require(_path.join(_appConfig.browserSrcPath, 'notebooks', 'notebook'));
 var _notebookEvents = require(_path.join(_appConfig.browserSrcPath, 'notebooks', 'notebook-events'));
 var _notesClient = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note-client'));
+var _noteEditor = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note-editor'));
 var _notes = require(_path.join(_appConfig.browserSrcPath, 'notes', 'note'));
 var _appUtil = require(_path.join(_appConfig.commonsPath, 'utility'));
 var _appError = require(_path.join(_appConfig.commonsPath, 'app-error'));
 var _notebookUtil = require(_path.join(__dirname, 'notebook-utils'));
+var _ee = _appConfig.getEventEmitter();
 
 var NotebooksClient = function() {
   var notebooksContainerUL, notebooksTabHeading, notebooksTabContainer;
@@ -92,6 +95,7 @@ var NotebooksClient = function() {
           if (notebookData.notes.length !== 0) {
             // Build the notes html.
             _notesClient.buildNotes(notebookData.notes, notebookID, notebookContents);
+            showCompletedNotes(notebookID)
           } else {
             // Add empty notebok HTML
             notebookContents.insertAdjacentHTML('beforeend', _notebookUtil.getEmptyHTML(EMPTY_NOTES_CLASS));
@@ -192,6 +196,7 @@ var NotebooksClient = function() {
     }
     try {
       _displayNotes(notes, notebookDbID, isEditable);
+      showCompletedNotes(notebookDbID);
     } catch (e) {
       var errObj = new _appError(e, _i18n.__('error.notes_display_error'));
       errObj.display();
@@ -309,7 +314,29 @@ var NotebooksClient = function() {
     }
   }
 
+  function showCompletedNotes(notebookDbId) {
+    if(!notebookDbId || notebookDbId.length === 0) {
+      return;
+    }
+    let notebookContentID = _appConfig.getNotebookContentID(notebookDbId);
+    let notebook = document.getElementById(notebookContentID);
+    let notes = notebook.getElementsByClassName('note');
+    let completedNotes = 0;
+    for(let i = 0; i !== notes.length; ++i) {
+      if(_noteEditor.isComplete(notes[i])) {
+        ++completedNotes;
+      }
+    }
 
+    let totalNotes = notes.length;
+    _appClient.statusBar.setCompletedNotes(completedNotes, totalNotes);
+  }
+
+
+  _ee.addListeners({
+    'note.saved': [showCompletedNotes],
+    'note.deleted': [showCompletedNotes]
+  });
 
   var eventsApi = {
     showTab: showTab,

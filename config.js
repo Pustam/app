@@ -3,6 +3,8 @@
 var os = require('os');
 var _i18n = require('i18n');
 var path = require('path');
+var EventEmitter = require('wolfy87-eventemitter');
+var _ee = new EventEmitter();
 
 var AppConfig = {
 	basePath: path.join(__dirname, path.sep) + path.sep,
@@ -49,7 +51,10 @@ var AppConfig = {
 		};
 	},
 	regexForTime: /\$\d{1,3}(\.\d{1,3})? \w{1,4}\$/,
-	maxPastDate: 60
+	maxPastDate: 60,
+	getEventEmitter: function() {
+		return _ee;
+	}
 };
 
 AppConfig.partialsPath = path.join(AppConfig.htmlPath, 'partials') + path.sep;

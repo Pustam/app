@@ -16,6 +16,7 @@ var _noteEvents = require(_appConfig.browserSrcPath + 'notes/note-events.js');
 var _noteEditor = require(_appConfig.browserSrcPath + 'notes/note-editor.js');
 var _appError = require(_appConfig.commonsPath + 'app-error.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
+var _ee = _appConfig.getEventEmitter();
 
 var NoteClient = function() {
   var currentlyFocusedNote = null;
@@ -187,10 +188,12 @@ var NoteClient = function() {
 
           // Remove the note from DOM.
           _noteEditor.removeNote(note);
+          _ee.trigger('note.deleted', [note.dataset.notebookid]);
         });
       } else {
         // Remove the note from DOM.
         _noteEditor.removeNote(note);
+        _ee.trigger('note.deleted', [note.dataset.notebookid]);
       }
     } catch (e) {
       var appErrObj = new _appError(e, _i18n.__('error.notes_deletion_err'));
@@ -215,8 +218,8 @@ var NoteClient = function() {
       if (err) {
         err.display();
       }
-
       _noteEditor.toggleMove(note);
+      _ee.trigger('note.saved', [note.dataset.notebookid]);
     });
 
   }
@@ -345,6 +348,7 @@ var NoteClient = function() {
       return;
     }
     checkIfBlur(noteObj);
+    _ee.trigger('note.saved', [noteObj.notebookID]);
     noteObj = null;
   }
   // END of CALLBACKS
@@ -411,6 +415,7 @@ var NoteClient = function() {
         $dlg.modal('hide');
         // Remove the note from DOM.
         _noteEditor.removeNote(note);
+        _ee.trigger('note.saved', [note.dataset.notebookid]);
       }
     });
   }
