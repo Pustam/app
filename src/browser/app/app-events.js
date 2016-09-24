@@ -1,8 +1,7 @@
 'use strict';
 
 var _i18n = require('i18n');
-const _ipcRenderer = require('electron').ipcRenderer;
-var _shell = require('shell');
+const {ipcRenderer, shell} = require('electron');
 
 var _appConfig = require(__dirname + '/../../../config.js');
 var _appUtil = require(_appConfig.commonsPath + 'utility.js');
@@ -47,7 +46,7 @@ var AppEvents = function() {
     var href = event.target.getAttribute('href');
     event.preventDefault();
     if (href) {
-      _shell.openExternal(href);
+      shell.openExternal(href);
     }
   }
 
@@ -60,7 +59,7 @@ var AppEvents = function() {
   }
 
   function exitApp() {
-    _ipcRenderer.send('exit-app');
+    ipcRenderer.send('exit-app');
   }
 
   return {

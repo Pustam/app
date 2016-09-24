@@ -5,7 +5,7 @@
  ****************************************************************/
 
 'use strict';
-var _shell = require('shell');
+const {shell} = require('electron');
 
 var _appConfig = require(__dirname + '/../../../config');
 var _noteKeyBindings = require(__dirname + '/note-keybindings');
@@ -78,7 +78,7 @@ var NoteEvents = function() {
 
   function evtNoteClick(event) {
     if (event.target.href) {
-      _shell.openExternal(event.target.href);
+      shell.openExternal(event.target.href);
       event.preventDefault();
     }
   }
