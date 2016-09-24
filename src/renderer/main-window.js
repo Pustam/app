@@ -1,7 +1,6 @@
 'use strict';
 
-var _browserWindow = require('browser-window');
-var _globalShortcut = require('global-shortcut');
+const {globalShortcut, BrowserWindow} = require('electron');
 var _i18n = require('i18n');
 
 // Custom
@@ -16,7 +15,7 @@ var MainWindow = function() {
     var settings = _settings.getAppSettings();
 
     // Create the browser window.
-    mainWindow = new _browserWindow({
+    mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
       icon: _appConfig.srcPath + 'img/markdown-notes-ico.png'
@@ -45,7 +44,7 @@ var MainWindow = function() {
   }
 
   function bindShortcutKey(shortcutKey) {
-    var ret = _globalShortcut.register('Super+Shift+' + shortcutKey, function() {
+    var ret = globalShortcut.register('Super+Shift+' + shortcutKey, function() {
       if (mainWindow.isFocused()) {
         isMaximized = mainWindow.isMaximized();
         mainWindow.hide();

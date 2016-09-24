@@ -1,8 +1,7 @@
 'use strict';
 
 var _i18n = require('i18n');
-var _remote = require('remote');
-var _dialog = _remote.require('dialog');
+var dialog = require('electron').remote;
 
 var _appConfig = require(__dirname + '/../../../config.js');
 var _settings = require(_appConfig.commonsPath + 'settings.js');
@@ -18,7 +17,7 @@ var SettingsClient = function() {
   var init = function(dlgRef) {
     _settingEvents.init({
       showActiveTab : showActiveTab,
-      hideAllTabs : hideAllTabs,      
+      hideAllTabs : hideAllTabs,
       settingsAppliedInfo : settingsAppliedInfo,
       dialogOpened : settingsDialogOpened,
       destroy : destroy

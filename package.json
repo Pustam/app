@@ -18,11 +18,12 @@
   "description": "A markdown based notebook, stores notes locally, intended to be keyboard friendly.",
   "dependencies" : {
     "nedb" : "1.8.0",
-    "async" : "1.5.2",
-    "i18n" : "0.8.2",
-    "ejs" : "2.3.4",
+    "async" : "2.0.1",
+    "i18n" : "0.8.3",
+    "ejs" : "2.5.2",
     "mark-it-down" : "https://github.com/markdown-note/mark-it-down.git",
-    "jquery" : "2.1.4"
+    "jquery" : "3.1.1",
+    "wolfy87-eventemitter": "5.1.*"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

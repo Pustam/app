@@ -6,7 +6,7 @@ var options = {
   "dir" : ".",
   "name" : "markdown-notes",
   "platform" : ["linux", "win32"],
-  "version" : "0.37.6",
+  "version" : "1.4.1",
   "out" : "/home/abijeet/Projects/markdown-notes/releases/",
   "icon" : "/home/abijeet/Pictures/markdown-notes.ico",
   "app-version" : "0.4.0",

@@ -1,9 +1,6 @@
 'use strict';
 
-var _app = require('app');
-const _ipcMain = require('electron').ipcMain;
-var _globalShortcut = require('global-shortcut');
-var _dialog = require('dialog');
+const {app, globalShortcut, dialog, ipcMain} = require('electron');
 var _i18n = require('i18n');
 
 // Custom
@@ -26,13 +23,13 @@ var MarkdownNotes = function() {
 
   function attachAppEvents() {
     // Called when the application is ready.
-    _app.on('ready', appReady);
+    app.on('ready', appReady);
 
     // Called on all windows closed
-    _app.on('window-all-closed', appWindowClosed);
+    app.on('window-all-closed', appWindowClosed);
 
     // Called on application quit
-    _app.on('will-quit', appWillQuit);
+    app.on('will-quit', appWillQuit);
   }
 
   function appWillQuit(event) {
@@ -42,10 +39,10 @@ var MarkdownNotes = function() {
       event.preventDefault();
       _settings.updateAppSettings(settingsToBeApplied, function() {
         settingsToBeApplied = null;
-        _app.quit();
+        app.quit();
       });
     } else {
-      _globalShortcut.unregisterAll();
+      globalShortcut.unregisterAll();
     }
   }
 
@@ -55,31 +52,31 @@ var MarkdownNotes = function() {
 
   function appWindowClosed() {
     if (process.platform !== 'darwin') {
-      _app.quit();
+      app.quit();
     }
   }
 
   function attachIPCEvents() {
     // Start of IPC messages.
-    _ipcMain.on('exit-app', function(event) {
-      _app.quit();
+    ipcMain.on('exit-app', function(event) {
+      app.quit();
     });
 
-    _ipcMain.on('update-shortcut', function(event, arg) {
+    ipcMain.on('update-shortcut', function(event, arg) {
       var oldKey = arg.old;
       var newKey = arg.new;
-      _globalShortcut.unregister('Super+Shift+' + oldKey);
+      globalShortcut.unregister('Super+Shift+' + oldKey);
       event.returnValue = _mainWindow.bindShortcutKey(newKey);
     });
 
-    _ipcMain.on('settings-updated', function(event, arg) {
+    ipcMain.on('settings-updated', function(event, arg) {
       settingsToBeApplied = arg.newSettings;
     });
 
-    _ipcMain.on('fatal-error', function(event, arg) {
-      _dialog.showErrorBox(_i18n.__('app.fatal_error'), arg.message);
+    ipcMain.on('fatal-error', function(event, arg) {
+      dialog.showErrorBox(_i18n.__('app.fatal_error'), arg.message);
       settingsToBeApplied = null;
-      _app.quit();
+      app.quit();
     });
   }
 

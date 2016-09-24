@@ -1,7 +1,6 @@
 'use strict';
 
-var _remote = require('remote');
-var _dialog = _remote.require('dialog');
+var dialog = require('electron').remote;
 var _i18n = require('i18n');
 
 var _appConfig = require(__dirname + '/../../../config.js');
@@ -95,7 +94,7 @@ var SettingEvents = function() {
   }
 
   function evtChooseFolder(event) {
-    var path = _dialog.showOpenDialog(null, {
+    var path = dialog.showOpenDialog(null, {
       properties : ['openDirectory', 'createDirectory']
     });
     if(path !== 'undefined') {
@@ -104,7 +103,7 @@ var SettingEvents = function() {
     }
   }
 
-  return {    
+  return {
     init : init
   };
 };
