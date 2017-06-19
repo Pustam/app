@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title translate="title">
+  </title>
+  <link rel="stylesheet" href="../css/font-awesome-4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../css/bulma.css">
+  <link rel="stylesheet" href="../css/header.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
+  <link rel="stylesheet" href="../css/footer.css">
+  <link rel="stylesheet" href="../../node_modules/flatpickr/dist/flatpickr.css">
+</head>
+
+<body>
+  <div class="content app-body">
+    <!-- Sidebar -->
+    <aside id="notebookList">
+    </aside>
+    <!-- END : Sidebar -->
+    <!-- Main body -->
+    <main id="mainContainer">
+      <!-- Header -->
+      <header class="columns">
+        <div class="column is-half">
+          <a id="btnToggleSidebar" href="#"><i class="fa fa-bars fa-2x" aria-hidden="true"></i></a>
+          <div class="is-inline-block">
+            <div class="field has-addons" id="dtNotepicker">
+              <p class="control">
+                <input class="input" type="text" placeholder="Select Date.." data-input>
+              </p>
+              <p class="control">
+                <a class="button is-info" data-toggle>
+                <i class="fa fa-calendar fa-lg"></i>
+              </a>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="column has-text-right">
+          <a id="btnAddNote" href="#"><i class="fa fa-plus fa-2x" id="btnAddNote" aria-hidden="true"></i></a>
+          <a id="btnDeleteNote" href="#"><i class="fa fa-trash-o fa-2x" id="btnDeleteNote" aria-hidden="true"></i></a>
+        </div>
+      </header>
+      <!-- END : Header -->
+    </main>
+    <!-- END : Main body -->
+  </div>
+  <footer class="has-text-right">
+    3 out of 5 tasks done in 6 hours
+  </footer>
+  <script src="../../node_modules/slideout/dist/slideout.js"></script>
+  <script>
+    require('../renderer.js');
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+header a {
+  color: #4a4a4a; }
+
+header .is-inline-block {
+  vertical-align: top; }
+
+header a {
+  margin-right: 15px;
+  cursor: pointer; }
+
+header > div a:last-child {
+  margin-right: 0px; }

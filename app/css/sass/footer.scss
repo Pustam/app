@@ -1,0 +1,14 @@
+@import 'vars.scss';
+
+footer {
+    position: fixed;
+    line-height: $app-footer-height;
+    border-top: 2px solid #464646;
+    bottom: 0px;
+    width: 100%;
+    z-index: 2;
+    background-color: #fff;
+    max-height: $app-footer-height;
+    font-size: 0.8rem;
+    padding: 0px 8px;
+}

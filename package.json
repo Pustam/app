@@ -1,0 +1,40 @@
+{
+  "name": "markdown-notes-v2",
+  "version": "0.1.0",
+  "description": "A markdown based notebook, stores notes locally, intended to be keyboard friendly re-written from scratch.",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/markdown-note/markdown-notes",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "bugs": {
+    "url": "https://github.com/markdown-note/markdown-notes/issues"
+  },
+  "author": "Abijeet Patro <abijeetpatro@gmail.com> (http://www.thecurlybraces.com)",
+  "license": "MIT",
+  "dependencies": {
+    "i18n" : "0.8.3",
+    "ejs" : "2.5.6",
+    "sqlite3": "3.1.8",
+    "bluebird": "3.5.0",
+    "bulma": "0.4.2",
+    "slideout": "1.0.1",
+    "flatpickr": "3.0.5-1"
+  },
+  "devDependencies": {
+    "electron": "~1.6.2",
+    "eslint": "^3.10.2",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.3.2",
+    "eslint-plugin-standard": "^2.0.1",
+    "gulp": "3.9.1",
+    "gulp-sass": "3.1.0"
+  }
+}

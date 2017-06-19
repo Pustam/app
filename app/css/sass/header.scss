@@ -1,0 +1,15 @@
+@import 'vars.scss';
+
+header a {
+  color: $app-text-color;
+}
+header .is-inline-block {
+  vertical-align: top;
+}
+header a {
+  margin-right: 15px;
+  cursor: pointer;
+}
+header > div a:last-child {
+  margin-right: 0px;
+}
